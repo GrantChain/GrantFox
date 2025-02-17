@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center"> <img src="https://github.com/user-attachments/assets/a66b95c6-b592-4ae5-9080-715c935cd9e8" alt="CLR-S (2)"> </p>
+
+# GigFox
+
+A next-gen freelancing platform leveraging smart escrows via the Trustless Work API to ensure secure, transparent, and efficient transactions between clients and freelancers.
+
+---
+
+# Maintainers | [Telegram](https://t.me/gigifox25)
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/e245e8af-6f6f-4a0a-a37f-df132e9b4986" alt="Owner 2" width="150" />
+      <br /><br />
+      <strong>Joel Vargas | Frontend Developer</strong>
+      <br /><br />
+      <a href="https://github.com/JoelVR17" target="_blank">JoelVR17</a>
+      <br />
+      <a href="https://t.me/joelvr20" target="_blank">Telegram</a>
+    </td>
+  </tr>
+</table>
+
+---
 
 ## Getting Started
 
-First, run the development server:
+Follow the steps below to get started with this project:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Installation
+
+1. Install dependencies:
+
+   ```bash
+   npm i
+   ```
+
+2. Format the code using Prettier: (This is for avoid eslint errors)
+
+   ```bash
+   npx prettier --write .
+   ```
+
+3. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+## Environment Variables
+
+Make sure to set up the following environment variable in your `.env` file:
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Branch Main -> v.1 API
+# ! OBSOLETE FOR THIS dApp VERSION !
+NEXT_PUBLIC_API_URL=https://api.trustlesswork.com
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Branch Develop -> v.2 API
+NEXT_PUBLIC_API_URL=https://dev.api.trustlesswork.com
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# See API Key Video
+NEXT_PUBLIC_API_KEY=
 
-## Learn More
+```
 
-To learn more about Next.js, take a look at the following resources:
+### API Key Video
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+[dApp Trustless Work](https://dapp.trustlesswork.com)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+https://github.com/user-attachments/assets/33ea60b7-69b3-456a-afa6-56a7e70eb984
 
-## Deploy on Vercel
+## Wallet Requirements
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To use this project, you must have one of the following wallets installed:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Freighter**
+- **Albedo**
+- **xBull**
+- **LOBSTR**
+
+These wallets are required to interact with the platform.
+
+### How to use a Wallet
+
+You should use Chrome, Brave or Firefox browser, please install any of the wallets that were listen before.
+Important Note: If you're having problems to use Freighter, make sure that you have the wallet in "test net", and also if even you couldn't be able to use because it shows you "Not Available". Try going to: Security > Manage Connected Wallet > Remove the "localhost". If the problem persist, please contact us. This mistake happens for the wallet, not our product.
+
+## IMPORTANT NOTE:
+
+_It's important to note that we are using Husky. This means that when you run a `git push`, Husky will automatically execute `npm run format and npm run lint`. If either of these commands throws an error, the push will not be successful, and you will see a Husky error. When this happens, make sure to resolve any format and lint errors before trying the push again._
+
+---
+
+## **Thanks to all the contributors who have made this project possible!**
+
+[![Contributors](https://contrib.rocks/image?repo=Tico4Chain-Coders/dApp-Trustless-Work)](https://github.com/Tico4Chain-Coders/dApp-Trustless-Work/graphs/contributors)
