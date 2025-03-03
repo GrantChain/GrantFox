@@ -19,6 +19,15 @@ A next-gen freelancing platform leveraging smart escrows via the Trustless Work 
       <br />
       <a href="https://t.me/joelvr20" target="_blank">Telegram</a>
     </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/6b97e15f-9954-47d0-81b5-49f83bed5e4b" alt="Owner 1" width="150" />
+      <br /><br />
+      <strong>Tech Rebel | Product Manager</strong>
+      <br /><br />
+      <a href="https://github.com/techrebelgit" target="_blank">techrebelgit</a>
+      <br />
+      <a href="https://t.me/Tech_Rebel" target="_blank">Telegram</a>
+    </td>
   </tr>
 </table>
 
