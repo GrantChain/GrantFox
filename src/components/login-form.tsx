@@ -86,7 +86,7 @@ export function LoginForm({
               </div>
             </div>
           </form>
-          <div className="relative hidden bg-[#252222] md:block">
+          <div className="relative hidden bg-primary md:block">
             <div className="absolute inset-0 flex items-center justify-center">
               <img
                 src="/favicon.ico"
