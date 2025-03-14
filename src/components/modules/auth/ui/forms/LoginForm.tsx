@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useWallet } from "@/components/auth/hooks/wallet.hook";
+import { Wallet } from "lucide-react";
 
 export function LoginForm({
   className,
@@ -20,7 +21,7 @@ export function LoginForm({
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
                 <p className="text-balance text-muted-foreground">
-                  Login to your Acme Inc account
+                  Login in GrantChain
                 </p>
               </div>
               <div className="grid gap-2">
@@ -42,14 +43,21 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  placeholder="m@example.com"
+                />
               </div>
               <Button
                 type="button"
                 onClick={() => handleConnect()}
                 className="w-full"
               >
-                Login
+                <Wallet />
+                Connect Wallet
               </Button>
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">
