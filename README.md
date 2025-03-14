@@ -100,4 +100,3 @@ Important Note: If you're having problems to use Freighter, make sure that you h
 ## IMPORTANT NOTE:
 
 _It's important to note that we are using Husky. This means that when you run a `git push`, Husky will automatically execute `npm run format and npm run lint`. If either of these commands throws an error, the push will not be successful, and you will see a Husky error. When this happens, make sure to resolve any format and lint errors before trying the push again._
-
