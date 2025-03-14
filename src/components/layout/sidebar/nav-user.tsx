@@ -25,6 +25,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { useWallet } from "@/components/auth/hooks/wallet.hook";
 
 export function NavUser({
   user,
@@ -36,6 +38,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { handleDisconnect } = useWallet();
 
   return (
     <SidebarMenu>
@@ -98,7 +101,10 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => handleDisconnect()}
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>
