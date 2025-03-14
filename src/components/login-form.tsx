@@ -1,8 +1,8 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function LoginForm({
   className,
@@ -86,12 +86,14 @@ export function LoginForm({
               </div>
             </div>
           </form>
-          <div className="relative hidden bg-muted md:block">
-            <img
-              src="/placeholder.svg"
-              alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-            />
+          <div className="relative hidden bg-[#252222] md:block">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img
+                src="/favicon.ico"
+                alt="Image"
+                className="h-3/5 w-4/5 object-cover dark:brightness-[0.2] dark:grayscale"
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -100,5 +102,5 @@ export function LoginForm({
         and <a href="#">Privacy Policy</a>.
       </div>
     </div>
-  )
+  );
 }
