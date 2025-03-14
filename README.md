@@ -1,4 +1,4 @@
-<p align="center"> <img src="https://github.com/user-attachments/assets/a66b95c6-b592-4ae5-9080-715c935cd9e8" alt="CLR-S (2)"> </p>
+<p align="center"> <img src="https://github.com/user-attachments/assets/25cfd5b8-e303-4af6-920e-e42d1ac8d418" alt="CLR-S (2)"> </p>
 
 # GigFox
 
