@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "@/utils/ThemeToggle";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -44,8 +43,11 @@ export const HeaderLanding = () => {
           </Link>
         </nav>
         <div className="flex items-center gap-4">
-          <ThemeToggle />
-          <Button>Sign In</Button>
+          <Link href="/login" className="flex items-center">
+            <Button size="lg" className="bg-primary text-primary-foreground">
+              Sign In
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
