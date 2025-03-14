@@ -45,25 +45,15 @@ export const Landing = () => {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button
-                    size="lg"
-                    className="bg-primary text-primary-foreground"
-                  >
-                    Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button size="lg" variant="outline">
-                    View Documentation
-                  </Button>
+                  <Link href="https://docs.trustlesswork.com/trustless-work">
+                    <Button
+                      size="lg"
+                      className="bg-primary text-primary-foreground"
+                    >
+                      Trustless Work Documentation
+                    </Button>
+                  </Link>
                 </div>
-              </div>
-              <div className="flex items-center justify-center">
-                <Image
-                  src="/favicon.ico"
-                  alt="GrantChain Logo"
-                  width={300}
-                  height={300}
-                  className="rounded-md"
-                />
               </div>
             </div>
           </div>
@@ -304,15 +294,14 @@ export const Landing = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button
-                  size="lg"
-                  className="bg-primary text-primary-foreground"
-                >
-                  Sign Up <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button size="lg" variant="outline">
-                  Request Demo
-                </Button>
+                <Link href="/login" className="flex items-center">
+                  <Button
+                    size="lg"
+                    className="bg-primary text-primary-foreground"
+                  >
+                    Sign In <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
