@@ -7,7 +7,7 @@ import {
   SendTransactionResponse,
 } from "@/@types/escrow/escrow-response.entity";
 import http from "./axios";
-import { useGlobalAuthenticationStore } from "@/components/auth/store/store";
+import { useGlobalAuthenticationStore } from "@/components/wallet/store/store";
 import { signTransaction } from "@stellar/freighter-api";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 import { HttpMethod } from "@/@types/http.entity";
