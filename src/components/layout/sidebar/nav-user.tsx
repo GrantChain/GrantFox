@@ -25,8 +25,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { useWallet } from "@/components/auth/hooks/wallet.hook";
+import { supabase } from "@/lib/supabase";
 
 export function NavUser({
   user,
@@ -38,7 +37,12 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const { handleDisconnect } = useWallet();
+
+  const handleLogout = async () => {
+    let { error } = await supabase.auth.signOut();
+
+    if (error) console.log(error);
+  };
 
   return (
     <SidebarMenu>
@@ -103,7 +107,7 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer"
-              onClick={() => handleDisconnect()}
+              onClick={() => handleLogout()}
             >
               <LogOut />
               Log out
