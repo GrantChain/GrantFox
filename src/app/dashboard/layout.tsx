@@ -1,19 +1,11 @@
 "use client";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
-import { useGlobalAuthenticationStore } from "@/components/auth/store/store";
 import useLayoutDashboard from "@/hooks/layout-dashboard.hook";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const address = useGlobalAuthenticationStore((state) => state.address);
   const { label } = useLayoutDashboard();
-
-  // Authentication check
-  if (address === "") {
-    redirect("/");
-  }
 
   return (
     <SidebarProvider>
