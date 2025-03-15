@@ -1,6 +1,6 @@
 import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
-import { kit } from "../constants/wallet-kit.constant";
 import { useGlobalAuthenticationStore } from "../store/store";
+import { kit } from "@/lib/wallet-kit";
 
 export const useWallet = () => {
   const { connectWalletStore, disconnectWalletStore } =
