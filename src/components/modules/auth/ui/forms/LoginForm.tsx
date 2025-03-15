@@ -9,14 +9,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useLogin } from "../../hooks/login.hook";
 import { FormProvider } from "react-hook-form";
+import { useAuth } from "../../hooks/auth.hook";
+import Link from "next/link";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { form, handleLogin } = useLogin();
+  const { form, handleLogin } = useAuth();
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -88,9 +89,12 @@ export function LoginForm({
                 </Button>
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
-                  <a href="#" className="underline underline-offset-4">
+                  <Link
+                    href="/sign-up"
+                    className="underline underline-offset-4"
+                  >
                     Sign up
-                  </a>
+                  </Link>
                 </div>
               </div>
             </form>
