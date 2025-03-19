@@ -62,24 +62,22 @@ Follow the steps below to get started with this project:
 Make sure to set up the following environment variable in your `.env` file:
 
 ```
+# SUPABASE
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=
 
-# Branch Main -> v.1 API
-# ! OBSOLETE FOR THIS dApp VERSION !
-NEXT_PUBLIC_API_URL=https://api.trustlesswork.com
-
-# Branch Develop -> v.2 API
+# TRUSTLESS WORK
 NEXT_PUBLIC_API_URL=https://dev.api.trustlesswork.com
-
-# See API Key Video
 NEXT_PUBLIC_API_KEY=
-
 ```
 
 ### API Key Video
 
 [dApp Trustless Work](https://dapp.trustlesswork.com)
 
-https://github.com/user-attachments/assets/33ea60b7-69b3-456a-afa6-56a7e70eb984
+https://github.com/user-attachments/assets/31fd6423-fab8-4dfd-96ac-077cd537cb22
+
 
 ## Wallet Requirements
 
