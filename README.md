@@ -2,7 +2,7 @@
 
 # GigFox
 
-A next-gen freelancing platform leveraging smart escrows via the Trustless Work API to ensure secure, transparent, and efficient transactions between clients and freelancers.
+Grants Open Source Platform.
 
 ---
 
