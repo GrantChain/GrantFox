@@ -62,7 +62,7 @@ Follow the steps below to get started with this project:
 Make sure to set up the following environment variable in your `.env` file:
 
 ```
-# SUPABASE
+# SUPABASE -> Create a Supabase Database and copy the KEYS
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=
