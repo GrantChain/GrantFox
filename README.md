@@ -28,6 +28,15 @@ Grants Open Source Platform.
       <br />
       <a href="https://t.me/Tech_Rebel" target="_blank">Telegram</a>
     </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/447fd30d-25a6-46b9-9597-b6046581a06c" alt="Owner 1" width="150" />
+      <br /><br />
+      <strong>Pablo Mora | Product Owner</strong>
+      <br /><br />
+      <a href="https://github.com/pmora3003" target="_blank">pmora3003</a>
+      <br />
+      <a href="https://t.me/pablomora3003" target="_blank">Telegram</a>
+    </td>
   </tr>
 </table>
 
