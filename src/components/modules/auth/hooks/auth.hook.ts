@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { registerUser } from "../services/register-user.service";
 
 export const useAuth = () => {
   const router = useRouter();
@@ -57,8 +58,33 @@ export const useAuth = () => {
           variant: "destructive",
         });
       }
+      console.log("data", data);
 
-      if (data && !error) router.push("/sign-up/verify");
+      if (data.user && !error) {
+        try {
+          const { success, message } = await registerUser(
+            data.user.id,
+            data.user.email || "",
+          );
+
+          if (!success) {
+            toast({
+              title: "Error",
+              description: "User registration failed.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          //router.push("/sign-up/verify");
+        } catch (error) {
+          toast({
+            title: "Error registering user",
+            description: "Please try again later.",
+            variant: "destructive",
+          });
+        }
+      }
     } catch (error) {
       if (error) console.error(error);
     }
