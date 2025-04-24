@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  user_id: string;
   email: string;
   full_name: string;
   pfp_url?: string;
@@ -9,3 +9,5 @@ export interface User {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface UserPayload extends Pick<User, "user_id" | "email"> {}
