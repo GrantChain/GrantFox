@@ -46,6 +46,13 @@ Grants Open Source Platform.
 
 Follow the steps below to get started with this project:
 
+## Summary
+
+1. Install npm dependencies.
+2. Create a Supabase Database. [Tutorial](https://youtu.be/jA2-IwR0zjk)
+3. Prisma Migration. This video works too👆🏼      
+4. Run the Project.
+
 ## Installation
 
 1. Install dependencies:
@@ -60,7 +67,13 @@ Follow the steps below to get started with this project:
    npx prettier --write .
    ```
 
-3. Start the development server:
+3. Generate the Prisma Model into Supabase
+
+    ```bash
+   npx prisma db push
+   ```
+
+4. Start the development server:
 
    ```bash
    npm run dev
@@ -71,12 +84,16 @@ Follow the steps below to get started with this project:
 Make sure to set up the following environment variable in your `.env` file:
 
 ```
-# SUPABASE -> Create a Supabase Database and copy the KEYS
+# SUPABASE -> Create a Supabase Database and copy the KEYS <-- See the Tutorial Video in Summary Section
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=
 
-# TRUSTLESS WORK
+# PRISMA <-- See the Tutorial Video in Summary Section
+DATABASE_URL=
+DIRECT_URL=
+
+# TRUSTLESS WORK  <-- See the Video Below <-- Not necessary yet
 NEXT_PUBLIC_API_URL=https://dev.api.trustlesswork.com
 NEXT_PUBLIC_API_KEY=
 ```
