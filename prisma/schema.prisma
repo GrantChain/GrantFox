@@ -12,12 +12,13 @@ datasource db {
 model User {
   user_id        String   @id @default(cuid())
   email          String
-  wallet_address String
+  wallet_address String?
   role           String
   created_at     DateTime
   updated_at     DateTime @updatedAt
-  pfp_url        String
-  location       DateTime
+  pfp_url        String?
+  location       String?
+  bio            String?
 
   // Relaciones
   grantProvider  Grant_provider?
@@ -32,9 +33,9 @@ model User {
 
 model Grant_provider {
   user_id          String   @id
-  organization_name DateTime
-  network_type     String
-  contact_email    String
+  organization_name DateTime?
+  network_type     String?
+  contact_email    String?
   created_at       DateTime
   updated_at       DateTime @updatedAt
 
@@ -45,10 +46,10 @@ model Grant_provider {
 
 model Grantee {
   user_id        String @id
-  personal_name String
-  position_title String
-  linkedin_url  String
-  github_url    String
+  personal_name String?
+  position_title String?
+  linkedin_url  String?
+  github_url    String?
   linked_team_id String
 
   user           User   @relation(fields: [user_id], references: [user_id])
