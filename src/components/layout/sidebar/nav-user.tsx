@@ -25,7 +25,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/components/modules/auth/hooks/auth.hook";
 
 export function NavUser({
   user,
@@ -37,12 +37,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-
-  const handleLogout = async () => {
-    let { error } = await supabase.auth.signOut();
-
-    if (error) console.log(error);
-  };
+  const { handleLogout } = useAuth();
 
   return (
     <SidebarMenu>
