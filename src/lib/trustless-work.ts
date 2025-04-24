@@ -6,11 +6,11 @@ import {
   EscrowRequestResponse,
   SendTransactionResponse,
 } from "@/@types/escrow/escrow-response.entity";
-import http from "./axios";
 import { useGlobalAuthenticationStore } from "@/components/wallet/store/store";
 import { signTransaction } from "@stellar/freighter-api";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 import { HttpMethod } from "@/@types/http.entity";
+import { httpTW } from "./axios";
 
 type AxiosRequestConfig = {
   method: HttpMethod;
@@ -49,7 +49,7 @@ export async function createEscrowRequest<T extends EscrowEndpoint>(
   };
 
   try {
-    const axiosResponse = await http.request<EscrowRequestResponse>(config);
+    const axiosResponse = await httpTW.request<EscrowRequestResponse>(config);
     response = axiosResponse.data;
   } catch (err) {
     error = (err as Error).message;
@@ -65,7 +65,7 @@ export async function sendTransaction(
   signedXdr: string,
 ): Promise<SendTransactionResponse> {
   try {
-    const response = await http.post<SendTransactionResponse>(
+    const response = await httpTW.post<SendTransactionResponse>(
       "/helper/send-transaction",
       {
         signedXdr,
