@@ -1,5 +1,5 @@
 import { Verify } from "@/components/modules/auth/ui/pages/Verify";
 
-export const VerifyPage = () => {
+export default function VerifyPage() {
   return <Verify />;
-};
+}

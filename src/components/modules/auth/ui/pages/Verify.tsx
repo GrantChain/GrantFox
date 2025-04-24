@@ -7,7 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckCircle, Link, Mail } from "lucide-react";
+import { CheckCircle, Mail } from "lucide-react";
+import Link from "next/link";
 
 export const Verify = () => {
   return (

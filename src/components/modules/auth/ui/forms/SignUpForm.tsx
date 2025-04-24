@@ -14,12 +14,13 @@ import {
 import { useAuth } from "../../hooks/auth.hook";
 import { FormProvider } from "react-hook-form";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { form, handleSignUp } = useAuth();
+  const { form, showPassword, setShowPassword, handleSignUp } = useAuth();
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -32,7 +33,7 @@ export function SignUpForm({
             >
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
-                  <h1 className="text-2xl font-bold">Hi!</h1>
+                  <h1 className="text-2xl font-bold">Welcome!</h1>
                   <p className="text-balance text-muted-foreground">
                     SignUp in GrantFox
                   </p>
@@ -72,14 +73,26 @@ export function SignUpForm({
                           <span className="text-destructive ml-1">*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="Enter password"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                            }}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Enter password"
+                              {...field}
+                              onChange={(e) => field.onChange(e)}
+                              className="pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword((prev) => !prev)}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                              {showPassword ? (
+                                <EyeOff size={18} />
+                              ) : (
+                                <Eye size={18} />
+                              )}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const http = axios.create({
+export const httpTW = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "",
   timeout: 60000, // 1 minute
   headers: {
@@ -9,4 +9,10 @@ const http = axios.create({
   },
 });
 
-export default http;
+export const http = axios.create({
+  baseURL: "/api",
+  timeout: 60000, // 1 minute
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
