@@ -9,78 +9,76 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// ------------------- User -------------------
 model User {
-  user_id        String          @id @default(cuid())
+  user_id        String   @id @default(cuid())
   email          String
   wallet_address String
   role           String
+  created_at     DateTime
+  updated_at     DateTime @updatedAt
   pfp_url        String
-  location       String
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
+  location       DateTime
 
-  // Relations
-  grant_provider Grant_provider?
+  // Relaciones
+  grantProvider  Grant_provider?
   grantee        Grantee?
+  grants         Grant[]     @relation("GrantsCreatedBy")
+  teams          Team[]      @relation("UserTeams")
+  applications   Application[] @relation("UserApplications")
+  milestoneSubmissions Milestone_submission[]
+
+  @@map("user")
 }
 
-// ------------------- Grant Provider -------------------
 model Grant_provider {
-  user_id           String   @id
-  organization_name String
-  network_type      String
-  contact_email     String
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  user_id          String   @id
+  organization_name DateTime
+  network_type     String
+  contact_email    String
+  created_at       DateTime
+  updated_at       DateTime @updatedAt
 
-  user              User     @relation(fields: [user_id], references: [user_id])
+  user             User     @relation(fields: [user_id], references: [user_id])
 
   @@map("grant_provider")
 }
 
-// ------------------- Grantee -------------------
 model Grantee {
-  user_id        String   @id
-  personal_name  String
+  user_id        String @id
+  personal_name String
   position_title String
-  linkedin_url   String
-  github_url     String
+  linkedin_url  String
+  github_url    String
   linked_team_id String
-  telegram_url   String
-  x_url          String
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
 
-  user           User         @relation(fields: [user_id], references: [user_id])
-  team           Team         @relation(fields: [linked_team_id], references: [team_id])
+  user           User   @relation(fields: [user_id], references: [user_id])
+  team           Team   @relation(fields: [linked_team_id], references: [team_id])
   applications   Application[]
 
   @@map("grantee")
 }
 
-// ------------------- Team -------------------
 model Team {
   team_id     String   @id @default(cuid())
   team_name   String
   description String
   industry    String
-  location    String
+  location    DateTime
   team_email  String
   team_phone  String
   founded_date DateTime
   website_url String
   logo_url    String
-  created_at  DateTime @default(now())
+  created_at  DateTime
   updated_at  DateTime @updatedAt
 
   grantees    Grantee[]
-  projects    Project[]
+  users       User[]    @relation("UserTeams")
+  projects    Project[] @relation("TeamProjects")
 
   @@map("team")
 }
 
-// ------------------- Project -------------------
 model Project {
   project_id   String   @id @default(cuid())
   team_id      String
@@ -90,58 +88,106 @@ model Project {
   website_url  String
   start_date   DateTime
   end_date     DateTime
-  status       String
-  pitch_url    String
-  created_at   DateTime @default(now())
+  status       DateTime
+  created_at   DateTime
   updated_at   DateTime @updatedAt
-
-  team         Team     @relation(fields: [team_id], references: [team_id])
-
+  pitch_url    String
+  team         Team     @relation("TeamProjects", fields: [team_id], references: [team_id])
   applications Application[]
 
   @@map("project")
 }
 
-// ------------------- Grant -------------------
 model Grant {
-  grant_id     String   @id @default(cuid())
-  title        String
-  description  String
-  metrics      String
-  milestones   String
-  status       String
+  grant_id      String   @id @default(cuid())
+  title         String
+  description   String
+  metrics       String
+  milestones    String
+  status        DateTime
   total_funding String
-  currency     String
-  created_by   String
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  currency      String
+  created_by    String
+  created_at    DateTime
+  updated_at    DateTime @updatedAt
 
-  applications Application[]
+  user          User     @relation("GrantsCreatedBy", fields: [created_by], references: [user_id])
+  applications  Application[]
 
   @@map("grant")
 }
 
-// ------------------- Application -------------------
 model Application {
-  application_id String   @id @default(cuid())
-  grant_id       String
-  grantee_id     String
-  project_id     String
-  description    String
-  pitch_url      String
-  motivation     String
-  status         String
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  application_id  String   @id @default(cuid())
+  grant_id        String
+  grantee_id      String
+  project_id      String
+  description     String
+  user_id         String?
+  user            User?    @relation("UserApplications", fields: [user_id], references: [user_id])
+  pitch_url       String
+  motivation      DateTime
+  status          DateTime
+  created_at      DateTime
+  updated_at      DateTime @updatedAt
 
-  grant          Grant     @relation(fields: [grant_id], references: [grant_id])
-  grantee        Grantee   @relation(fields: [grantee_id], references: [user_id])
-  project        Project   @relation(fields: [project_id], references: [project_id])
+  grant           Grant     @relation(fields: [grant_id], references: [grant_id])
+  grantee         Grantee   @relation(fields: [grantee_id], references: [user_id])
+  project         Project   @relation(fields: [project_id], references: [project_id])
+  escrow          Escrow?
 
   @@map("application")
 }
 
-// ------------------- Milestone Submission -------------------
+model Escrow {
+  id               String      @id @default(cuid())
+  title            String
+  description      String
+  created_at       DateTime    @default(now())
+  updated_at       DateTime    @updatedAt
+  contract_id      String?
+  balance          String?
+  trustline        String?
+  service_provider String
+  engagement_id    String
+  dispute_resolver String
+  amount           String
+  platform_address String
+  platform_fee     String
+  approver         String
+  release_signer   String
+  user             String
+  issuer           String
+  dispute_flag     Boolean?
+  release_flag     Boolean?
+  resolved_flag    Boolean?
+  approver_funds   String?
+  receiver_funds   String?
+  receiver         String?
+  receiver_memo    Int?
+  dispute_started_by String?
+  application_id   String   @unique
+
+  application      Application @relation(fields: [application_id], references: [application_id])
+  milestones       Milestone[]
+
+  @@map("escrow")
+}
+
+model Milestone {
+  id              String   @id @default(cuid())
+  description     String
+  status          String?
+  approved_flag   Boolean?
+  evidence        String?
+  escrowId        String
+
+  escrow          Escrow   @relation(fields: [escrowId], references: [id])
+  submissions     Milestone_submission[]
+
+  @@map("milestone")
+}
+
 model Milestone_submission {
   submission_id  String   @id @default(cuid())
   milestone_id   String
@@ -149,59 +195,11 @@ model Milestone_submission {
   content        String
   review_notes   String
   submitted_at   DateTime
-  created_at     DateTime @default(now())
+  created_at     DateTime
   updated_at     DateTime @updatedAt
 
   milestone      Milestone @relation(fields: [milestone_id], references: [id])
+  user           User      @relation(fields: [submitted_by], references: [user_id])
 
   @@map("milestone_submission")
-}
-
-// ------------------- Milestone -------------------
-model Milestone {
-  id            String   @id @default(cuid())
-  description   String
-  status        String?
-  approved_flag Boolean?
-  evidence      String?
-  escrowId      String
-
-  escrow        Escrow   @relation(fields: [escrowId], references: [id])
-  submissions   Milestone_submission[]
-
-  @@map("milestone")
-}
-
-// ------------------- Escrow -------------------
-model Escrow {
-  id                 String      @id @default(cuid())
-  title              String
-  description        String
-  created_at         DateTime    @default(now())
-  updated_at         DateTime    @updatedAt
-  contract_id        String?
-  balance            String?
-  trustline          String?
-  service_provider   String
-  engagement_id      String
-  dispute_resolver   String
-  amount             String
-  platform_address   String
-  platform_fee       String
-  approver           String
-  release_signer     String
-  user               String
-  issuer             String
-  dispute_flag       Boolean?
-  release_flag       Boolean?
-  resolved_flag      Boolean?
-  approver_funds     String?
-  receiver_funds     String?
-  receiver           String?
-  receiver_memo      Int?
-  dispute_started_by String?
-
-  milestones         Milestone[]
-
-  @@map("escrow")
 }
