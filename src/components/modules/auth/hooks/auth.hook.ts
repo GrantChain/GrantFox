@@ -51,6 +51,8 @@ export const useAuth = () => {
         password: payload.password,
       });
 
+      console.log(data);
+
       if (error) {
         toast({
           title: "Error",
@@ -58,11 +60,10 @@ export const useAuth = () => {
           variant: "destructive",
         });
       }
-      console.log("data", data);
 
       if (data.user && !error) {
         try {
-          const { success, message } = await registerUser(
+          const { success } = await registerUser(
             data.user.id,
             data.user.email || "",
           );
@@ -76,7 +77,7 @@ export const useAuth = () => {
             return;
           }
 
-          //router.push("/sign-up/verify");
+          router.push("/sign-up/verify");
         } catch (error) {
           toast({
             title: "Error registering user",
