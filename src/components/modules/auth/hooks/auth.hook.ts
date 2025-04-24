@@ -7,9 +7,11 @@ import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export const useAuth = () => {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
@@ -82,6 +84,8 @@ export const useAuth = () => {
 
   return {
     form,
+    showPassword,
+    setShowPassword,
     handleLogin,
     handleSignUp,
     handleLogout,
