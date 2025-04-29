@@ -51,8 +51,6 @@ export const useAuth = () => {
         password: payload.password,
       });
 
-      console.log(data);
-
       if (error) {
         toast({
           title: "Error",
