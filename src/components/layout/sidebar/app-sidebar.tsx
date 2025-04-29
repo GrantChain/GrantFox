@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import type * as React from "react";
 import {
   AudioWaveform,
   BookOpen,
@@ -8,6 +8,7 @@ import {
   Command,
   Frame,
   GalleryVerticalEnd,
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: <Map is a valid name but you need to be careful with it, as is also reserved in JS> 
   Map,
   PieChart,
   Settings2,
@@ -25,6 +26,8 @@ import { TeamSwitcher } from "./team-switcher";
 import { NavMain } from "./nav-main";
 import { NavProjects } from "./nav-projects";
 import { NavUser } from "./nav-user";
+import { ThemeToggle } from "@/components/layout/sidebar/theme-toggler";
+import { Separator } from "@/components/ui/separator";
 
 // This is sample data.
 const data = {
@@ -167,6 +170,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
+        <div className="flex items-center justify-between px-4 py-2">
+          <p className="text-sm font-medium">Theme</p>
+          <ThemeToggle />
+        </div>
+        <Separator className="my-1" />
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
