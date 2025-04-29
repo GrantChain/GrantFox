@@ -25,7 +25,7 @@ export function SignUpForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
-        <CardContent className="grid p-0 md:grid-cols-2">
+        <CardContent className="grid p-0 grid-cols-1">
           <FormProvider {...form}>
             <form
               onSubmit={form.handleSubmit(handleSignUp)}
@@ -111,15 +111,6 @@ export function SignUpForm({
               </div>
             </form>
           </FormProvider>
-          <div className="relative hidden bg-primary md:block">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <img
-                src="/favicon.ico"
-                alt="Image"
-                className="h-3/5 w-4/5 object-cover dark:brightness-[0.2] dark:grayscale"
-              />
-            </div>
-          </div>
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
