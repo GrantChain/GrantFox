@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { ThemeToggle } from "../sidebar/theme-toggler";
 
 export const HeaderLanding = () => {
   return (
@@ -43,6 +44,7 @@ export const HeaderLanding = () => {
           </Link>
         </nav>
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           <Link href="/login" className="flex items-center">
             <Button size="lg" className="bg-primary text-primary-foreground">
               Sign In
