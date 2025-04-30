@@ -9,7 +9,7 @@ import {
   Mail 
 } from "lucide-react";
 
-export const FooterLanding = () => {
+export const Footer = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   // Update the year when the component mounts
@@ -121,4 +121,4 @@ export const FooterLanding = () => {
       </div>
     </footer>
   );
-};
+}; 
