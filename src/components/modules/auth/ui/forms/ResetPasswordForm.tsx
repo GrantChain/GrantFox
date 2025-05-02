@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import {
+  CardHeader,
+  CardTitle,
   Card,
   CardContent,
 } from "@/components/ui/card";
@@ -98,9 +100,20 @@ export function ResetPasswordForm() {
   // Show success message and login button when password reset is successful
   if (isSuccess) {
     return (
-      <div className="flex flex-col space-y-4 items-center text-center">
-        <p className="text-green-600">Your password has been successfully reset!</p>
-        <Button onClick={() => (window.location.href = "/login")}>Log in</Button>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <CardTitle className="text-2xl">Password Reset</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center gap-6">
+            <p className="text-muted-foreground">
+              Your password has been successfully reset!
+            </p>
+            <Button onClick={() => (window.location.href = "/login")}>
+              Log in
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }

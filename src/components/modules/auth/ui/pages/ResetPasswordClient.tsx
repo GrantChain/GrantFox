@@ -4,6 +4,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 import { supabase } from "@/lib/supabase";
+import {
+  CardHeader,
+  CardTitle,
+  Card,
+  CardContent,
+} from "@/components/ui/card";
 
 export function ResetPasswordClient() {
   const searchParams = useSearchParams();
@@ -33,9 +39,18 @@ export function ResetPasswordClient() {
   // Show a loader while validating the token
   if (isValidToken === null) {
     return (
-      <div className="container flex h-screen w-screen flex-col items-center justify-center">
-        <div>Validating link...</div>
-      </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+      <Card className="w-full max-w-md text-center">
+        <CardHeader>
+          <CardTitle className="text-2xl">Validating link...</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center gap-6">
+          <p className="text-muted-foreground">
+            Please don't recharge the page
+          </p>
+        </CardContent>
+      </Card>
+    </div>
     );
   }
 
