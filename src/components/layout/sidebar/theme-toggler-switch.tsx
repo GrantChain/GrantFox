@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 
 export function ThemeToggleSwitch() {
   const { theme, setTheme } = useTheme();
-  
+
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
