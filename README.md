@@ -50,7 +50,7 @@ Follow the steps below to get started with this project:
 
 1. Install npm dependencies.
 2. Create a Supabase Database. [Tutorial](https://youtu.be/jA2-IwR0zjk)
-3. Prisma Migration. This video works too👆🏼      
+3. Prisma Migration. This video works too👆🏼
 4. Run the Project.
 
 ## Installation
@@ -69,7 +69,7 @@ Follow the steps below to get started with this project:
 
 3. Generate the Prisma Model into Supabase
 
-    ```bash
+   ```bash
    npx prisma db push
    ```
 
@@ -103,7 +103,6 @@ NEXT_PUBLIC_API_KEY=
 [dApp Trustless Work](https://dapp.trustlesswork.com)
 
 https://github.com/user-attachments/assets/31fd6423-fab8-4dfd-96ac-077cd537cb22
-
 
 ## Wallet Requirements
 

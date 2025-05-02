@@ -8,7 +8,7 @@ import {
   Command,
   Frame,
   GalleryVerticalEnd,
-  // biome-ignore lint/suspicious/noShadowRestrictedNames: <Map is a valid name but you need to be careful with it, as is also reserved in JS> 
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: <Map is a valid name but you need to be careful with it, as is also reserved in JS>
   Map,
   PieChart,
   Settings2,
