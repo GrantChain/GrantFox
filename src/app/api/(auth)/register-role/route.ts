@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
-
-// Schema to validate the payload
-const RolePayloadSchema = z.object({
-  user_id: z.string(),
-  role: z.enum(["grant_provider", "grantee"]),
-});
+import { RolePayloadSchema } from "@/components/modules/auth/schema/role-selection.schema";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -25,7 +19,7 @@ export async function POST(req: Request) {
       data: { role },
     });
 
-    // Create the record in the specific table based on the role
+    // Create the corresponding record in the specific table
     if (role === "grant_provider") {
       await prisma.grant_provider.create({
         data: {

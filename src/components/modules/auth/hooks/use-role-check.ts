@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from "@/lib/supabase";  
 
 export function useRoleCheck() {
   const [shouldShowModal, setShouldShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     async function checkUserRole() {
@@ -16,13 +15,11 @@ export function useRoleCheck() {
           return;
         }
 
-        // Endpoint to check the role from the DB
         const response = await fetch(`/api/check-role/${user.id}`);
         
         if (response.ok) {
           const { role } = await response.json();
           
-          // If the role is empty or does not exist, show modal
           if (!role || role === "") {
             setShouldShowModal(true);
           }
@@ -36,7 +33,7 @@ export function useRoleCheck() {
     }
 
     checkUserRole();
-  }, [supabase]);
+  }, []);
 
   return { shouldShowModal, isLoading, setShouldShowModal };
 }
