@@ -6,5 +6,5 @@ export const RoleSchema = z.object({
 
 export const RolePayloadSchema = z.object({
   user_id: z.string(),
-  role: z.enum(["grant_provider", "grantee"]), 
+  role: z.enum(["grant_provider", "grantee"]),
 });

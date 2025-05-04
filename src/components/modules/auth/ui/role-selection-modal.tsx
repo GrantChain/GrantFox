@@ -11,16 +11,21 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { UserCircle2, Building2 } from "lucide-react";
 import { registerRole } from "../services/register-role.service";
-import { supabase } from "@/lib/supabase";  // Cambio aquí
+import { supabase } from "@/lib/supabase"; // Cambio aquí
 
 interface RoleSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps) {
+export function RoleSelectionModal({
+  isOpen,
+  onClose,
+}: RoleSelectionModalProps) {
   console.log("🎭 Modal renderizado - isOpen:", isOpen);
-  const [selectedRole, setSelectedRole] = useState<"grant_provider" | "grantee" | null>(null);
+  const [selectedRole, setSelectedRole] = useState<
+    "grant_provider" | "grantee" | null
+  >(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -32,24 +37,26 @@ export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps)
 
     setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
-        throw new Error('User not authenticated');
+        throw new Error("User not authenticated");
       }
 
       const result = await registerRole(user.id, selectedRole);
 
       if (result.success) {
-        toast.success('Role registered successfully');
+        toast.success("Role registered successfully");
         onClose();
         router.refresh();
       } else {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error('Error registering role:', error);
-      toast.error('Failed to register role');
+      console.error("Error registering role:", error);
+      toast.error("Failed to register role");
     } finally {
       setIsLoading(false);
     }
@@ -64,23 +71,23 @@ export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps)
             Please select how you want to use our platform
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <div
             className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all ${
-              selectedRole === 'grantee'
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/50'
+              selectedRole === "grantee"
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50"
             }`}
-            onClick={() => setSelectedRole('grantee')}
+            onClick={() => setSelectedRole("grantee")}
           >
             <div className="flex items-start gap-4">
               <UserCircle2 className="h-8 w-8 mt-1" />
               <div>
                 <h3 className="font-semibold text-lg">Grantee</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Looking for grants and funding opportunities. Submit applications
-                  and manage your grant requests.
+                  Looking for grants and funding opportunities. Submit
+                  applications and manage your grant requests.
                 </p>
               </div>
             </div>
@@ -88,11 +95,11 @@ export function RoleSelectionModal({ isOpen, onClose }: RoleSelectionModalProps)
 
           <div
             className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all ${
-              selectedRole === 'grant_provider'
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/50'
+              selectedRole === "grant_provider"
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50"
             }`}
-            onClick={() => setSelectedRole('grant_provider')}
+            onClick={() => setSelectedRole("grant_provider")}
           >
             <div className="flex items-start gap-4">
               <Building2 className="h-8 w-8 mt-1" />
