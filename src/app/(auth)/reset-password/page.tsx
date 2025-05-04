@@ -7,6 +7,6 @@ export const metadata: Metadata = {
 };
 
 export default function ResetPasswordPage() {
-    console.log("Page loaded");
-    return <ResetPasswordClient />;
+  console.log("Page loaded");
+  return <ResetPasswordClient />;
 }

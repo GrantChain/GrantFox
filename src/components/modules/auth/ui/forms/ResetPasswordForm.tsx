@@ -5,12 +5,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import {
-  CardHeader,
-  CardTitle,
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { CardHeader, CardTitle, Card, CardContent } from "@/components/ui/card";
 import {
   FormField,
   FormItem,
@@ -30,10 +25,22 @@ const passwordSchema = z
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Password must include uppercase, lowercase, number and special character")
-      .regex(/[a-z]/, "Password must include uppercase, lowercase, number and special character")
-      .regex(/[0-9]/, "Password must include uppercase, lowercase, number and special character")
-      .regex(/[^A-Za-z0-9]/, "Password must include uppercase, lowercase, number and special character"),
+      .regex(
+        /[A-Z]/,
+        "Password must include uppercase, lowercase, number and special character",
+      )
+      .regex(
+        /[a-z]/,
+        "Password must include uppercase, lowercase, number and special character",
+      )
+      .regex(
+        /[0-9]/,
+        "Password must include uppercase, lowercase, number and special character",
+      )
+      .regex(
+        /[^A-Za-z0-9]/,
+        "Password must include uppercase, lowercase, number and special character",
+      ),
     confirmPassword: z.string(),
   })
   // Additional validation to ensure both passwords match
@@ -81,14 +88,19 @@ export function ResetPasswordForm() {
         const password = value.password || "";
         setIsPasswordValid(password.length === 0 || password.length >= 8);
       }
-      
+
       // Check if passwords match, but only if confirm field has content
-      if ((name === "confirmPassword" || name === "password" || name === undefined) && 
-          value.confirmPassword && value.confirmPassword.length > 0) {
+      if (
+        (name === "confirmPassword" ||
+          name === "password" ||
+          name === undefined) &&
+        value.confirmPassword &&
+        value.confirmPassword.length > 0
+      ) {
         setPasswordsMatch(value.password === value.confirmPassword);
       }
     });
-    
+
     return () => subscription.unsubscribe();
   }, [methods]);
 
@@ -128,7 +140,9 @@ export function ResetPasswordForm() {
               {/* Form header with title and description */}
               <div className="flex flex-col items-center text-center mb-6">
                 <h1 className="text-2xl font-bold">Reset your password</h1>
-                <p className="text-muted-foreground text-sm">Choose a new secure password</p>
+                <p className="text-muted-foreground text-sm">
+                  Choose a new secure password
+                </p>
               </div>
 
               {/* Display any error messages from the API */}
@@ -155,11 +169,15 @@ export function ResetPasswordForm() {
                             className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
                             onClick={() => setShowPassword((prev) => !prev)}
                           >
-                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            {showPassword ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
                           </button>
                         </div>
                       </FormControl>
-                    
+
                       <FormMessage />
                     </FormItem>
                   )}
@@ -183,13 +201,19 @@ export function ResetPasswordForm() {
                           <button
                             type="button"
                             className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
-                            onClick={() => setShowConfirmPassword((prev) => !prev)}
+                            onClick={() =>
+                              setShowConfirmPassword((prev) => !prev)
+                            }
                           >
-                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            {showConfirmPassword ? (
+                              <EyeOff size={18} />
+                            ) : (
+                              <Eye size={18} />
+                            )}
                           </button>
                         </div>
                       </FormControl>
-                      
+
                       <FormMessage />
                     </FormItem>
                   )}

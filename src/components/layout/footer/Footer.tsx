@@ -3,11 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { 
-  Linkedin, 
-  Github, 
-  Mail 
-} from "lucide-react";
+import { Linkedin, Github, Mail } from "lucide-react";
 
 export const Footer = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -42,16 +38,28 @@ export const Footer = () => {
           <div className="flex flex-col items-center md:items-start">
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <div className="flex flex-col gap-2">
-              <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
+              <Link
+                href="#"
+                className="text-sm text-muted-foreground hover:text-primary"
+              >
                 About Us
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
+              <Link
+                href="#"
+                className="text-sm text-muted-foreground hover:text-primary"
+              >
                 Documentation
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
+              <Link
+                href="#"
+                className="text-sm text-muted-foreground hover:text-primary"
+              >
                 Terms of Service
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
+              <Link
+                href="#"
+                className="text-sm text-muted-foreground hover:text-primary"
+              >
                 Privacy Policy
               </Link>
             </div>
@@ -107,13 +115,22 @@ export const Footer = () => {
             © {currentYear} GrantFox. All rights reserved.
           </p>
           <div className="flex gap-4">
-            <Link href="#" className="text-xs text-muted-foreground hover:text-primary">
+            <Link
+              href="#"
+              className="text-xs text-muted-foreground hover:text-primary"
+            >
               Terms
             </Link>
-            <Link href="#" className="text-xs text-muted-foreground hover:text-primary">
+            <Link
+              href="#"
+              className="text-xs text-muted-foreground hover:text-primary"
+            >
               Privacy
             </Link>
-            <Link href="#" className="text-xs text-muted-foreground hover:text-primary">
+            <Link
+              href="#"
+              className="text-xs text-muted-foreground hover:text-primary"
+            >
               Cookies
             </Link>
           </div>
@@ -121,4 +138,4 @@ export const Footer = () => {
       </div>
     </footer>
   );
-}; 
+};
