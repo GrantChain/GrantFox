@@ -13,7 +13,10 @@ export async function POST(req: Request) {
 
   // If the email is invalid, return 400
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid email address" },
+      { status: 400 },
+    );
   }
 
   const { email } = parsed.data;
@@ -33,7 +36,10 @@ export async function POST(req: Request) {
     }
 
     // Return success response
-    return NextResponse.json({ message: "Password reset email sent" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Password reset email sent" },
+      { status: 200 },
+    );
   } catch (error) {
     // Catch unexpected errors
     return NextResponse.json({ error: "Server error" }, { status: 500 });

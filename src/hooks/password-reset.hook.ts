@@ -10,7 +10,10 @@ import { useRouter } from "next/navigation";
 
 // Email validation schema
 const forgotPasswordSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address"),
 });
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
@@ -23,7 +26,7 @@ const resetPasswordSchema = z
       .min(8, "Password must be at least 8 characters")
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-        "Password must contain an uppercase letter, a lowercase letter, a number, and a special character"
+        "Password must contain an uppercase letter, a lowercase letter, a number, and a special character",
       ),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
@@ -76,7 +79,9 @@ export function usePasswordReset() {
       }
 
       setIsSuccess(true);
-      toast.success("An email with instructions to reset your password has been sent");
+      toast.success(
+        "An email with instructions to reset your password has been sent",
+      );
     } catch (err: any) {
       console.error("Password reset request error:", err.message);
       setError(err.message || "Failed to send reset email");

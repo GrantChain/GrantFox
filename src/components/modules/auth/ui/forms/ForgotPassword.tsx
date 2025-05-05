@@ -59,8 +59,9 @@ export function ForgotPasswordForm({
                       </svg>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      If an account exists with that email, we've sent a password reset link.
-                      Please check your inbox and spam folder.
+                      If an account exists with that email, we've sent a
+                      password reset link. Please check your inbox and spam
+                      folder.
                     </p>
                   </div>
                 ) : (
@@ -92,11 +93,7 @@ export function ForgotPasswordForm({
                 )}
 
                 {!isSuccess && (
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
-                  >
+                  <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Sending..." : "Send Reset Link"}
                   </Button>
                 )}

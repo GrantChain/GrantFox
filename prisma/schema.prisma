@@ -33,7 +33,7 @@ model User {
 
 model Grant_provider {
   user_id          String   @id
-  organization_name DateTime?
+  organization_name String?
   network_type     String?
   contact_email    String?
   created_at       DateTime
@@ -50,10 +50,10 @@ model Grantee {
   position_title String?
   linkedin_url  String?
   github_url    String?
-  linked_team_id String
+  linked_team_id String?
 
   user           User   @relation(fields: [user_id], references: [user_id])
-  team           Team   @relation(fields: [linked_team_id], references: [team_id])
+  team           Team?   @relation(fields: [linked_team_id], references: [team_id])
   applications   Application[]
 
   @@map("grantee")
