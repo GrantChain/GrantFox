@@ -3,7 +3,7 @@ import { useGlobalAuthenticationStore } from "../store/store";
 import { kit } from "@/lib/wallet-kit";
 
 export const useWallet = () => {
-  const { connectWalletStore, disconnectWalletStore } =
+  const { connectWalletStore, disconnectWalletStore, address } =
     useGlobalAuthenticationStore();
 
   const connectWallet = async () => {
@@ -11,11 +11,8 @@ export const useWallet = () => {
       modalTitle: "Connect to your favorite wallet",
       onWalletSelected: async (option: ISupportedWallet) => {
         kit.setWallet(option.id);
-
-        const { address } = await kit.getAddress();
-        const { name } = option;
-
-        connectWalletStore(address, name);
+        const { address: addr } = await kit.getAddress();
+        connectWalletStore(addr, option.name);
       },
     });
   };
@@ -35,18 +32,15 @@ export const useWallet = () => {
 
   const handleDisconnect = async () => {
     try {
-      if (disconnectWallet) {
-        await disconnectWallet();
-      }
+      await disconnectWallet();
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
     }
   };
 
   return {
-    connectWallet,
-    disconnectWallet,
     handleConnect,
     handleDisconnect,
+    account: address, 
   };
 };
