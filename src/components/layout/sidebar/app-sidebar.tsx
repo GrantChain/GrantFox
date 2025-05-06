@@ -1,6 +1,7 @@
 "use client";
 
 import type * as React from "react";
+import { useSidebar } from "@/components/ui/sidebar";
 import {
   AudioWaveform,
   BookOpen,
@@ -13,6 +14,8 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  AlertTriangle,
+  Wallet as WalletIcon,
 } from "lucide-react";
 
 import {
@@ -166,6 +169,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     const { handleConnect, handleDisconnect, account } = useWallet();
     const isConnected = Boolean(account);
+
+    const { open } = useSidebar();
   
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -173,11 +178,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        {!isConnected && (
-          <div className="bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100 rounded-md p-2 mb-2 text-sm">
-            Connect your wallet to enable on-chain actions
-          </div>
-        )}
+      {!isConnected && (
+         open ? (
+           <div className="bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100 rounded-md p-2 mb-2 text-sm">
+             Connect your wallet to enable on-chain actions
+           </div>
+         ) : (
+           <div className="flex items-center justify-center p-2 mb-2">
+             <AlertTriangle className="h-6 w-6 text-yellow-500 dark:text-yellow-400" />
+           </div>
+         )
+       )}
 
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
@@ -185,14 +196,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
          <div className="flex flex-col gap-2 px-4 py-2">
             <Button
-              variant="outline"
-              size="default"
-              onClick={isConnected ? handleDisconnect : handleConnect}
-            >
-              {isConnected ? "Disconnect Wallet" : "Connect Wallet"}
-            </Button>
-
-            {/* El resto del footer */}
+           variant="outline"
+           size="default"
+           onClick={isConnected ? handleDisconnect : handleConnect}
+         >
+           {open
+             ? (isConnected ? "Disconnect Wallet" : "Connect Wallet")
+             : <WalletIcon className="h-5 w-5" />
+           }
+         </Button>
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">Theme</p>
               <ThemeToggle />
