@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import GoogleSignInButton from '@/components/modules/auth/ui/google/GoogleSignInButton';
+
 import {
   FormControl,
   FormField,
@@ -100,14 +102,25 @@ export function LoginForm({
                 <Button type="submit" className="w-full">
                   Login
                 </Button>
+                <div className="relative py-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-muted" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase text-muted-foreground">
+                    <span className="bg-background px-2">or continue with</span>
+                  </div>
+                </div>
+                <div className="flex justify-center">
+                  <GoogleSignInButton />
+                </div>
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
-                  <Link
+                  <a
                     href="/sign-up"
                     className="underline underline-offset-4"
                   >
                     Sign up
-                  </Link>
+                  </a>
                 </div>
 
                 <div className="text-center text-sm">
