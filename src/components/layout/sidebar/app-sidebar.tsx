@@ -32,8 +32,8 @@ import { NavUser } from "./nav-user";
 import { ThemeToggle } from "@/components/layout/sidebar/theme-toggler";
 import { Separator } from "@/components/ui/separator";
 
-import { useWallet } from "@/components/wallet/hooks/wallet.hook";            
-import { Button } from "@/components/ui/button";          
+import { useWallet } from "@/components/wallet/hooks/wallet.hook";
+import { Button } from "@/components/ui/button";
 
 // This is sample data.
 const data = {
@@ -60,6 +60,18 @@ const data = {
     },
   ],
   navMain: [
+    {
+      title: "Opportunities",
+      url: "/dashboard/opportunities",
+      icon: WalletIcon,
+      isActive: true,
+      items: [
+        {
+          title: "All Grants",
+          url: "/dashboard/opportunities",
+        },
+      ],
+    },
     {
       title: "Playground",
       url: "#",
@@ -166,54 +178,57 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { handleConnect, handleDisconnect, account } = useWallet();
+  const isConnected = Boolean(account);
 
-    const { handleConnect, handleDisconnect, account } = useWallet();
-    const isConnected = Boolean(account);
+  const { open } = useSidebar();
 
-    const { open } = useSidebar();
-  
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-      {!isConnected && (
-         open ? (
-           <div className="bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100 rounded-md p-2 mb-2 text-sm">
-             Connect your wallet to enable on-chain actions
-           </div>
-         ) : (
-           <div className="flex items-center justify-center p-2 mb-2">
-             <AlertTriangle className="h-6 w-6 text-yellow-500 dark:text-yellow-400" />
-           </div>
-         )
-       )}
+        {!isConnected &&
+          (open ? (
+            <div className="bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100 rounded-md p-2 mb-2 text-sm">
+              Connect your wallet to enable on-chain actions
+            </div>
+          ) : (
+            <div className="flex items-center justify-center p-2 mb-2">
+              <AlertTriangle className="h-6 w-6 text-yellow-500 dark:text-yellow-400" />
+            </div>
+          ))}
 
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-         <div className="flex flex-col gap-2 px-4 py-2">
-            <Button
-           variant="outline"
-           size="default"
-           onClick={isConnected ? handleDisconnect : handleConnect}
-         >
-           {open
-             ? (isConnected ? "Disconnect Wallet" : "Connect Wallet")
-             : <WalletIcon className="h-5 w-5" />
-           }
-         </Button>
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">Theme</p>
-              <ThemeToggle />
-            </div>
-            <Separator className="my-1" />
-            <NavUser user={data.user} />
+        <div className="flex flex-col gap-2 px-4 py-2">
+          <Button
+            variant="outline"
+            size="default"
+            onClick={isConnected ? handleDisconnect : handleConnect}
+          >
+            {open ? (
+              isConnected ? (
+                "Disconnect Wallet"
+              ) : (
+                "Connect Wallet"
+              )
+            ) : (
+              <WalletIcon className="h-5 w-5" />
+            )}
+          </Button>
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium">Theme</p>
+            <ThemeToggle />
           </div>
-          <SidebarRail />
-        </SidebarFooter>
+          <Separator className="my-1" />
+          <NavUser user={data.user} />
+        </div>
+        <SidebarRail />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
