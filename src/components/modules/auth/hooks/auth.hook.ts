@@ -44,6 +44,27 @@ export const useAuth = () => {
     }
   };
 
+  const handleGoogleLogin = async (credential: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: credential,
+      });
+  
+      if (error) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      console.error('Google login error:', err);
+    }
+  };
+
   const handleSignUp = async (payload: z.infer<typeof authSchema>) => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -114,5 +135,6 @@ export const useAuth = () => {
     handleLogin,
     handleSignUp,
     handleLogout,
+    handleGoogleLogin,
   };
 };

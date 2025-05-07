@@ -22,7 +22,6 @@ export function RoleSelectionModal({
   isOpen,
   onClose,
 }: RoleSelectionModalProps) {
-  console.log("🎭 Modal renderizado - isOpen:", isOpen);
   const [selectedRole, setSelectedRole] = useState<
     "grant_provider" | "grantee" | null
   >(null);
