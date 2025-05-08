@@ -39,25 +39,25 @@ const navItems = [
     title: "Dashboard",
     url: "/dashboard",
     icon: Home,
-    roles: ["grantProvider", "grantee", "admin"],
+    roles: ["grantProvider", "grantee"],
   },
   {
     title: "Grant Projects",
     url: "/projects",
     icon: Sparkles,
-    roles: ["grantProvider", "admin"],
+    roles: ["grantProvider", "grantee"],
   },
   {
     title: "Opportunities",
     url: "/opportunities",
     icon: Sparkles,
-    roles: ["grantee", "admin"],
+    roles: ["grantee"],
   },
   {
     title: "Help",
     url: "/help",
     icon: HelpCircle,
-    roles: ["grantProvider", "grantee", "admin"],
+    roles: ["grantProvider", "grantee"],
   },
 ];
 
