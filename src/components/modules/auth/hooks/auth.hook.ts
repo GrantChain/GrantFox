@@ -44,24 +44,30 @@ export const useAuth = () => {
     }
   };
 
-  const handleGoogleLogin = async (credential: string) => {
+  const handleGoogleLogin = async () => {
     try {
-      const { error } = await supabase.auth.signInWithIdToken({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        token: credential,
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        }
       });
-  
+      
       if (error) {
         toast({
           title: 'Error',
           description: error.message,
           variant: 'destructive',
         });
-      } else {
-        router.push('/dashboard');
       }
+      
     } catch (err) {
       console.error('Google login error:', err);
+      toast({
+        title: 'Error',
+        description: 'Failed to sign in with Google',
+        variant: 'destructive',
+      });
     }
   };
 

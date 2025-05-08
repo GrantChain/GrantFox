@@ -15,6 +15,7 @@ import { useAuth } from "../../hooks/auth.hook";
 import { FormProvider } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleSignInButton from '@/components/modules/auth/ui/google/GoogleSignInButton';
+import Link from "next/link";
 
 export function SignUpForm({
   className,
@@ -115,9 +116,9 @@ export function SignUpForm({
                 </div>
                 <div className="text-center text-sm">
                   Do you have an account?{" "}
-                  <a href="/login" className="underline underline-offset-4">
+                  <Link href="/login" className="underline underline-offset-4">
                     Login
-                  </a>
+                  </Link>
                 </div>
               </div>
             </form>
