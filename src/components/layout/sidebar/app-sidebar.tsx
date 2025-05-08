@@ -45,7 +45,7 @@ const navItems = [
     title: "Grant Projects",
     url: "/projects",
     icon: Sparkles,
-    roles: ["grantProvider", "grantee"],
+    roles: ["grantProvider"],
   },
   {
     title: "Opportunities",
