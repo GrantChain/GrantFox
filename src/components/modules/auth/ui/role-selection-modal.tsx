@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { UserCircle2, Building2 } from "lucide-react";
 import { registerRole } from "../services/register-role.service";
-import { supabase } from "@/lib/supabase"; // Cambio aquí
+import { supabase } from "@/lib/supabase";
 
 interface RoleSelectionModalProps {
   isOpen: boolean;
@@ -22,7 +22,6 @@ export function RoleSelectionModal({
   isOpen,
   onClose,
 }: RoleSelectionModalProps) {
-  console.log("🎭 Modal renderizado - isOpen:", isOpen);
   const [selectedRole, setSelectedRole] = useState<
     "grant_provider" | "grantee" | null
   >(null);

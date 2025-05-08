@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/form";
 import { useAuth } from "../../hooks/auth.hook";
 import { FormProvider } from "react-hook-form";
-import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import GoogleSignInButton from '@/components/modules/auth/ui/google/GoogleSignInButton';
 
 export function SignUpForm({
   className,
@@ -102,11 +102,22 @@ export function SignUpForm({
                 <Button type="submit" className="w-full">
                   Sign Up
                 </Button>
+                <div className="relative py-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-muted" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase text-muted-foreground">
+                    <span className="bg-background px-2">or continue with</span>
+                  </div>
+                </div>
+                <div className="flex justify-center">
+                  <GoogleSignInButton />
+                </div>
                 <div className="text-center text-sm">
                   Do you have an account?{" "}
-                  <Link href="/login" className="underline underline-offset-4">
+                  <a href="/login" className="underline underline-offset-4">
                     Login
-                  </Link>
+                  </a>
                 </div>
               </div>
             </form>
