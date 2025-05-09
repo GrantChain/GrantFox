@@ -1,3 +1,4 @@
+// src/modules/auth/hooks/auth.hook.ts
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -9,10 +10,13 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { registerUser } from "../services/register-user.service";
+import { useTemporaryEmailStore } from "../store/auth.store";
 
 export const useAuth = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { setEmail, email } = useTemporaryEmailStore();
 
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
@@ -84,10 +88,13 @@ export const useAuth = () => {
           description: error.message,
           variant: "destructive",
         });
+        return;
       }
 
-      if (data.user && !error) {
+      if (data.user) {
         try {
+          setEmail(payload.email);
+
           const { success } = await registerUser(
             data.user.id,
             data.user.email || "",
@@ -134,6 +141,48 @@ export const useAuth = () => {
     }
   };
 
+  const handleResend = async () => {
+    setIsLoading(true);
+    try {
+      if (!email) {
+        toast({
+          title: "Error",
+          description: "No email available for resending verification",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "We've sent a new confirmation email to your inbox",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Failed to resend verification email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     form,
     showPassword,
@@ -142,5 +191,7 @@ export const useAuth = () => {
     handleSignUp,
     handleLogout,
     handleGoogleLogin,
+    handleResend,
+    isLoading,
   };
 };
