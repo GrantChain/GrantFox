@@ -1,51 +1,21 @@
 'use client'
 
-import Script from 'next/script'
-import { useEffect, useState } from 'react'
-import type { CredentialResponse } from 'google-one-tap'
-import { useAuth } from '@/components/modules/auth/hooks/auth.hook'
+import { Button } from "@/components/ui/button";
+import { FcGoogle } from "react-icons/fc";
+import { useAuth } from "@/components/modules/auth/hooks/auth.hook";
 
 export default function GoogleSignInButton() {
-  const { handleGoogleLogin } = useAuth()
-  const [googleScriptLoaded, setGoogleScriptLoaded] = useState(false)
-
-  useEffect(() => {
-    if (googleScriptLoaded) {
-      window.google?.accounts.id.initialize({
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
-        callback: async (response: CredentialResponse) => {
-          await handleGoogleLogin(response.credential)
-        },
-      })
-
-      // Render google sign in button
-      const buttonContainer = document.getElementById("googleSignInButton");
-      if (buttonContainer) {
-        window.google?.accounts.id.renderButton(
-          buttonContainer,
-          { 
-            type: "standard", 
-            shape: "pill",
-            theme: "outline",
-            text: "signin_with",
-            size: "large",
-            logo_alignment: "left"
-          }
-        )
-      }
-    }
-  }, [googleScriptLoaded, handleGoogleLogin])
+  const { handleGoogleLogin } = useAuth();
 
   return (
-    <>
-      <Script 
-        src="https://accounts.google.com/gsi/client" 
-        strategy="afterInteractive"
-        onLoad={() => setGoogleScriptLoaded(true)}
-      />
-      
-      {}
-      <div id="googleSignInButton"></div>
-    </>
-  )
+    <Button 
+      variant="outline" 
+      type="button"
+      onClick={handleGoogleLogin}
+      className="flex items-center justify-center gap-2 w-full"
+    >
+      <FcGoogle className="h-5 w-5" />
+      <span>Sign in with Google</span>
+    </Button>
+  );
 }

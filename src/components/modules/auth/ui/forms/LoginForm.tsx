@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import GoogleSignInButton from '@/components/modules/auth/ui/google/GoogleSignInButton';
+import Link from "next/link";
 
 import {
   FormControl,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { FormProvider } from "react-hook-form";
 import { useAuth } from "../../hooks/auth.hook";
-import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 
 export function LoginForm({
@@ -115,12 +115,12 @@ export function LoginForm({
                 </div>
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
-                  <a
+                  <Link
                     href="/sign-up"
                     className="underline underline-offset-4"
                   >
                     Sign up
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="text-center text-sm">
