@@ -3,9 +3,6 @@ import { GrantsTable } from "../tables/GrantsTable";
 export const Grants = () => {
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Grant Opportunities</h1>
-      </div>
       <GrantsTable />
     </div>
   );
