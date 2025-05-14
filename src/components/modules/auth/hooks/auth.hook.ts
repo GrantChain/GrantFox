@@ -7,10 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { registerUser } from "../services/register-user.service";
 import { useTemporaryEmailStore } from "../store/auth.store";
+import { toast } from "sonner";
 
 export const useAuth = () => {
   const router = useRouter();
@@ -35,11 +35,7 @@ export const useAuth = () => {
       });
 
       if (error && error.status === 400) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        toast.error(error.message);
       }
 
       if (data?.session && !error) router.push("/dashboard");
@@ -51,27 +47,18 @@ export const useAuth = () => {
   const handleGoogleLogin = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
-        }
+        },
       });
-      
+
       if (error) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast.error(error.message);
       }
-      
     } catch (err) {
-      console.error('Google login error:', err);
-      toast({
-        title: 'Error',
-        description: 'Failed to sign in with Google',
-        variant: 'destructive',
-      });
+      console.error("Google login error:", err);
+      toast.error("Failed to sign in with Google");
     }
   };
 
@@ -83,11 +70,7 @@ export const useAuth = () => {
       });
 
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        toast.error(error.message);
         return;
       }
 
@@ -101,21 +84,13 @@ export const useAuth = () => {
           );
 
           if (!success) {
-            toast({
-              title: "Error",
-              description: "User registration failed.",
-              variant: "destructive",
-            });
+            toast.error("User registration failed.");
             return;
           }
 
           router.push("/sign-up/verify");
         } catch (error) {
-          toast({
-            title: "Error registering user",
-            description: "Please try again later.",
-            variant: "destructive",
-          });
+          toast.error("Please try again later.");
         }
       }
     } catch (error) {
@@ -128,11 +103,7 @@ export const useAuth = () => {
       let { error } = await supabase.auth.signOut();
 
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        toast.error(error.message);
       } else {
         router.push("/");
       }
@@ -145,39 +116,24 @@ export const useAuth = () => {
     setIsLoading(true);
     try {
       if (!email) {
-        toast({
-          title: "Error",
-          description: "No email available for resending verification",
-          variant: "destructive",
-        });
+        toast(toast.error("No email available for resending verification"));
         return;
       }
 
       const { error } = await supabase.auth.resend({
-        type: 'signup',
+        type: "signup",
         email,
       });
 
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        toast.error(error.message);
         return;
       }
 
-      toast({
-        title: "Success",
-        description: "We've sent a new confirmation email to your inbox",
-      });
+      toast.success("We've sent a new confirmation email to your inbox");
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Error",
-        description: "Failed to resend verification email",
-        variant: "destructive",
-      });
+      toast.error("Failed to resend verification email");
     } finally {
       setIsLoading(false);
     }
