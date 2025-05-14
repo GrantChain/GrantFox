@@ -9,19 +9,19 @@ export const navItems = [
   },
   {
     title: "Grant Projects",
-    url: "/grants/projects",
+    url: "/dashboard/grants/projects",
     icon: Sparkles,
     roles: ["grant_provider"],
   },
   {
     title: "Opportunities",
-    url: "/grants/opportunities",
+    url: "/dashboard/grants/opportunities",
     icon: Sparkles,
     roles: ["grantee"],
   },
   {
     title: "Help",
-    url: "/help",
+    url: "/dashboard/help",
     icon: HelpCircle,
     roles: ["grant_provider", "grantee"],
   },
