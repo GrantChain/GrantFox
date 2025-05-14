@@ -1,6 +1,6 @@
-import { GrantsTable } from "@/components/modules/grants/ui/grants-table";
+import { GrantsTable } from "../tables/GrantsTable";
 
-export default function OpportunitiesPage() {
+export const Grants = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -9,4 +9,4 @@ export default function OpportunitiesPage() {
       <GrantsTable />
     </div>
   );
-} 
+};

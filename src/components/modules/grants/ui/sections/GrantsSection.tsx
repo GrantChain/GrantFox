@@ -1,6 +1,6 @@
 "use client";
 
-import { GrantsTable } from "./grants-table";
+import { GrantsTable } from "../tables/GrantsTable";
 
 export function GrantsSection() {
   return (
@@ -12,7 +12,8 @@ export function GrantsSection() {
               Available Grants
             </h2>
             <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Browse through our available grants and find the perfect opportunity for your project.
+              Browse through our available grants and find the perfect
+              opportunity for your project.
             </p>
           </div>
         </div>
@@ -22,4 +23,4 @@ export function GrantsSection() {
       </div>
     </section>
   );
-} 
+}

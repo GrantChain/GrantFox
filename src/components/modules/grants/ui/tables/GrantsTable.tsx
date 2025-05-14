@@ -28,9 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useGrants } from "../hooks/use-grants.hook";
-import { Grant } from "../services/grants.service";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Grant } from "../../services/grants.service";
+import { useGrants } from "../../hooks/grants.hook";
 
 // Define the columns for our table
 const columns: ColumnDef<Grant>[] = [
@@ -154,7 +154,7 @@ export function GrantsTable() {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -183,7 +183,7 @@ export function GrantsTable() {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -222,4 +222,4 @@ export function GrantsTable() {
       </div>
     </div>
   );
-} 
+}
