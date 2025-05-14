@@ -1,16 +1,16 @@
 import { StateCreator } from "zustand";
-import { AuthenticationGlobalStore } from "../@types/authentication.entity";
+import { WalletGlobalStore } from "../@types/wallet.entity";
 
 const AUTHENTICATION_ACTIONS = {
   CONNECT_WALLET: "authentication/connect",
   DISCONNECT_WALLET: "authentication/disconnect",
 } as const;
 
-export const useGlobalAuthenticationSlice: StateCreator<
-  AuthenticationGlobalStore,
+export const useGlobalWalletSlice: StateCreator<
+  WalletGlobalStore,
   [["zustand/devtools", never]],
   [],
-  AuthenticationGlobalStore
+  WalletGlobalStore
 > = (set) => {
   return {
     // Stores

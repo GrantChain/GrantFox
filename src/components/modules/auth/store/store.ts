@@ -1,13 +1,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+import { AuthenticationStore } from "./@types/authentication.entity";
 
-interface TemporaryEmailState {
-  email: string;
-  setEmail: (email: string) => void;
-  clearEmail: () => void;
-}
-
-export const useTemporaryEmailStore = create<TemporaryEmailState>()(
+export const useAuthenticationBoundedStore = create<AuthenticationStore>()(
   devtools(
     (set) => ({
       email: "",
@@ -16,6 +11,6 @@ export const useTemporaryEmailStore = create<TemporaryEmailState>()(
     }),
     {
       name: "temporary-email-store",
-    }
-  )
+    },
+  ),
 );

@@ -9,14 +9,15 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { registerUser } from "../services/register-user.service";
-import { useTemporaryEmailStore } from "../store/auth.store";
 import { toast } from "sonner";
+import { useAuthenticationBoundedStore } from "../store/store";
 
 export const useAuth = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { setEmail, email } = useTemporaryEmailStore();
+  const setEmail = useAuthenticationBoundedStore((state) => state.setEmail);
+  const email = useAuthenticationBoundedStore((state) => state.email);
 
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),

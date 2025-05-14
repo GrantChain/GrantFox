@@ -1,4 +1,4 @@
-export interface AuthenticationGlobalStore {
+export interface WalletGlobalStore {
   address: string;
   name: string;
 

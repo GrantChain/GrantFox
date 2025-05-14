@@ -1,14 +1,14 @@
 import { persist } from "zustand/middleware";
 import { create } from "zustand";
-import { useGlobalAuthenticationSlice } from "./slices/authentication.slice";
-import { AuthenticationGlobalStore } from "./@types/authentication.entity";
+import { useGlobalWalletSlice } from "./slices/wallet.slice";
+import { WalletGlobalStore } from "./@types/wallet.entity";
 
-type AuthState = AuthenticationGlobalStore;
+type AuthState = WalletGlobalStore;
 
-export const useGlobalAuthenticationStore = create<AuthState>()(
+export const useGlobalWalletStore = create<AuthState>()(
   persist(
     (...b) => ({
-      ...useGlobalAuthenticationSlice(...b),
+      ...useGlobalWalletSlice(...b),
     }),
     {
       name: "address-wallet",

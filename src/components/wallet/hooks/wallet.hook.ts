@@ -1,10 +1,10 @@
 import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
-import { useGlobalAuthenticationStore } from "../store/store";
+import { useGlobalWalletStore } from "../store/store";
 import { kit } from "@/lib/wallet-kit";
 
 export const useWallet = () => {
   const { connectWalletStore, disconnectWalletStore, address } =
-    useGlobalAuthenticationStore();
+    useGlobalWalletStore();
 
   const connectWallet = async () => {
     await kit.openModal({
@@ -41,6 +41,6 @@ export const useWallet = () => {
   return {
     handleConnect,
     handleDisconnect,
-    account: address, 
+    account: address,
   };
 };

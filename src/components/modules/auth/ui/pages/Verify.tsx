@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,7 @@ import {
 import { CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "../../hooks/auth.hook";
-import { useTemporaryEmailStore } from "../../store/auth.store";
+import { useTemporaryEmailStore } from "../../store/store";
 
 export const Verify = () => {
   const { handleResend, isLoading } = useAuth();
@@ -29,7 +29,12 @@ export const Verify = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
           <CardDescription className="text-base mt-2">
-            We've sent a confirmation email to {email ? <span className="font-medium">{email}</span> : "your inbox"}
+            We've sent a confirmation email to{" "}
+            {email ? (
+              <span className="font-medium">{email}</span>
+            ) : (
+              "your inbox"
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center space-y-4">
@@ -48,8 +53,8 @@ export const Verify = () => {
           <Button className="w-full" asChild>
             <Link href="/">Return to Home</Link>
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full"
             onClick={handleResend}
             disabled={isLoading}
