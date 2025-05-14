@@ -1,29 +1,22 @@
+import { RoleResponse, AuthServiceResponse } from "@/@types/responses.entity";
 import { http } from "@/lib/axios";
-import { User } from "@/@types/user.entity";
-import { AuthServiceResponse } from "@/@types/responses.entity";
 
-// This function is used to register a user in the "PUBLIC" User Table
-export const registerUser = async (
+export const checkRole = async (
   user_id: string,
-  email: string,
 ): Promise<AuthServiceResponse> => {
   try {
-    const response = await http.post<User>("/register-user", {
-      user_id,
-      email,
-    });
-
-    if (response.status === 201) {
+    const response = await http.get<RoleResponse>(`/check-role/${user_id}`);
+    if (response.status === 200) {
       return {
         success: true,
-        message: "User registered successfully",
+        message: "Role checked successfully",
         data: response.data,
       };
     } else {
       return {
         success: false,
-        message: "Error registering user. Please try again.",
-        data: response.data,
+        message: "Error checking role. Please try again.",
+        data: null,
       };
     }
   } catch (error: unknown) {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { checkRole } from "../services/check-role.service";
 
 export function useRoleCheck() {
   const [shouldShowModal, setShouldShowModal] = useState(false);
@@ -17,10 +18,10 @@ export function useRoleCheck() {
           return;
         }
 
-        const response = await fetch(`/api/check-role/${user.id}`);
+        const response = await checkRole(user.id);
 
-        if (response.ok) {
-          const { role } = await response.json();
+        if (response.success) {
+          const { role } = response.data as { role: string };
 
           if (!role || role === "") {
             setShouldShowModal(true);
