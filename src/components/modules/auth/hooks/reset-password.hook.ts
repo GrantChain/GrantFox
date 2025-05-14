@@ -1,0 +1,58 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { resetPasswordSchema } from "@/components/modules/auth/ui/schema/reset-password.schema";
+
+type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+
+export const useResetPassword = () => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const form = useForm<ResetPasswordFormValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const handlePasswordReset = async (data: ResetPasswordFormValues) => {
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: data.password,
+      });
+
+      if (error) throw error;
+
+      router.push("/login");
+
+      toast.success("Password updated successfully");
+    } catch (err: any) {
+      console.error("Error updating password:", err);
+      toast.error(err.message || "Failed to reset password");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    form,
+    isLoading,
+    showPassword,
+    showConfirmPassword,
+    setShowPassword,
+    setShowConfirmPassword,
+    handlePasswordReset,
+  };
+};

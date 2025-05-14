@@ -1,7 +1,7 @@
 "use client";
 
 import { RoleSelectionModal } from "./role-selection-modal";
-import { useRoleCheck } from "../hooks/use-role-check";
+import { useRoleCheck } from "../hooks/role-check.hook";
 
 export function RoleSelectionProvider({
   children,
