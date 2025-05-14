@@ -8,7 +8,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { AlertTriangle, Wallet as WalletIcon } from "lucide-react";
+import { AlertTriangle, Wallet } from "lucide-react";
 import { useMemo } from "react";
 import {
   Sidebar,
@@ -18,10 +18,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
-import { ThemeToggle } from "@/components/layout/sidebar/theme-toggler";
 import { Separator } from "@/components/ui/separator";
 import { useWallet } from "@/components/wallet/hooks/wallet.hook";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useUser } from "@/components/modules/auth/context/UserContext";
 import TooltipInfo from "@/components/shared/TooltipInfo";
@@ -29,7 +27,7 @@ import { navItems } from "./constants/items.constant";
 import Link from "next/link";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { handleConnect, handleDisconnect, account } = useWallet();
+  const { account } = useWallet();
   const isConnected = Boolean(account);
   const { open } = useSidebar();
   const { user, isLoading } = useUser();
@@ -99,12 +97,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu className="px-2 py-2">
           {filteredNavItems.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <Link href={item.url} className="flex items-center gap-2">
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
+              <TooltipInfo
+                content={
+                  !isConnected
+                    ? "Connect your wallet to access this section"
+                    : ""
+                }
+              >
+                <div className="w-full">
+                  <SidebarMenuButton asChild disabled={!isConnected}>
+                    <Link
+                      href={isConnected ? item.url : "#"}
+                      className={`flex items-center gap-2 ${!isConnected ? "opacity-50 cursor-not-allowed" : ""}`}
+                      onClick={(e) => !isConnected && e.preventDefault()}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </div>
+              </TooltipInfo>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
@@ -128,27 +140,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </>
           )}
 
-          <Button
-            variant="outline"
-            size="default"
-            onClick={isConnected ? handleDisconnect : handleConnect}
-          >
-            {open ? (
-              isConnected ? (
-                "Disconnect Wallet"
-              ) : (
-                "Connect Wallet"
-              )
-            ) : (
-              <WalletIcon className="h-5 w-5" />
-            )}
-          </Button>
-          <div className="flex items-center justify-between px-4 py-2 group-data-[collapsible=icon]:px-2">
-            <p className="text-sm font-medium group-data-[collapsible=icon]:hidden">
-              Theme
-            </p>
-            <ThemeToggle />
-          </div>
           <Separator className="my-1" />
           <NavUser
             user={{
