@@ -12,11 +12,11 @@ import {
 import { CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "../../hooks/auth.hook";
-import { useTemporaryEmailStore } from "../../store/store";
+import { useAuthenticationBoundedStore } from "../../store/store";
 
 export const Verify = () => {
   const { handleResend, isLoading } = useAuth();
-  const { email } = useTemporaryEmailStore();
+  const { email } = useAuthenticationBoundedStore();
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">

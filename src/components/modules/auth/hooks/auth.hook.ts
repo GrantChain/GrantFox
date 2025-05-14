@@ -68,6 +68,9 @@ export const useAuth = () => {
       const { data, error } = await supabase.auth.signUp({
         email: payload.email,
         password: payload.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        },
       });
 
       if (error) {
@@ -124,6 +127,9 @@ export const useAuth = () => {
       const { error } = await supabase.auth.resend({
         type: "signup",
         email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        },
       });
 
       if (error) {

@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { registerRole } from "../services/register-role.service";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "../context/UserContext";
 
 interface RoleSelectionHookProps {
   onClose: () => void;
@@ -14,6 +15,7 @@ export const useRoleSelection = ({ onClose }: RoleSelectionHookProps) => {
   >(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { refreshUser } = useUser();
 
   const handleSubmit = async () => {
     if (!selectedRole) {
@@ -35,8 +37,9 @@ export const useRoleSelection = ({ onClose }: RoleSelectionHookProps) => {
 
       if (result.success) {
         toast.success("Role registered successfully");
-        onClose();
+        await refreshUser();
         router.refresh();
+        onClose();
       } else {
         toast.error(result.message);
       }
