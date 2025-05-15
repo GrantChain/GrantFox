@@ -4,8 +4,6 @@ import { GrantsFilters, GrantsPagination } from "../@types/filters.entity";
 
 const DEFAULT_FILTERS: GrantsFilters = {
   search: "",
-  status: "all",
-  currency: "all",
   minFunding: "",
   maxFunding: "",
   startDate: "",
@@ -19,8 +17,6 @@ export const useGrantsFilters = () => {
   const getFiltersFromUrl = (): GrantsFilters => {
     return {
       search: searchParams.get("search") || DEFAULT_FILTERS.search,
-      status: searchParams.get("status") || DEFAULT_FILTERS.status,
-      currency: searchParams.get("currency") || DEFAULT_FILTERS.currency,
       minFunding: searchParams.get("minFunding") || DEFAULT_FILTERS.minFunding,
       maxFunding: searchParams.get("maxFunding") || DEFAULT_FILTERS.maxFunding,
       startDate: searchParams.get("startDate") || DEFAULT_FILTERS.startDate,
