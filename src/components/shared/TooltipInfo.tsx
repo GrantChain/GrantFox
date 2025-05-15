@@ -13,6 +13,10 @@ interface TooltipInfoProps {
 }
 
 const TooltipInfo = ({ content, children }: TooltipInfoProps) => {
+  if (content === "") {
+    return children || null;
+  }
+
   return (
     <TooltipProvider>
       <Tooltip>
