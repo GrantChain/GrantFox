@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useAuth } from "../../hooks/auth.hook";
+import { useAuth } from "../../hooks/useAuth";
 import { FormProvider } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleSignInButton from "@/components/modules/auth/ui/google/GoogleSignInButton";

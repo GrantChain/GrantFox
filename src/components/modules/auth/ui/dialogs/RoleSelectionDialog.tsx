@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { UserCircle2, Building2 } from "lucide-react";
-import { useRoleSelection } from "../../hooks/role-selection.hook";
+import { useRoleSelection } from "../../hooks/useRoleSelection";
 
 interface RoleSelectionModalProps {
   isOpen: boolean;

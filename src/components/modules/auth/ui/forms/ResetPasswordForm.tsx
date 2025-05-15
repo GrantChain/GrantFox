@@ -1,6 +1,6 @@
 "use client";
 
-import { useResetPassword } from "@/components/modules/auth/hooks/reset-password.hook";
+import { useResetPassword } from "@/components/modules/auth/hooks/useResetPassword";
 import { FormProvider } from "react-hook-form";
 import {
   FormField,

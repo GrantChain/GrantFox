@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "../../hooks/auth.hook";
+import { useAuth } from "../../hooks/useAuth";
 import { useAuthenticationBoundedStore } from "../../store/store";
 
 export const Verify = () => {

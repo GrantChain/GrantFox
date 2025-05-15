@@ -2,7 +2,7 @@
 
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 import { CardHeader, CardTitle, Card, CardContent } from "@/components/ui/card";
-import { useResetPassword } from "../../hooks/reset-password.hook";
+import { useResetPassword } from "../../hooks/useResetPassword";
 
 export const ResetPasswordClient = () => {
   const { isValidToken } = useResetPassword();

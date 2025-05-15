@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { FormProvider } from "react-hook-form";
-import { useAuth } from "../../hooks/auth.hook";
+import { useAuth } from "../../hooks/useAuth";
 import { Eye, EyeOff } from "lucide-react";
 
 export const LoginForm = () => {

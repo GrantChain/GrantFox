@@ -13,7 +13,7 @@ import {
 import { FormProvider } from "react-hook-form";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { useForgotPassword } from "../../hooks/forgot-password.hook";
+import { useForgotPassword } from "../../hooks/useForgotPassword";
 import { AuthLayout } from "../shared/AuthLayout";
 import { AuthFooter } from "../shared/AuthFooter";
 
