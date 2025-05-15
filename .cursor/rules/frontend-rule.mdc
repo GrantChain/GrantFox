@@ -42,6 +42,7 @@ Follow these rules when you write code:
 - Implement accessibility features on elements. For example, a tag should have a tabindex=“0”, aria-label, on:click, and on:keydown, and similar attributes.
 - Always use arrow functions to create components, except the pages on app directory.
 - You can never use anys.
+- Everything must be 100% response and compatible with dark/light shadcn's mode.
 
 
 - Use consts instead of functions, for example, “const toggle = () =>”. Also, define a type if possible.
