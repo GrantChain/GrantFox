@@ -32,7 +32,7 @@ export const GrantsSection = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-[90rem] mx-auto">
       <GrantFilters onFilterChange={handleFilterChange} filters={filters} />
 
       <div

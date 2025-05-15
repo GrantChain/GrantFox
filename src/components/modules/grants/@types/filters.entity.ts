@@ -1,7 +1,5 @@
 export interface GrantsFilters {
   search?: string;
-  status?: string;
-  currency?: string;
   minFunding?: string;
   maxFunding?: string;
   startDate?: string;

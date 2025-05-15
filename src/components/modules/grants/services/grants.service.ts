@@ -18,10 +18,6 @@ class GrantsService {
 
     const filterMap: Record<FilterKey, (value: FilterValue) => any> = {
       search: (value) => (value ? query.ilike("title", `%${value}%`) : query),
-      status: (value) =>
-        value && value !== "all" ? query.eq("status", value) : query,
-      currency: (value) =>
-        value && value !== "all" ? query.eq("currency", value) : query,
       minFunding: (value) =>
         value ? query.gte("total_funding", value) : query,
       maxFunding: (value) =>
