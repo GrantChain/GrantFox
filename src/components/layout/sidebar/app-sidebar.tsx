@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
 import { Separator } from "@/components/ui/separator";
-import { useWallet } from "@/components/wallet/hooks/wallet.hook";
+import { useWallet } from "@/components/wallet/hooks/useWallet";
 import Image from "next/image";
 import { useUser } from "@/components/modules/auth/context/UserContext";
 import TooltipInfo from "@/components/shared/TooltipInfo";

@@ -17,7 +17,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/components/modules/auth/hooks/auth.hook";
+import { useAuth } from "@/components/modules/auth/hooks/useAuth";
 
 export function NavUser({
   user,

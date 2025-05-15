@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "../sidebar/theme-toggler";
-import { useWallet } from "@/components/wallet/hooks/wallet.hook";
+import { useWallet } from "@/components/wallet/hooks/useWallet";
 import { Wallet as WalletIcon } from "lucide-react";
-import useLayoutDashboard from "@/hooks/layout-dashboard.hook";
+import useLayoutDashboard from "@/hooks/useLayoutDashboard";
 
 export const Header = () => {
   const { handleConnect, handleDisconnect, account } = useWallet();
