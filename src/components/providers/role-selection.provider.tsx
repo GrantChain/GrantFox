@@ -1,6 +1,6 @@
 "use client";
 
-import { useRoleCheck } from "../modules/auth/hooks/role-check.hook";
+import { useRoleCheck } from "../modules/auth/hooks/useRoleCheck";
 import { RoleSelectionDialog } from "../modules/auth/ui/dialogs/RoleSelectionDialog";
 
 export const RoleSelectionProvider = ({
