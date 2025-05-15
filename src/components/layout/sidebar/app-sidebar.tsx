@@ -86,7 +86,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               GrantFox
             </span>
           </div>
-
           <SidebarTrigger className="self-end group-data-[collapsible=icon]:hidden h-10 w-10 z-0" />
         </div>
         <SidebarTrigger className="hidden group-data-[collapsible=icon]:flex h-10  mx-auto mt-2" />

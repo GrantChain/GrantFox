@@ -5,6 +5,7 @@ import { ThemeToggle } from "../sidebar/theme-toggler";
 import { useWallet } from "@/components/wallet/hooks/useWallet";
 import { Wallet as WalletIcon } from "lucide-react";
 import useLayoutDashboard from "@/hooks/useLayoutDashboard";
+import { MobileTrigger } from "../sidebar/mobile-trigger";
 
 export const Header = () => {
   const { handleConnect, handleDisconnect, account } = useWallet();
@@ -13,9 +14,13 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-16 items-center justify-between px-10">
+      <div className="flex h-16 items-center justify-between px-4 md:px-10">
+        <MobileTrigger />
+
         {label !== "Help" && label !== "Report Issue" && (
-          <h2 className="text-2xl font-bold tracking-tight">{label}</h2>
+          <h2 className="text-xl md:text-2xl font-bold tracking-tight">
+            {label}
+          </h2>
         )}
 
         <div className="flex items-center gap-4">
