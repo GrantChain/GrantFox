@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,6 +16,25 @@ export const useResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const handleHashChange = async () => {
+      // Check if Supabase can recover the session from the URL
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error || !data.session) {
+        console.error("Error validating reset token:", error);
+        setIsValidToken(false);
+        router.replace("/forgot-password?error=invalid_link");
+        return;
+      }
+
+      setIsValidToken(true);
+    };
+
+    handleHashChange();
+  }, [router]);
 
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -54,5 +73,7 @@ export const useResetPassword = () => {
     setShowPassword,
     setShowConfirmPassword,
     handlePasswordReset,
+    isValidToken,
+    setIsValidToken,
   };
 };

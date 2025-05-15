@@ -1,34 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
-import { supabase } from "@/lib/supabase";
 import { CardHeader, CardTitle, Card, CardContent } from "@/components/ui/card";
+import { useResetPassword } from "../../hooks/reset-password.hook";
 
 export const ResetPasswordClient = () => {
-  const router = useRouter();
-  const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
-
-  // Supabase handles authentication through the full URL, not just a parameter
-  useEffect(() => {
-    const handleHashChange = async () => {
-      // Check if Supabase can recover the session from the URL
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error || !data.session) {
-        console.error("Error validating reset token:", error);
-        setIsValidToken(false);
-        router.replace("/forgot-password?error=invalid_link");
-        return;
-      }
-
-      setIsValidToken(true);
-    };
-
-    // Process the current URL
-    handleHashChange();
-  }, [router]);
+  const { isValidToken } = useResetPassword();
 
   // Show a loader while validating the token
   if (isValidToken === null) {
@@ -52,7 +29,7 @@ export const ResetPasswordClient = () => {
   if (isValidToken === false) return null;
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
+    <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-xl">
         <ResetPasswordForm />
       </div>

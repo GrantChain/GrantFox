@@ -19,7 +19,7 @@ export const Verify = () => {
   const { email } = useAuthenticationBoundedStore();
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">

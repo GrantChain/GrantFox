@@ -2,7 +2,6 @@
 
 import { useResetPassword } from "@/components/modules/auth/hooks/reset-password.hook";
 import { FormProvider } from "react-hook-form";
-import { CardHeader, CardTitle, Card, CardContent } from "@/components/ui/card";
 import {
   FormField,
   FormItem,
