@@ -1,4 +1,3 @@
-// src/modules/auth/hooks/auth.hook.ts
 "use client";
 
 import { useForm } from "react-hook-form";
