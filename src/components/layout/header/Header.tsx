@@ -13,9 +13,9 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="flex h-16 items-center justify-between px-10">
         {label !== "Help" && label !== "Report Issue" && (
-          <h2 className="text-2xl font-bold tracking-tight px-10">{label}</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{label}</h2>
         )}
 
         <div className="flex items-center gap-4">
