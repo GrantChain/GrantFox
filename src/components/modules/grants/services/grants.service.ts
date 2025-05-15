@@ -1,25 +1,76 @@
 import { Grant } from "@/@types/grant.entity";
 import { supabase } from "@/lib/supabase";
+import { GrantsFilters } from "../@types/filters.entity";
+
+interface PaginationParams {
+  page: number;
+  pageSize: number;
+}
+
+type FilterKey = keyof GrantsFilters;
+type FilterValue = GrantsFilters[FilterKey];
 
 class GrantsService {
   private readonly TABLE_NAME = "grant";
 
-  async findAll(): Promise<Grant[]> {
+  private buildFilterQuery(query: any, filters?: GrantsFilters) {
+    if (!filters) return query;
+
+    const filterMap: Record<FilterKey, (value: FilterValue) => any> = {
+      search: (value) => (value ? query.ilike("title", `%${value}%`) : query),
+      status: (value) =>
+        value && value !== "all" ? query.eq("status", value) : query,
+      currency: (value) =>
+        value && value !== "all" ? query.eq("currency", value) : query,
+      minFunding: (value) =>
+        value ? query.gte("total_funding", value) : query,
+      maxFunding: (value) =>
+        value ? query.lte("total_funding", value) : query,
+      startDate: (value) => (value ? query.gte("created_at", value) : query),
+      endDate: (value) => (value ? query.lte("created_at", value) : query),
+    };
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value && key in filterMap) {
+        query = filterMap[key as FilterKey](value);
+      }
+    });
+
+    return query;
+  }
+
+  private applyPagination(query: any, pagination?: PaginationParams) {
+    if (!pagination) return query;
+
+    const { page, pageSize } = pagination;
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    return query.range(from, to);
+  }
+
+  async findAll(
+    filters?: GrantsFilters,
+    pagination?: PaginationParams,
+  ): Promise<{ data: Grant[]; total: number }> {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from(this.TABLE_NAME)
-        .select("*")
-        .order("created_at", { ascending: false });
+        .select("*", { count: "exact" });
+
+      query = this.buildFilterQuery(query, filters);
+      query = this.applyPagination(query, pagination);
+      query = query.order("created_at", { ascending: false });
+
+      const { data, error, count } = await query;
 
       if (error) {
         throw new Error(`Error fetching grants: ${error.message}`);
       }
 
-      if (!data || data.length === 0) {
-        return [];
-      }
-
-      return data;
+      return {
+        data: data || [],
+        total: count || 0,
+      };
     } catch (error) {
       console.error("Error in findAll:", error);
       throw error;
