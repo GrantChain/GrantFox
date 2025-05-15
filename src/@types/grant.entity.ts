@@ -1,9 +1,13 @@
 export interface Grant {
-  id: string;
-  grant_provider_id: string;
-  project_id?: string;
+  grant_id: string;
   title: string;
   description: string;
-  created_at: Date;
-  updated_at: Date;
+  metrics: string;
+  milestones: string;
+  status: string;
+  total_funding: string;
+  currency: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
 }
