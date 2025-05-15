@@ -1,8 +1,9 @@
 import { SearchX } from "lucide-react";
+import { Card } from "../ui/card";
 
 export const NoData = () => {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+    <Card className="flex my-20 max-w-3xl mx-auto flex-col items-center justify-center py-12 px-4 text-center p-10">
       <div className="rounded-full bg-muted p-4 mb-4">
         <SearchX className="h-8 w-8 text-muted-foreground" />
       </div>
@@ -11,6 +12,6 @@ export const NoData = () => {
         We couldn't find any data matching your criteria. Try adjusting your
         filters or check back later for new data.
       </p>
-    </div>
+    </Card>
   );
 };

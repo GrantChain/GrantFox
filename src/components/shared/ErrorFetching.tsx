@@ -1,8 +1,9 @@
 import { AlertTriangle } from "lucide-react";
+import { Card } from "../ui/card";
 
 export const ErrorFetching = () => {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+    <Card className="flex my-20 max-w-3xl mx-auto flex-col items-center justify-center py-12 px-4 text-center p-10">
       <div className="rounded-full bg-muted p-4 mb-4">
         <AlertTriangle className="h-8 w-8 text-muted-foreground" />
       </div>
@@ -10,6 +11,6 @@ export const ErrorFetching = () => {
       <p className="text-muted-foreground max-w-sm">
         We couldn't fetch the data. Please try again later.
       </p>
-    </div>
+    </Card>
   );
 };
