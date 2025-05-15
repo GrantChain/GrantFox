@@ -1,29 +1,112 @@
-import { supabase } from '@/lib/supabase';
+import { Grant } from "@/@types/grant.entity";
+import { supabase } from "@/lib/supabase";
 
-export interface Grant {
-  grant_id: string;
-  title: string;
-  description: string;
-  metrics: string;
-  milestones: string;
-  status: string;
-  total_funding: string;
-  currency: string;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-}
+class GrantsService {
+  private readonly TABLE_NAME = "grant";
 
-export const fetchGrants = async (): Promise<Grant[]> => {
-  const { data, error } = await supabase
-    .from('grant')
-    .select('*')
-    .order('created_at', { ascending: false });
+  async findAll(): Promise<Grant[]> {
+    try {
+      const { data, error } = await supabase
+        .from(this.TABLE_NAME)
+        .select("*")
+        .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error('Error fetching grants:', error);
-    throw error;
+      if (error) {
+        throw new Error(`Error fetching grants: ${error.message}`);
+      }
+
+      if (!data || data.length === 0) {
+        return [];
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in findAll:", error);
+      throw error;
+    }
   }
 
-  return data || [];
-}; 
+  async findOne(id: string): Promise<Grant | null> {
+    try {
+      const { data, error } = await supabase
+        .from(this.TABLE_NAME)
+        .select("*")
+        .eq("grant_id", id)
+        .single();
+
+      if (error) {
+        throw new Error(`Error fetching grant: ${error.message}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in findOne:", error);
+      throw error;
+    }
+  }
+
+  async create(grant: Omit<Grant, "grant_id" | "created_at">): Promise<Grant> {
+    try {
+      const { data, error } = await supabase
+        .from(this.TABLE_NAME)
+        .insert([grant])
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Error creating grant: ${error.message}`);
+      }
+
+      if (!data) {
+        throw new Error("Failed to create grant");
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in create:", error);
+      throw error;
+    }
+  }
+
+  async update(id: string, grant: Partial<Grant>): Promise<Grant> {
+    try {
+      const { data, error } = await supabase
+        .from(this.TABLE_NAME)
+        .update(grant)
+        .eq("grant_id", id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`Error updating grant: ${error.message}`);
+      }
+
+      if (!data) {
+        throw new Error(`Grant with ID ${id} not found`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in update:", error);
+      throw error;
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from(this.TABLE_NAME)
+        .delete()
+        .eq("grant_id", id);
+
+      if (error) {
+        throw new Error(`Error deleting grant: ${error.message}`);
+      }
+    } catch (error) {
+      console.error("Error in delete:", error);
+      throw error;
+    }
+  }
+}
+
+export const grantsService = new GrantsService();

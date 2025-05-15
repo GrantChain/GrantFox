@@ -25,6 +25,7 @@ import { useUser } from "@/components/modules/auth/context/UserContext";
 import TooltipInfo from "@/components/shared/TooltipInfo";
 import { navItems } from "./constants/items.constant";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { account } = useWallet();
@@ -60,10 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <div className="flex items-center justify-center p-4">
             <div className="animate-pulse space-y-4 w-full">
               {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-10 bg-gray-200 dark:bg-gray-700 rounded-md"
-                />
+                <Skeleton key={i} className="h-10 w-full" />
               ))}
             </div>
           </div>
