@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { GrantsFilters } from "../../@types/filters.entity";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRange } from "react-day-picker";
 
 interface GrantFiltersProps {
   onFilterChange: (filters: GrantsFilters) => void;
@@ -20,8 +22,23 @@ export const GrantFilters = ({
   onFilterChange,
   filters,
 }: GrantFiltersProps) => {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: filters.startDate ? new Date(filters.startDate) : undefined,
+    to: filters.endDate ? new Date(filters.endDate) : undefined,
+  });
+
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
     const newFilters = { ...filters, [key]: value };
+    onFilterChange(newFilters);
+  };
+
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+    const newFilters = {
+      ...filters,
+      startDate: range?.from?.toISOString().split("T")[0] || "",
+      endDate: range?.to?.toISOString().split("T")[0] || "",
+    };
     onFilterChange(newFilters);
   };
 
@@ -35,6 +52,7 @@ export const GrantFilters = ({
       startDate: "",
       endDate: "",
     };
+    setDateRange(undefined);
     onFilterChange(emptyFilters);
   };
 
@@ -108,20 +126,10 @@ export const GrantFilters = ({
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Start Date</label>
-          <Input
-            type="date"
-            value={filters.startDate}
-            onChange={(e) => handleFilterChange("startDate", e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">End Date</label>
-          <Input
-            type="date"
-            value={filters.endDate}
-            onChange={(e) => handleFilterChange("endDate", e.target.value)}
+          <label className="text-sm font-medium">Date Range</label>
+          <DateRangePicker
+            date={dateRange}
+            onDateChange={handleDateRangeChange}
           />
         </div>
       </div>
