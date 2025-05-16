@@ -2,7 +2,6 @@
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
-import { MobileTrigger } from "@/components/layout/sidebar/mobile-trigger";
 import { RoleSelectionProvider } from "@/components/providers/role-selection.provider";
 import { UserProvider } from "@/components/modules/auth/context/UserContext";
 import { Footer } from "@/components/layout/footer/Footer";

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { forgotPasswordSchema } from "@/components/modules/auth/ui/schema/forgot-password.schema";
+import { forgotPasswordSchema } from "@/components/modules/auth/schema/forgot-password.schema";
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 

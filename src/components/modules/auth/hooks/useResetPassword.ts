@@ -7,7 +7,7 @@ import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { resetPasswordSchema } from "@/components/modules/auth/ui/schema/reset-password.schema";
+import { resetPasswordSchema } from "@/components/modules/auth/schema/reset-password.schema";
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 

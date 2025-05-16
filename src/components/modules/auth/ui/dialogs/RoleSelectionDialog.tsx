@@ -23,8 +23,6 @@ export const RoleSelectionDialog = ({
       onClose,
     });
 
-  console.log(isOpen);
-
   return (
     <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-[525px]">
