@@ -4,10 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useScrollToHash } from "../../hooks/scroll-to-hash.hook";
 import { HeaderLanding } from "@/components/layout/header/HeaderLanding";
 import { HeroSection } from "../sections/HeroSection";
-import { FeaturesSection } from "../sections/FeaturesSection";
-import { HowItWorksSection } from "../sections/HowItWorksSection";
-import { UseCasesSection } from "../sections/UseCasesSection";
-import { GetStartedSection } from "../sections/GetStartedSection";
 import { FooterLanding } from "@/components/layout/footer/FooterLanding";
 
 export const Landing = () => {
@@ -24,12 +20,8 @@ export const Landing = () => {
       >
         <HeaderLanding />
 
-        <main className="flex-1">
+        <main className="flex-1 min-h-screen">
           <HeroSection />
-          <FeaturesSection />
-          <HowItWorksSection />
-          <UseCasesSection />
-          <GetStartedSection />
         </main>
 
         <FooterLanding />

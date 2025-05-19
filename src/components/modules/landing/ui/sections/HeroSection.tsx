@@ -31,15 +31,26 @@ export const HeroSection = () => {
                 className="max-w-[600px] text-muted-foreground md:text-xl dark:text-muted-foreground"
                 variants={itemVariants}
               >
-                Open-source grants platform using Trustless Work smart escrows,
-                ideal for blockchains, DAOs, hackathons, and events.
+                Open-source grants platform using{" "}
+                <Link
+                  href="https://www.trustlesswork.com"
+                  className="text-primary font-bold hover:text-primary/80"
+                  target="_blank"
+                >
+                  Trustless Work
+                </Link>{" "}
+                smart escrows, ideal for blockchains, DAOs, hackathons, and
+                events.
               </motion.p>
             </div>
             <motion.div
               className="flex flex-col gap-2 min-[400px]:flex-row"
               variants={itemVariants}
             >
-              <Link href="https://docs.trustlesswork.com/trustless-work">
+              <Link
+                href="https://docs.trustlesswork.com/trustless-work"
+                target="_blank"
+              >
                 <motion.div
                   variants={buttonVariants}
                   initial="initial"

@@ -6,7 +6,7 @@ import {
   EscrowRequestResponse,
   SendTransactionResponse,
 } from "@/@types/escrow/escrow-response.entity";
-import { useGlobalAuthenticationStore } from "@/components/wallet/store/store";
+import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import { signTransaction } from "@stellar/freighter-api";
 import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 import { HttpMethod } from "@/@types/http.entity";
@@ -81,7 +81,7 @@ export async function sendTransaction(
 
 export async function signTx(unsignedTransaction: string): Promise<string> {
   try {
-    const address = useGlobalAuthenticationStore((state) => state.address);
+    const address = useGlobalWalletStore((state) => state.address);
 
     const { signedTxXdr } = await signTransaction(unsignedTransaction, {
       address,

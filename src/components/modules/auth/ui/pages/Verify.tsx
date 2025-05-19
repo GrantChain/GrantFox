@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,15 +11,15 @@ import {
 } from "@/components/ui/card";
 import { CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "../../hooks/auth.hook";
-import { useTemporaryEmailStore } from "../../store/auth.store";
+import { useAuth } from "../../hooks/useAuth";
+import { useAuthenticationBoundedStore } from "../../store/store";
 
 export const Verify = () => {
   const { handleResend, isLoading } = useAuth();
-  const { email } = useTemporaryEmailStore();
+  const { email } = useAuthenticationBoundedStore();
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
@@ -29,7 +29,12 @@ export const Verify = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
           <CardDescription className="text-base mt-2">
-            We've sent a confirmation email to {email ? <span className="font-medium">{email}</span> : "your inbox"}
+            We've sent a confirmation email to{" "}
+            {email ? (
+              <span className="font-medium">{email}</span>
+            ) : (
+              "your inbox"
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center space-y-4">
@@ -48,8 +53,8 @@ export const Verify = () => {
           <Button className="w-full" asChild>
             <Link href="/">Return to Home</Link>
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full"
             onClick={handleResend}
             disabled={isLoading}

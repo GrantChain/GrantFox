@@ -1,9 +1,17 @@
 import { http } from "@/lib/axios";
+import { User } from "@/@types/user.entity";
+import { AuthServiceResponse } from "@/@types/responses.entity";
 
 // This function is used to register a user in the "PUBLIC" User Table
-export const registerUser = async (user_id: string, email: string) => {
+export const registerUser = async (
+  user_id: string,
+  email: string,
+): Promise<AuthServiceResponse> => {
   try {
-    const response = await http.post("/register-user", { user_id, email });
+    const response = await http.post<User>("/register-user", {
+      user_id,
+      email,
+    });
 
     if (response.status === 201) {
       return {

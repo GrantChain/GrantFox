@@ -1,21 +1,21 @@
+import { http } from "@/lib/axios";
+import { AuthServiceResponse, RoleResponse } from "@/@types/responses.entity";
+
 export const registerRole = async (
   user_id: string,
   role: "grant_provider" | "grantee",
-) => {
+): Promise<AuthServiceResponse> => {
   try {
-    const response = await fetch("/api/register-role", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ user_id, role }),
+    const response = await http.post<RoleResponse>("/register-role", {
+      user_id,
+      role,
     });
 
     if (response.status === 200) {
       return {
         success: true,
         message: "Role registered successfully",
-        data: await response.json(),
+        data: response.data,
       };
     } else {
       return {

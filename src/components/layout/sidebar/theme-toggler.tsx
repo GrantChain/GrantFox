@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTheme } from "@/hooks/theme-provider";
+import { useTheme } from "@/components/providers/theme.provider";
 
 export function ThemeToggle() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
