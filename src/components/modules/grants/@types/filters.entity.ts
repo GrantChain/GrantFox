@@ -5,8 +5,3 @@ export interface GrantsFilters {
   startDate?: string;
   endDate?: string;
 }
-
-export interface GrantsPagination {
-  page: number;
-  pageSize: number;
-}
