@@ -1,11 +1,7 @@
 import { Grant } from "@/@types/grant.entity";
 import { supabase } from "@/lib/supabase";
 import { GrantsFilters } from "../@types/filters.entity";
-
-interface PaginationParams {
-  page: number;
-  pageSize: number;
-}
+import { Pagination } from "@/@types/pagination.entity";
 
 type FilterKey = keyof GrantsFilters;
 type FilterValue = GrantsFilters[FilterKey];
@@ -35,7 +31,7 @@ class GrantsService {
     return query;
   }
 
-  private applyPagination(query: any, pagination?: PaginationParams) {
+  private applyPagination(query: any, pagination?: Pagination) {
     if (!pagination) return query;
 
     const { page, pageSize } = pagination;
@@ -46,7 +42,7 @@ class GrantsService {
 
   async findAll(
     filters?: GrantsFilters,
-    pagination?: PaginationParams,
+    pagination?: Pagination,
   ): Promise<{ data: Grant[]; total: number }> {
     try {
       let query = supabase
