@@ -11,46 +11,52 @@ datasource db {
 
 model User {
   user_id        String   @id @default(cuid())
-  email          String
-  wallet_address String?
-  role           String
-  created_at     DateTime
+  email          String   @unique
+  wallet_address String?  @unique
+  role           UserRole
+  username       String?  @unique
+  created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
-  pfp_url        String?
+  profile_url    String?
+  cover_url      String?
   location       String?
   bio            String?
+  is_active      Boolean @default(true)
 
   // Relaciones
-  grantProvider  Grant_provider?
+  grant_provider  Grant_provider?
   grantee        Grantee?
   grants         Grant[]     @relation("GrantsCreatedBy")
   teams          Team[]      @relation("UserTeams")
-  applications   Application[] @relation("UserApplications")
-  milestoneSubmissions Milestone_submission[]
+  system_logs     SystemLog[]
+
+  milestone_submissions Milestone_submission[]
 
   @@map("user")
 }
 
 model Grant_provider {
-  user_id          String   @id
+  user_id          String   @id @default(cuid())
   organization_name String?
   network_type     String?
-  contact_email    String?
-  created_at       DateTime
+  email            String?
+  created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
   user             User     @relation(fields: [user_id], references: [user_id])
+  escrow           Escrow[]
 
   @@map("grant_provider")
 }
 
 model Grantee {
-  user_id        String @id
-  personal_name String?
+  user_id        String @id @default(cuid())
+  name           String?
   position_title String?
-  linkedin_url  String?
-  github_url    String?
+  social_media   Json?
   linked_team_id String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
   user           User   @relation(fields: [user_id], references: [user_id])
   team           Team?   @relation(fields: [linked_team_id], references: [team_id])
@@ -61,16 +67,18 @@ model Grantee {
 
 model Team {
   team_id     String   @id @default(cuid())
-  team_name   String
+  name   String
   description String
   industry    String
-  location    DateTime
-  team_email  String
-  team_phone  String
+  location    String
+  email  String
+  phone  String
   founded_date DateTime
   website_url String
   logo_url    String
-  created_at  DateTime
+  type        UserRole
+  size        Int
+  created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
   grantees    Grantee[]
@@ -83,16 +91,17 @@ model Team {
 model Project {
   project_id   String   @id @default(cuid())
   team_id      String
-  project_name String
+  name String
   summary      String
   repo_url     String
   website_url  String
   start_date   DateTime
   end_date     DateTime
-  status       DateTime
-  created_at   DateTime
+  status       ProjectStatus
+  created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   pitch_url    String
+  tags         Tags[]
   team         Team     @relation("TeamProjects", fields: [team_id], references: [team_id])
   applications Application[]
 
@@ -104,15 +113,15 @@ model Grant {
   title         String
   description   String
   metrics       String
-  milestones    String
-  status        DateTime
-  total_funding String
-  currency      String
+  status        GrantStatus
+  total_funding Decimal
+  currency      Currency
   created_by    String
-  created_at    DateTime
+  created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
   user          User     @relation("GrantsCreatedBy", fields: [created_by], references: [user_id])
+  milestones    Milestone[]
   applications  Application[]
 
   @@map("grant")
@@ -120,70 +129,68 @@ model Grant {
 
 model Application {
   application_id  String   @id @default(cuid())
+  escrow_id       String   @unique
   grant_id        String
   grantee_id      String
   project_id      String
   description     String
-  user_id         String?
-  user            User?    @relation("UserApplications", fields: [user_id], references: [user_id])
   pitch_url       String
-  motivation      DateTime
-  status          DateTime
-  created_at      DateTime
+  motivation      String
+  status          ApplicationStatus
+  created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
   grant           Grant     @relation(fields: [grant_id], references: [grant_id])
   grantee         Grantee   @relation(fields: [grantee_id], references: [user_id])
   project         Project   @relation(fields: [project_id], references: [project_id])
-  escrow          Escrow?
+  escrow          Escrow    @relation(fields: [escrow_id], references: [escrow_id])
 
   @@map("application")
 }
 
 model Escrow {
-  id               String      @id @default(cuid())
+  escrow_id        String      @id @default(cuid())
+  engagement_id    String
+  application_id   String      
+  platform_fee     Decimal     @default(5)
   title            String
   description      String
+  receiver_memo    Int?
   created_at       DateTime    @default(now())
   updated_at       DateTime    @updatedAt
-  contract_id      String?
-  balance          String?
-  trustline        String?
-  service_provider String
-  engagement_id    String
-  dispute_resolver String
-  amount           String
-  platform_address String
-  platform_fee     String
-  approver         String
-  release_signer   String
-  user             String
-  issuer           String
-  dispute_flag     Boolean?
-  release_flag     Boolean?
-  resolved_flag    Boolean?
-  approver_funds   String?
-  receiver_funds   String?
-  receiver         String?
-  receiver_memo    Int?
-  dispute_started_by String?
-  application_id   String   @unique
+  contract_id      String
+  balance          Decimal     @default(0)
+  trustline        Json
+  roles            Json
+  deployed_by      String
 
-  application      Application @relation(fields: [application_id], references: [application_id])
+  application      Application? @relation()
+  grant_provider   Grant_provider @relation(fields: [deployed_by], references: [user_id])
   milestones       Milestone[]
 
   @@map("escrow")
 }
 
 model Milestone {
-  id              String   @id @default(cuid())
+  milestone_id    String   @id @default(cuid())
   description     String
-  status          String?
-  approved_flag   Boolean?
+  status          MilestoneStatus
   evidence        String?
-  escrowId        String
+  escrow_id       String
+  grant_id        String
+  amount          Decimal
+  is_disputed     Boolean @default(false)
+  is_released     Boolean @default(false)
+  is_resolved     Boolean @default(false)
+  is_approved     Boolean @default(false)
+  approver_funds  Decimal? @default(0)
+  receiver_funds  Decimal? @default(0)
+  dispute_started_by String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-  escrow          Escrow   @relation(fields: [escrowId], references: [id])
+  escrow          Escrow   @relation(fields: [escrow_id], references: [escrow_id])
+  grant           Grant    @relation(fields: [grant_id], references: [grant_id])
   submissions     Milestone_submission[]
 
   @@map("milestone")
@@ -195,12 +202,101 @@ model Milestone_submission {
   submitted_by   String
   content        String
   review_notes   String
-  submitted_at   DateTime
-  created_at     DateTime
+  created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
-  milestone      Milestone @relation(fields: [milestone_id], references: [id])
+  milestone      Milestone @relation(fields: [milestone_id], references: [milestone_id])
   user           User      @relation(fields: [submitted_by], references: [user_id])
 
   @@map("milestone_submission")
+}
+
+model SystemLog {
+  log_id          String       @id @default(cuid())
+  user_id         String?      
+  log_type        LogType      
+  action          String       
+  entity_type     String?      
+  entity_id       String?     
+  description     String      
+  ip_address      String?   
+  browser         String?     
+  os              String?     
+  status          LogStatus    @default(INFO) 
+  created_at      DateTime     @default(now())
+  
+  user            User?        @relation(fields: [user_id], references: [user_id])
+  
+  @@index([user_id])
+  @@index([log_type])
+  @@index([entity_type, entity_id])
+  @@index([created_at])
+  @@index([status])
+  @@map("system_log")
+}
+
+
+// ENUMS
+enum UserRole {
+  GRANTEE
+  GRANT_PROVIDER
+  ADMIN
+}
+
+enum GrantStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  CANCELED
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+}
+
+enum Tags {
+  AI
+  GAMING
+  FINANCE
+  NFT
+  INFRASTRUCTURE
+  OTHER
+}
+
+enum Currency {
+	USDC
+	XLM
+	EURC
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  COMPLETED
+  CANCELED
+}
+
+enum MilestoneStatus {
+  PENDING
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum LogType {
+  ACTIVITY    
+  ERROR      
+  SECURITY    
+  TRANSACTION 
+}
+
+enum LogStatus {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
 }
