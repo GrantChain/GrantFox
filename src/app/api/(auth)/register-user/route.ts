@@ -14,21 +14,27 @@ export async function POST(req: Request) {
 
   const { user_id, email } = parsed.data;
 
+  // Generate username from email (part before @)
+  const username = email.split("@")[0];
+
   try {
     const user = await prisma.user.create({
       data: {
         user_id,
         email,
+        username,
         wallet_address: "",
-        role: "",
-        created_at: new Date(),
-        pfp_url: "",
+        bio: "",
+        role: "GRANTEE",
+        profile_url: "",
+        cover_url: "",
         location: "",
       },
     });
 
     return NextResponse.json({ user }, { status: 201 });
   } catch (error) {
+    console.error("Error creating user:", error);
     return NextResponse.json(
       { error: "Failed to create user" },
       { status: 500 },

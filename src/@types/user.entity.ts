@@ -1,13 +1,18 @@
+import { UserRole } from "@/generated/prisma";
+
 export interface User {
   user_id: string;
   email: string;
-  full_name: string;
-  pfp_url?: string;
+  profile_url?: string;
+  cover_url?: string;
   location?: string;
-  role: string;
-  team_id?: string;
+  role: UserRole;
+  bio?: string;
+  wallet_address?: string;
+  username?: string;
+  is_active?: boolean;
   created_at: Date;
   updated_at: Date;
 }
 
-export interface UserPayload extends Pick<User, "user_id" | "email"> {}
+export type UserPayload = Pick<User, "user_id" | "email">;

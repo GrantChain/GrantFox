@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     });
 
     // Create the corresponding record in the specific table
-    if (role === "grant_provider") {
+    if (role === "GRANT_PROVIDER") {
       await prisma.grant_provider.create({
         data: {
           user_id: user_id,
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
           updated_at: new Date(),
         },
       });
-    } else if (role === "grantee") {
+    } else if (role === "GRANTEE") {
       await prisma.grantee.create({
         data: {
           user_id: user_id,
