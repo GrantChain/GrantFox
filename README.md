@@ -72,11 +72,22 @@ Follow the steps below to get started with this project:
 
 2. Lint and Format with Biome: (This is to ensure code quality and consistency)
 
-   To manually lint and format all files in the project, you can run:
-   ```bash
-   npx biome check --write .
-   ```
-   Biome will also automatically lint and format your staged files before each commit due to the pre-commit hook.
+   While Biome automatically lints and formats your staged files before each commit, you can also run these checks manually across the entire project using the following scripts:
+
+   *   To check for linting and formatting issues and apply automatic fixes:
+       ```bash
+       pnpm biome:fix
+       # or
+       pnpm biome
+       ```
+   *   To only check for linting and formatting issues without applying fixes:
+       ```bash
+       pnpm biome:check
+       ```
+   *   To only format the code without linting:
+       ```bash
+       pnpm biome:format
+       ```
 
 3. Generate the Prisma Model into Supabase
 
