@@ -109,6 +109,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
   }, [fetchUserData, refreshUser]);
 
+  console.log(user);
+
   return (
     <UserContext.Provider
       value={{
