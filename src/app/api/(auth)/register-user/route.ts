@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         username,
         wallet_address: "",
         bio: "",
-        role: "GRANTEE",
+        role: "EMPTY",
         profile_url: "",
         cover_url: "",
         location: "",

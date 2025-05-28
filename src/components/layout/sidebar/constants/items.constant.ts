@@ -5,24 +5,24 @@ export const navItems = [
     title: "Dashboard",
     url: "/dashboard",
     icon: Home,
-    roles: ["grant_provider", "grantee"],
+    roles: ["GRANT_PROVIDER", "GRANTEE"],
   },
   {
     title: "Grant Projects",
     url: "/dashboard/grants/projects",
     icon: Sparkles,
-    roles: ["grant_provider"],
+    roles: ["GRANT_PROVIDER"],
   },
   {
     title: "Opportunities",
     url: "/dashboard/grants/opportunities",
     icon: Sparkles,
-    roles: ["grantee"],
+    roles: ["GRANTEE"],
   },
   {
     title: "Help",
     url: "/dashboard/help",
     icon: HelpCircle,
-    roles: ["grant_provider", "grantee"],
+    roles: ["GRANT_PROVIDER", "GRANTEE"],
   },
 ];

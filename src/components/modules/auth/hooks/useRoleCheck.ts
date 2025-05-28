@@ -23,7 +23,7 @@ export function useRoleCheck() {
         if (response.success) {
           const { role } = response.data as { role: string };
 
-          if (!role || role === "") {
+          if (role === "EMPTY") {
             setShouldShowModal(true);
           }
         }
