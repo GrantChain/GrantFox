@@ -50,7 +50,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       if (roleResponse.success && roleResponse.data) {
         const { role } = roleResponse.data;
 
-        if (role === "grantee") {
+        if (role === "GRANTEE") {
           const { data: granteeData, error: granteeError } = await supabase
             .from("grantee")
             .select("*")
@@ -60,7 +60,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           if (!granteeError && granteeData) {
             setGrantee(granteeData);
           }
-        } else if (role === "grant_provider") {
+        } else if (role === "GRANT_PROVIDER") {
           const { data: providerData, error: providerError } = await supabase
             .from("grant_provider")
             .select("*")

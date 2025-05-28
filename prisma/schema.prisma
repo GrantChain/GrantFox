@@ -239,6 +239,7 @@ model SystemLog {
 enum UserRole {
   GRANTEE
   GRANT_PROVIDER
+  EMPTY
   ADMIN
 }
 
