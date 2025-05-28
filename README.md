@@ -70,11 +70,13 @@ Follow the steps below to get started with this project:
    npm i
    ```
 
-2. Format the code using Prettier: (This is for avoid eslint errors)
+2. Lint and Format with Biome: (This is to ensure code quality and consistency)
 
+   To manually lint and format all files in the project, you can run:
    ```bash
-   npx prettier --write .
+   npx biome check --write .
    ```
+   Biome will also automatically lint and format your staged files before each commit due to the pre-commit hook.
 
 3. Generate the Prisma Model into Supabase
 
@@ -129,6 +131,12 @@ These wallets are required to interact with the platform.
 You should use Chrome, Brave or Firefox browser, please install any of the wallets that were listen before.
 Important Note: If you're having problems to use Freighter, make sure that you have the wallet in "test net", and also if even you couldn't be able to use because it shows you "Not Available". Try going to: Security > Manage Connected Wallet > Remove the "localhost". If the problem persist, please contact us. This mistake happens for the wallet, not our product.
 
-## IMPORTANT NOTE:
+## IMPORTANT NOTE: Code Quality and Commit Standards
 
-_It's important to note that we are using Husky. This means that when you run a `git push`, Husky will automatically execute `npm run format and npm run lint`. If either of these commands throws an error, the push will not be successful, and you will see a Husky error. When this happens, make sure to resolve any format and lint errors before trying the push again._
+_This project uses **Biome.js** for code linting and formatting, and **Husky** to enforce code quality and commit message standards._
+
+_Here's how it works:_
+*   _**Pre-commit Hook**: Before any commit is finalized, Husky triggers Biome.js to automatically lint and format your **staged files**. If Biome finds issues that it cannot fix automatically, or if there are linting errors, the commit will be prevented. You'll need to resolve these issues before you can commit._
+*   _**Commit Message Validation**: After you write your commit message and try to finalize the commit, Husky uses `commitlint` to ensure your message adheres to the [Conventional Commits](https://www.conventionalcommits.org/) standard (e.g., `feat: add new feature`, `fix: resolve bug`). If your commit message is not correctly formatted, the commit will be rejected. You'll need to amend your commit message to meet the standard._
+
+_These integrations help maintain a clean, consistent codebase and a well-structured commit history. If a commit fails due to either of these checks, please review the error messages provided by Biome or commitlint and make the necessary corrections._
