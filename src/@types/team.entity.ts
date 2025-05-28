@@ -1,10 +1,18 @@
+import { UserRole } from "@/generated/prisma";
+
 export interface Team {
-  id: string;
+  team_id: string;
   name: string;
-  bio?: string;
-  github_url?: string;
-  linkedin_url?: string;
-  website_url?: string;
+  description: string;
+  industry: string;
+  location: string;
+  email: string;
+  phone: string;
+  founded_date: Date;
+  website_url: string;
+  logo_url: string;
+  type: UserRole;
+  size: number;
   created_at: Date;
   updated_at: Date;
 }

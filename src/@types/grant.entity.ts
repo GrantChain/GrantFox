@@ -1,13 +1,14 @@
+import { GrantStatus, Currency } from "@/generated/prisma";
+
 export interface Grant {
   grant_id: string;
   title: string;
   description: string;
   metrics: string;
-  milestones: string;
-  status: string;
-  total_funding: string;
-  currency: string;
+  status: GrantStatus;
+  total_funding: number;
+  currency: Currency;
   created_by: string;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
 }

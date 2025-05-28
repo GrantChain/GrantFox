@@ -23,7 +23,6 @@ model User {
   bio            String?
   is_active      Boolean @default(true)
 
-  // Relaciones
   grant_provider  Grant_provider?
   grantee        Grantee?
   grants         Grant[]     @relation("GrantsCreatedBy")

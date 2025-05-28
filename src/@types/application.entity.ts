@@ -1,10 +1,15 @@
+import { ApplicationStatus } from "@/generated/prisma";
+
 export interface Application {
-  id: string;
+  application_id: string;
+  escrow_id: string;
   grant_id: string;
-  user_id: string;
-  description?: string;
-  pitch_url?: string;
-  status: string;
+  grantee_id: string;
+  project_id: string;
+  description: string;
+  pitch_url: string;
+  motivation: string;
+  status: ApplicationStatus;
   created_at: Date;
   updated_at: Date;
 }

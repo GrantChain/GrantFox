@@ -1,8 +1,8 @@
 export interface GrantProvider {
-  id: string;
   user_id: string;
-  name: string;
-  network_type: string;
+  organization_name?: string;
+  network_type?: string;
+  email?: string;
   created_at: Date;
   updated_at: Date;
 }

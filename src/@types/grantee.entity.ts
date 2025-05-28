@@ -1,8 +1,9 @@
 export interface Grantee {
-  id: string;
   user_id: string;
-  telegram_url?: string;
-  x_url?: string;
+  name?: string;
+  position_title?: string;
+  social_media?: Record<string, any>;
+  linked_team_id?: string;
   created_at: Date;
   updated_at: Date;
 }
