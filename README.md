@@ -37,6 +37,15 @@ Grants Open Source Platform.
       <br />
       <a href="https://t.me/pablomora3003" target="_blank">Telegram</a>
     </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/927ca8ad-f3ee-40a2-b48c-c3699cc0948c" alt="Owner 1" width="150" />
+      <br /><br />
+      <strong>Marco Araya | Backend Developer</strong>
+      <br /><br />
+      <a href="https://github.com/coxmar23" target="_blank">coxmars</a>
+      <br />
+      <a href="https://t.me/coxmar23" target="_blank">Telegram</a>
+    </td>
   </tr>
 </table>
 
