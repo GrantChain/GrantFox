@@ -46,9 +46,11 @@ export const useForgotPassword = () => {
       toast.success(
         "An email with instructions to reset your password has been sent",
       );
-    } catch (err: any) {
-      console.error("Password reset request error:", err.message);
-      setError(err.message || "Failed to send reset email");
+    } catch (err: unknown) {
+      console.error("Password reset request error:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to send reset email",
+      );
       toast.error("Failed to send reset email");
     } finally {
       setIsLoading(false);

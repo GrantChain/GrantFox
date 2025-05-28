@@ -9,8 +9,8 @@ export const NoData = () => {
       </div>
       <h3 className="text-lg font-semibold mb-2">No data found</h3>
       <p className="text-muted-foreground max-w-sm">
-        We couldn't find any data matching your criteria. Try adjusting your
-        filters or check back later for new data.
+        We couldn&apos;t find any data matching your criteria. Try adjusting
+        your filters or check back later for new data.
       </p>
     </Card>
   );

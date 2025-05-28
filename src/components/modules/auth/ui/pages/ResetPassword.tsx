@@ -17,7 +17,7 @@ export const ResetPasswordClient = () => {
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-6">
             <p className="text-muted-foreground">
-              Please don't recharge the page
+              Please don&apos;t recharge the page
             </p>
           </CardContent>
         </Card>

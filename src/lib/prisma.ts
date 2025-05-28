@@ -1,13 +1,11 @@
 import { PrismaClient } from "@/generated/prisma";
 
-declare global {
-  var prisma: PrismaClient | undefined;
-}
+let global: PrismaClient | undefined;
 
 export const prisma =
-  global.prisma ||
+  global ||
   new PrismaClient({
-    log: ["query", "error", "warn"], // debugging
+    log: ["query", "error", "warn"],
   });
 
-if (process.env.NODE_ENV !== "production") global.prisma = prisma;
+if (process.env.NODE_ENV !== "production") global = prisma;

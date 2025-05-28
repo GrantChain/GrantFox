@@ -29,7 +29,7 @@ export const Verify = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
           <CardDescription className="text-base mt-2">
-            We've sent a confirmation email to{" "}
+            We&apos;ve sent a confirmation email to{" "}
             {email ? (
               <span className="font-medium">{email}</span>
             ) : (
@@ -45,8 +45,8 @@ export const Verify = () => {
             </span>
           </div>
           <p className="text-sm text-muted-foreground">
-            If you don't see the email, check your spam folder or request a new
-            confirmation email.
+            If you don&apos;t see the email, check your spam folder or request a
+            new confirmation email.
           </p>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">

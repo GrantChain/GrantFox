@@ -8,7 +8,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { AlertTriangle, Wallet } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { useMemo } from "react";
 import {
   Sidebar,
@@ -142,7 +142,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             user={{
               name: user?.email?.split("@")[0] || "User",
               email: user?.email || "",
-              avatar: user?.pfp_url || "",
+              avatar: user?.profile_url || "",
               role: user?.role || "",
             }}
           />

@@ -6,7 +6,7 @@ export interface ApiRequest<T = unknown> {
   method: HttpMethod;
   url: string;
   data?: T;
-  params?: Record<string, any>;
+  //params?: Record<string, any>;
 }
 
 export interface ApiResponse<T = unknown> {

@@ -5,22 +5,24 @@ import { Pagination } from "@/@types/pagination.entity";
 
 type FilterKey = keyof GrantsFilters;
 type FilterValue = GrantsFilters[FilterKey];
+type SupabaseQuery = ReturnType<typeof supabase.from<"grant", Grant>>;
 
 class GrantsService {
   private readonly TABLE_NAME = "grant";
 
-  private buildFilterQuery(query: any, filters?: GrantsFilters) {
+  private buildFilterQuery(query: SupabaseQuery, filters?: GrantsFilters) {
     if (!filters) return query;
 
-    const filterMap: Record<FilterKey, (value: FilterValue) => any> = {
-      search: (value) => (value ? query.ilike("title", `%${value}%`) : query),
-      minFunding: (value) =>
-        value ? query.gte("total_funding", value) : query,
-      maxFunding: (value) =>
-        value ? query.lte("total_funding", value) : query,
-      startDate: (value) => (value ? query.gte("created_at", value) : query),
-      endDate: (value) => (value ? query.lte("created_at", value) : query),
-    };
+    const filterMap: Record<FilterKey, (value: FilterValue) => SupabaseQuery> =
+      {
+        search: (value) => (value ? query.ilike("title", `%${value}%`) : query),
+        minFunding: (value) =>
+          value ? query.gte("total_funding", value) : query,
+        maxFunding: (value) =>
+          value ? query.lte("total_funding", value) : query,
+        startDate: (value) => (value ? query.gte("created_at", value) : query),
+        endDate: (value) => (value ? query.lte("created_at", value) : query),
+      };
 
     Object.entries(filters).forEach(([key, value]) => {
       if (value && key in filterMap) {
@@ -31,7 +33,7 @@ class GrantsService {
     return query;
   }
 
-  private applyPagination(query: any, pagination?: Pagination) {
+  private applyPagination(query: SupabaseQuery, pagination?: Pagination) {
     if (!pagination) return query;
 
     const { page, pageSize } = pagination;

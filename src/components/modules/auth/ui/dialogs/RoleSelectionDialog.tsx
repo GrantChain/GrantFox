@@ -36,11 +36,11 @@ export const RoleSelectionDialog = ({
         <div className="grid gap-4 py-4">
           <div
             className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all ${
-              selectedRole === "grantee"
+              selectedRole === "GRANTEE"
                 ? "border-primary bg-primary/5"
                 : "border-border hover:border-primary/50"
             }`}
-            onClick={() => setSelectedRole("grantee")}
+            onClick={() => setSelectedRole("GRANTEE")}
           >
             <div className="flex items-start gap-4">
               <UserCircle2 className="h-8 w-8 mt-1" />
@@ -56,11 +56,11 @@ export const RoleSelectionDialog = ({
 
           <div
             className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all ${
-              selectedRole === "grant_provider"
+              selectedRole === "GRANT_PROVIDER"
                 ? "border-primary bg-primary/5"
                 : "border-border hover:border-primary/50"
             }`}
-            onClick={() => setSelectedRole("grant_provider")}
+            onClick={() => setSelectedRole("GRANT_PROVIDER")}
           >
             <div className="flex items-start gap-4">
               <Building2 className="h-8 w-8 mt-1" />

@@ -57,9 +57,11 @@ export const useResetPassword = () => {
       router.push("/login");
 
       toast.success("Password updated successfully");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error updating password:", err);
-      toast.error(err.message || "Failed to reset password");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to reset password",
+      );
     } finally {
       setIsLoading(false);
     }

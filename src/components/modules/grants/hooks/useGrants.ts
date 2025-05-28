@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { grantsService } from "../services/grants.service";
-import { GrantsFilters, GrantsPagination } from "../@types/filters.entity";
+import { GrantsFilters } from "../@types/filters.entity";
+import { Pagination } from "@/@types/pagination.entity";
 
 interface UseGrantsOptions {
   filters?: GrantsFilters;
-  pagination?: GrantsPagination;
+  pagination?: Pagination;
 }
 
 export const useGrants = (options?: UseGrantsOptions) => {

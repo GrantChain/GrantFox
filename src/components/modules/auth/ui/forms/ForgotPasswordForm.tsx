@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -48,7 +47,7 @@ export const ForgotPasswordForm = () => {
                 </svg>
               </div>
               <p className="text-sm text-muted-foreground">
-                If an account exists with that email, we've sent a password
+                If an account exists with that email, we&apos;ve sent a password
                 reset link. Please check your inbox and spam folder.
               </p>
             </div>

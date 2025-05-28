@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GrantsFilters } from "../../@types/filters.entity";
@@ -26,6 +26,13 @@ export const GrantFilters = ({
   );
   const [searchValue, setSearchValue] = useState(filters.search || "");
 
+  const handleFilterChange = useCallback(
+    (key: keyof typeof filters, value: string) => {
+      onFilterChange({ ...filters, [key]: value });
+    },
+    [filters, onFilterChange],
+  );
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchValue !== filters.search) {
@@ -34,11 +41,7 @@ export const GrantFilters = ({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchValue]);
-
-  const handleFilterChange = (key: keyof typeof filters, value: string) => {
-    onFilterChange({ ...filters, [key]: value });
-  };
+  }, [searchValue, filters.search, handleFilterChange]);
 
   const handleDateRangeChange = (range: DateRange | undefined) => {
     setDateRange(range);

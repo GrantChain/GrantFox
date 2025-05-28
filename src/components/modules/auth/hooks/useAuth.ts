@@ -41,6 +41,7 @@ export const useAuth = () => {
       if (data?.session && !error) router.push("/dashboard");
     } catch (error) {
       if (error) console.error(error);
+      toast.error("Failed to sign in");
     }
   };
 
@@ -93,17 +94,19 @@ export const useAuth = () => {
 
           router.push("/sign-up/verify");
         } catch (error) {
+          console.error(error);
           toast.error("Please try again later.");
         }
       }
     } catch (error) {
       if (error) console.error(error);
+      toast.error("Failed to sign up");
     }
   };
 
   const handleLogout = async () => {
     try {
-      let { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
 
       if (error) {
         toast.error(error.message);
@@ -111,7 +114,8 @@ export const useAuth = () => {
         router.push("/");
       }
     } catch (error) {
-      if (error) console.error(error);
+      console.error(error);
+      toast.error("Failed to sign out");
     }
   };
 

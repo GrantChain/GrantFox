@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { supabase } from "@/lib/supabase";
 import { User } from "@/@types/user.entity";
 import { Grantee } from "@/@types/grantee.entity";
@@ -25,7 +31,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchUserData = async (userId: string) => {
+  const fetchUserData = useCallback(async (userId: string) => {
     try {
       // Fetch user data
       const { data: userData, error: userError } = await supabase
@@ -71,16 +77,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     const {
       data: { user: authUser },
     } = await supabase.auth.getUser();
     if (authUser) {
       await fetchUserData(authUser.id);
     }
-  };
+  }, [fetchUserData]);
 
   useEffect(() => {
     const {
@@ -101,7 +107,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchUserData, refreshUser]);
 
   return (
     <UserContext.Provider

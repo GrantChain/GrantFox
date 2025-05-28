@@ -3,7 +3,7 @@ import { AuthServiceResponse, RoleResponse } from "@/@types/responses.entity";
 
 export const registerRole = async (
   user_id: string,
-  role: "grant_provider" | "grantee",
+  role: "GRANT_PROVIDER" | "GRANTEE",
 ): Promise<AuthServiceResponse> => {
   try {
     const response = await http.post<RoleResponse>("/register-role", {

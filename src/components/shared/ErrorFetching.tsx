@@ -9,7 +9,7 @@ export const ErrorFetching = () => {
       </div>
       <h3 className="text-lg font-semibold mb-2">Error fetching data</h3>
       <p className="text-muted-foreground max-w-sm">
-        We couldn't fetch the data. Please try again later.
+        We couldn&apos;t fetch the data. Please try again later.
       </p>
     </Card>
   );
