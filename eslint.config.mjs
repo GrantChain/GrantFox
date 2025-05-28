@@ -10,6 +10,19 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    ignores: [
+      ".next/**/*",
+      "src/generated/**/*",
+      "**/*.generated.*",
+      "**/*.wasm.*",
+    ],
+  },
+  {
+    rules: {
+      "@typescript-eslint/no-empty-object-type": "off",
+    },
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 

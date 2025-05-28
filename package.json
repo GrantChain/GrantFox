@@ -1,5 +1,5 @@
 {
-  "name": "gig-fox",
+  "name": "grant-fox",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -34,7 +34,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "framer-motion": "^12.9.2",
-    "gig-fox": "file:",
+    "grant-fox": "file:",
     "i": "^0.3.7",
     "lucide-react": "^0.481.0",
     "next": "15.1.7",
