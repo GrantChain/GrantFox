@@ -9,7 +9,6 @@ import {
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
-
 interface Application {
   id: string;
   applicantName: string;
@@ -27,7 +26,6 @@ interface CompletedItem {
   completedBy: string;
   finalAmount: number;
 }
-
 
 const mockApplications: Application[] = [
   {
@@ -138,7 +136,6 @@ const mockCompletedItems: CompletedItem[] = [
     finalAmount: 380000,
   },
 ];
-
 
 const ApplicationsTable: React.FC = () => {
   const columnHelper = createColumnHelper<Application>();
@@ -286,7 +283,6 @@ const ApplicationsTable: React.FC = () => {
   );
 };
 
-
 const DoneTable: React.FC = () => {
   const columnHelper = createColumnHelper<CompletedItem>();
 
@@ -422,7 +418,6 @@ const DoneTable: React.FC = () => {
     </div>
   );
 };
-
 
 const HistoricView: React.FC = () => {
   return (
