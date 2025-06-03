@@ -26,18 +26,30 @@ export const generalInfoSchema = z.object({
     .or(z.literal('')),
   profile_url: z
     .string()
+    .url('Please enter a valid URL')
     .optional()
-    .or(z.literal(''))
-    .refine((val) => !val || z.string().url().safeParse(val).success, {
-      message: 'Please enter a valid URL',
-    }),
+    .or(z.literal('')),
   cover_url: z
     .string()
+    .url('Please enter a valid URL')
     .optional()
-    .or(z.literal(''))
-    .refine((val) => !val || z.string().url().safeParse(val).success, {
-      message: 'Please enter a valid URL',
-    }),
+    .or(z.literal('')),
+});
+
+export const granteeSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(100, 'Name must be less than 100 characters'),
+  position_title: z
+    .string()
+    .max(100, 'Position title must be less than 100 characters')
+    .optional()
+    .or(z.literal('')),
+  twitter: z.string().url('Invalid Twitter URL').optional().or(z.literal('')),
+  linkedin: z.string().url('Invalid LinkedIn URL').optional().or(z.literal('')),
+  github: z.string().url('Invalid GitHub URL').optional().or(z.literal('')),
 });
 
 export type GeneralInfoFormData = z.infer<typeof generalInfoSchema>;
+export type GranteeFormData = z.infer<typeof granteeSchema>;

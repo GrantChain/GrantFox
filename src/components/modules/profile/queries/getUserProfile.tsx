@@ -1,8 +1,10 @@
+import type { Grantee } from '@/@types/grantee.entity';
 import type { User } from '@/@types/user.entity';
 import { supabase } from '@/lib/supabase';
 
 export interface UserProfile {
   user: User;
+  grantee?: Grantee;
 }
 
 export async function getUserProfile(
@@ -20,6 +22,25 @@ export async function getUserProfile(
     if (!user) return null;
 
     const profile: UserProfile = { user };
+
+    // Get role-specific data
+    if (user.role === 'GRANT_PROVIDER') {
+      console.log('GRANT_PROVIDER');
+    } else if (user.role === 'GRANTEE') {
+      const { data: grantee, error: granteeError } = await supabase
+        .from('grantee')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (granteeError && granteeError.code !== 'PGRST116') {
+        throw granteeError;
+      }
+
+      if (grantee) {
+        profile.grantee = grantee;
+      }
+    }
 
     return profile;
   } catch (error) {
