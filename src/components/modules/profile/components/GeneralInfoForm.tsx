@@ -1,0 +1,217 @@
+'use client';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  generalInfoSchema,
+  type GeneralInfoFormData,
+} from '../schemas/profile.schema';
+import type { User } from '@/@types/user.entity';
+import { Button } from '@/components/ui/button';
+
+interface GeneralInfoFormProps {
+  user: User;
+  onSubmit: (data: GeneralInfoFormData) => void;
+}
+
+export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
+  const form = useForm<GeneralInfoFormData>({
+    resolver: zodResolver(generalInfoSchema),
+    defaultValues: {
+      username: user.username || '',
+      email: user.email || '',
+      wallet_address: user.wallet_address || '',
+      location: user.location || '',
+      bio: user.bio || '',
+      profile_url: user.profile_url || '',
+      cover_url: user.cover_url || '',
+    },
+  });
+
+  const handleSubmit = (data: GeneralInfoFormData) => {
+    onSubmit(data);
+  };
+
+  const profileUrl = form.watch('profile_url');
+  const userName = form.watch('username');
+  const isSubmitted = form.formState.isSubmitted;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl">General Information</CardTitle>
+        <CardDescription>
+          Update your personal information and profile details
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
+            {/* Profile Picture Section */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="relative">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage
+                    src={profileUrl || '/placeholder.svg'}
+                    alt={userName}
+                  />
+                  <AvatarFallback className="text-lg">
+                    {userName
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="flex-1">
+                <FormField
+                  control={form.control}
+                  name="profile_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Profile Image URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://example.com/profile.jpg"
+                          {...field}
+                        />
+                      </FormControl>
+                      {isSubmitted && <FormMessage />}
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Cover Image */}
+            <FormField
+              control={form.control}
+              name="cover_url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cover Image URL</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="https://example.com/cover.jpg"
+                      {...field}
+                    />
+                  </FormControl>
+                  {isSubmitted && <FormMessage />}
+                </FormItem>
+              )}
+            />
+
+            {/* Basic Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your username" {...field} />
+                    </FormControl>
+                    {isSubmitted && <FormMessage />}
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        {...field}
+                      />
+                    </FormControl>
+                    {isSubmitted && <FormMessage />}
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="wallet_address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Stellar Wallet Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="G..." {...field} />
+                    </FormControl>
+                    {isSubmitted && <FormMessage />}
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="City, Country" {...field} />
+                    </FormControl>
+                    {isSubmitted && <FormMessage />}
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="bio"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bio</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Tell us about yourself..."
+                      rows={4}
+                      {...field}
+                    />
+                  </FormControl>
+                  {isSubmitted && <FormMessage />}
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full sm:w-auto">
+              Update General Info
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}
