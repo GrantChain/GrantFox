@@ -36,6 +36,19 @@ export const generalInfoSchema = z.object({
     .or(z.literal('')),
 });
 
+export const grantProviderSchema = z.object({
+  organization_name: z
+    .string()
+    .min(1, 'Organization name is required')
+    .max(100, 'Organization name must be less than 100 characters'),
+  network_type: z.string().optional().or(z.literal('')),
+  email: z
+    .string()
+    .email('Please enter a valid email address')
+    .optional()
+    .or(z.literal('')),
+});
+
 export const granteeSchema = z.object({
   name: z
     .string()
@@ -52,4 +65,5 @@ export const granteeSchema = z.object({
 });
 
 export type GeneralInfoFormData = z.infer<typeof generalInfoSchema>;
+export type GrantProviderFormData = z.infer<typeof grantProviderSchema>;
 export type GranteeFormData = z.infer<typeof granteeSchema>;
