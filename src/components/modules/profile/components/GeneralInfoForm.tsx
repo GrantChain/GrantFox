@@ -1,7 +1,8 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import type { User } from '@/@types/user.entity';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,9 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Form,
   FormControl,
@@ -20,12 +18,14 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import {
-  generalInfoSchema,
   type GeneralInfoFormData,
+  generalInfoSchema,
 } from '../schemas/profile.schema';
-import type { User } from '@/@types/user.entity';
-import { Button } from '@/components/ui/button';
 
 interface GeneralInfoFormProps {
   user: User;
@@ -206,8 +206,8 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
               )}
             />
 
-            <Button type="submit" className="w-full sm:w-auto">
-              Update General Info
+            <Button type="submit" className="w-full">
+              Save
             </Button>
           </form>
         </Form>
