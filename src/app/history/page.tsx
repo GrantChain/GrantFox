@@ -1,11 +1,11 @@
-import History from './component /history'
+import History from './component /history';
 
 const page = () => {
   return (
     <div>
-        <History />
+      <History />
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;
