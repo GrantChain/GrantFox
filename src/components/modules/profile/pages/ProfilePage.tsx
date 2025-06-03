@@ -6,10 +6,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { GeneralInfoForm } from '../components/GeneralInfoForm';
+import { GrantProviderForm } from '../components/GrantProviderForm';
 import { GranteeForm } from '../components/GranteeForm';
 import { useUserProfile } from '../hooks/useUserProfile';
 import type {
   GeneralInfoFormData,
+  GrantProviderFormData,
   GranteeFormData,
 } from '../schemas/profile.schema';
 
@@ -17,6 +19,10 @@ export default function ProfilePage() {
   const { profile, loading, error, refetch } = useUserProfile();
 
   const handleGeneralInfoSubmit = (data: GeneralInfoFormData) => {
+    console.log(data);
+  };
+
+  const handleGrantProviderSubmit = async (data: GrantProviderFormData) => {
     console.log(data);
   };
 
@@ -98,6 +104,14 @@ export default function ProfilePage() {
           user={profile.user}
           onSubmit={handleGeneralInfoSubmit}
         />
+
+        {/* Role-Specific Forms */}
+        {profile.user.role === 'GRANT_PROVIDER' && (
+          <GrantProviderForm
+            grantProvider={profile.grantProvider}
+            onSubmit={handleGrantProviderSubmit}
+          />
+        )}
 
         {profile.user.role === 'GRANTEE' && (
           <GranteeForm

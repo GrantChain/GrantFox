@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { UserCheck } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { type GranteeFormData, granteeSchema } from '../schemas/profile.schema';
 
@@ -59,7 +60,10 @@ export function GranteeForm({ grantee, onSubmit }: GranteeFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">Grantee Information</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <UserCheck className="h-5 w-5" />
+          Grantee Information
+        </CardTitle>
         <CardDescription>
           Manage your grantee profile and social links
         </CardDescription>

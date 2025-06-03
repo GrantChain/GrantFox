@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Camera } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import {
   type GeneralInfoFormData,
@@ -57,7 +58,10 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">General Information</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Camera className="h-5 w-5" />
+          General Information
+        </CardTitle>
         <CardDescription>
           Update your personal information and profile details
         </CardDescription>
