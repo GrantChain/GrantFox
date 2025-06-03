@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
-// TypeScript Interfaces
+
 interface Application {
   id: string;
   applicantName: string;
@@ -28,9 +28,7 @@ interface CompletedItem {
   finalAmount: number;
 }
 
-// Define proper badge variant types
 
-// Mock Data
 const mockApplications: Application[] = [
   {
     id: 'APP-2024-001',
@@ -141,7 +139,7 @@ const mockCompletedItems: CompletedItem[] = [
   },
 ];
 
-// Applications Table Component
+
 const ApplicationsTable: React.FC = () => {
   const columnHelper = createColumnHelper<Application>();
 
@@ -288,7 +286,7 @@ const ApplicationsTable: React.FC = () => {
   );
 };
 
-// Done Table Component
+
 const DoneTable: React.FC = () => {
   const columnHelper = createColumnHelper<CompletedItem>();
 
@@ -425,11 +423,10 @@ const DoneTable: React.FC = () => {
   );
 };
 
-// Main Historic View Component
+
 const HistoricView: React.FC = () => {
   return (
     <div className="container mx-auto py-6 px-4 max-w-7xl">
-      {/* Header Section */}
       <div className="mb-8">
         <div className="flex items-center space-x-3 mb-2">
           <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -454,8 +451,6 @@ const HistoricView: React.FC = () => {
           View historical applications and completed items
         </p>
       </div>
-
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="rounded-lg border bg-card p-6">
           <div className="flex items-center justify-between">
@@ -562,8 +557,6 @@ const HistoricView: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Main Content with ShadCN Tabs */}
       <Tabs defaultValue="applications" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger
