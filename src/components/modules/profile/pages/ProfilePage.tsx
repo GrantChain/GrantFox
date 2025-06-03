@@ -1,14 +1,13 @@
 'use client';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { useUser } from '../../auth/context/UserContext';
 import { GeneralInfoForm } from '../components/GeneralInfoForm';
 import { GrantProviderForm } from '../components/GrantProviderForm';
 import { GranteeForm } from '../components/GranteeForm';
-import { useUserProfile } from '../hooks/useUserProfile';
 import type {
   GeneralInfoFormData,
   GrantProviderFormData,
@@ -16,7 +15,7 @@ import type {
 } from '../schemas/profile.schema';
 
 export default function ProfilePage() {
-  const { profile, loading, error, refetch } = useUserProfile();
+  const { user, grantee, grantProvider, isLoading } = useUser();
 
   const handleGeneralInfoSubmit = (data: GeneralInfoFormData) => {
     console.log(data);
@@ -30,52 +29,33 @@ export default function ProfilePage() {
     console.log(data);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="max-w-[90rem] mx-auto">
         <div className="space-y-6">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-4 w-96" />
-          </div>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <Skeleton className="h-6 w-32" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
+          {Array.from({ length: 2 }).map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: safe to use index for static skeletons
+            <Card key={i}>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <Skeleton className="h-6 w-32" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <Skeleton className="h-24 w-full" />
                 </div>
-                <Skeleton className="h-24 w-full" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     );
   }
 
-  if (error && !profile) {
+  if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="flex items-center justify-between">
-            <span>{error}</span>
-            <Button variant="outline" size="sm" onClick={refetch}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Retry
-            </Button>
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="max-w-[90rem] mx-auto">
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -87,41 +67,28 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="max-w-[90rem] mx-auto">
       <div className="space-y-6">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Profile Settings
-          </h1>
-          <p className="text-muted-foreground">
-            Manage your account information
-          </p>
-        </div>
-
         {/* General Information Form */}
-        <GeneralInfoForm
-          user={profile.user}
-          onSubmit={handleGeneralInfoSubmit}
-        />
+        <GeneralInfoForm user={user} onSubmit={handleGeneralInfoSubmit} />
 
         {/* Role-Specific Forms */}
-        {profile.user.role === 'GRANT_PROVIDER' && (
+        {user.role === 'GRANT_PROVIDER' && (
           <GrantProviderForm
-            grantProvider={profile.grantProvider}
+            grantProvider={grantProvider ?? undefined}
             onSubmit={handleGrantProviderSubmit}
           />
         )}
 
-        {profile.user.role === 'GRANTEE' && (
+        {user.role === 'GRANTEE' && (
           <GranteeForm
-            grantee={profile.grantee}
+            grantee={grantee ?? undefined}
             onSubmit={handleGranteeSubmit}
           />
         )}
 
         {/* Role Selection Info */}
-        {!profile.user.role && (
+        {!user.role && (
           <Card>
             <CardContent className="p-6">
               <div className="text-center space-y-2">
