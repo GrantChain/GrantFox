@@ -1,4 +1,4 @@
-import { HelpCircle, History, Home, Sparkles } from 'lucide-react';
+import { HelpCircle, History, Home, Sparkles, UserCircle } from 'lucide-react';
 
 export const navItems = [
   {
@@ -23,6 +23,12 @@ export const navItems = [
     title: 'Historic',
     url: '/history',
     icon: History,
+    roles: ['GRANT_PROVIDER', 'GRANTEE'],
+  },
+  {
+    title: 'Profile',
+    url: '/dashboard/profile',
+    icon: UserCircle,
     roles: ['GRANT_PROVIDER', 'GRANTEE'],
   },
   {
