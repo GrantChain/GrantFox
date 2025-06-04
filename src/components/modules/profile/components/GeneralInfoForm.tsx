@@ -53,7 +53,6 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
 
   const profileUrl = form.watch('profile_url');
   const userName = form.watch('username');
-  const isSubmitted = form.formState.isSubmitted;
 
   return (
     <Card>
@@ -89,7 +88,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 w-full">
                 <FormField
                   control={form.control}
                   name="profile_url"
@@ -102,7 +101,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                           {...field}
                         />
                       </FormControl>
-                      {isSubmitted && <FormMessage />}
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -122,7 +121,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  {isSubmitted && <FormMessage />}
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -138,7 +137,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                     <FormControl>
                       <Input placeholder="Enter your username" {...field} />
                     </FormControl>
-                    {isSubmitted && <FormMessage />}
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -156,7 +155,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                         {...field}
                       />
                     </FormControl>
-                    {isSubmitted && <FormMessage />}
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -172,7 +171,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                     <FormControl>
                       <Input placeholder="G..." {...field} />
                     </FormControl>
-                    {isSubmitted && <FormMessage />}
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -186,7 +185,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                     <FormControl>
                       <Input placeholder="City, Country" {...field} />
                     </FormControl>
-                    {isSubmitted && <FormMessage />}
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -205,7 +204,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  {isSubmitted && <FormMessage />}
+                  <FormMessage />
                 </FormItem>
               )}
             />
