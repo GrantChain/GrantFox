@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import type * as React from "react";
+import { useUser } from '@/components/modules/auth/context/UserContext';
+import TooltipInfo from '@/components/shared/TooltipInfo';
+import { Separator } from '@/components/ui/separator';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { AlertTriangle } from "lucide-react";
-import { useMemo } from "react";
+} from '@/components/ui/sidebar';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar";
-import { NavUser } from "./nav-user";
-import { Separator } from "@/components/ui/separator";
-import { useWallet } from "@/components/wallet/hooks/useWallet";
-import Image from "next/image";
-import { useUser } from "@/components/modules/auth/context/UserContext";
-import TooltipInfo from "@/components/shared/TooltipInfo";
-import { navItems } from "./constants/items.constant";
-import Link from "next/link";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useWallet } from '@/components/wallet/hooks/useWallet';
+import { AlertTriangle } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import type * as React from 'react';
+import { useMemo } from 'react';
+import { navItems } from './constants/items.constant';
+import { NavUser } from './nav-user';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { account } = useWallet();
@@ -60,7 +60,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarContent>
           <div className="flex items-center justify-center p-4">
             <div className="animate-pulse space-y-4 w-full">
-              {[1, 2, 3].map((i) => (
+              {[1, 2, 3, 4].map((i) => (
                 <Skeleton key={i} className="h-10 w-full" />
               ))}
             </div>
@@ -97,15 +97,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <TooltipInfo
                 content={
                   !isConnected
-                    ? "Connect your wallet to access this section"
-                    : ""
+                    ? 'Connect your wallet to access this section'
+                    : ''
                 }
               >
                 <div className="w-full">
                   <SidebarMenuButton asChild disabled={!isConnected}>
                     <Link
-                      href={isConnected ? item.url : "#"}
-                      className={`flex items-center gap-2 ${!isConnected ? "opacity-50 cursor-not-allowed" : ""}`}
+                      href={isConnected ? item.url : '#'}
+                      className={`flex items-center gap-2 ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
                       onClick={(e) => !isConnected && e.preventDefault()}
                     >
                       <item.icon className="h-4 w-4" />
@@ -120,30 +120,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <div className="flex flex-col gap-2 px-4 py-2 group-data-[collapsible=icon]:px-0">
-          {!isConnected && (
-            <>
-              {open ? (
-                <div className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-200 rounded-md p-2 text-xs whitespace-nowrap">
-                  <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-                  <span>Connect wallet to continue</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center p-2 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-200 rounded-md text-xs">
-                  <TooltipInfo content="Connect wallet to continue">
-                    <AlertTriangle className="h-4 w-4" />
-                  </TooltipInfo>
-                </div>
-              )}
-            </>
-          )}
+          {!isConnected &&
+            (open ? (
+              <div className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-200 rounded-md p-2 text-xs whitespace-nowrap">
+                <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                <span>Connect wallet to continue</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center p-2 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-200 rounded-md text-xs">
+                <TooltipInfo content="Connect wallet to continue">
+                  <AlertTriangle className="h-4 w-4" />
+                </TooltipInfo>
+              </div>
+            ))}
 
           <Separator className="my-1" />
           <NavUser
             user={{
-              name: user?.email?.split("@")[0] || "User",
-              email: user?.email || "",
-              avatar: user?.profile_url || "",
-              role: user?.role || "",
+              name: user?.username || 'User',
+              email: user?.email || '',
+              avatar: user?.profile_url || '',
+              role: user?.role || '',
             }}
           />
         </div>
