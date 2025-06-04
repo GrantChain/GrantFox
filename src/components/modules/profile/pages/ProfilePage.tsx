@@ -4,7 +4,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import { useUser } from '../../auth/context/UserContext';
+import type { ProfileUpdateData } from '../@types/profile';
 import { GeneralInfoForm } from '../components/GeneralInfoForm';
 import { GrantProviderForm } from '../components/GrantProviderForm';
 import { GranteeForm } from '../components/GranteeForm';
@@ -17,16 +19,47 @@ import type {
 export default function ProfilePage() {
   const { user, grantee, grantProvider, isLoading } = useUser();
 
-  const handleGeneralInfoSubmit = (data: GeneralInfoFormData) => {
-    console.log(data);
+  const updateProfile = async (payload: ProfileUpdateData) => {
+    const res = await fetch('/api/profile', {
+      method: 'PATCH',
+      // biome-ignore lint/style/noNonNullAssertion: we validated `user` is not null above
+      body: JSON.stringify({ userId: user!.user_id, ...payload }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) {
+      const { error } = await res.json();
+      throw new Error(error || 'Error updating profile');
+    }
+  };
+
+  const handleGeneralInfoSubmit = async (data: GeneralInfoFormData) => {
+    try {
+      await updateProfile({ user: data });
+      toast.success('General information updated successfully');
+    } catch (err) {
+      toast.error('Failed to update general information');
+    }
   };
 
   const handleGrantProviderSubmit = async (data: GrantProviderFormData) => {
-    console.log(data);
+    try {
+      await updateProfile({ user: {}, grantProvider: data });
+      toast.success('Grant provider information updated successfully');
+    } catch (err) {
+      toast.error('Failed to update grant provider information');
+    }
   };
 
   const handleGranteeSubmit = async (data: GranteeFormData) => {
-    console.log(data);
+    try {
+      await updateProfile({ user: {}, grantee: data });
+      toast.success('Grantee information updated successfully');
+    } catch (err) {
+      toast.error('Failed to update grantee information');
+    }
   };
 
   if (isLoading) {
