@@ -40,6 +40,7 @@ export default function ProfilePage() {
       await updateProfile({ user: data });
       toast.success('General information updated successfully');
     } catch (err) {
+      console.error(err);
       toast.error('Failed to update general information');
     }
   };
@@ -49,6 +50,7 @@ export default function ProfilePage() {
       await updateProfile({ user: {}, grantProvider: data });
       toast.success('Grant provider information updated successfully');
     } catch (err) {
+      console.error(err);
       toast.error('Failed to update grant provider information');
     }
   };
@@ -58,6 +60,7 @@ export default function ProfilePage() {
       await updateProfile({ user: {}, grantee: data });
       toast.success('Grantee information updated successfully');
     } catch (err) {
+      console.error(err);
       toast.error('Failed to update grantee information');
     }
   };
