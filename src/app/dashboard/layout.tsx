@@ -1,13 +1,19 @@
-"use client";
+'use client';
 
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
-import { RoleSelectionProvider } from "@/components/providers/role-selection.provider";
-import { UserProvider } from "@/components/modules/auth/context/UserContext";
-import { Footer } from "@/components/layout/footer/Footer";
-import { Header } from "@/components/layout/header/Header";
+import { Footer } from '@/components/layout/footer/Footer';
+import { Header } from '@/components/layout/header/Header';
+import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
+import { UserProvider } from '@/components/modules/auth/context/UserContext';
+import { withRoleAccess } from '@/components/modules/auth/hoc/withRoleAccess';
+import { RoleSelectionProvider } from '@/components/providers/role-selection.provider';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import type { ReactNode } from 'react';
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+type Props = {
+  children: ReactNode;
+};
+
+const DashboardLayout = ({ children }: Props) => {
   return (
     <UserProvider>
       <RoleSelectionProvider>
@@ -28,4 +34,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default Layout;
+// Protect the entire dashboard with role-based access
+export default withRoleAccess(DashboardLayout, {
+  allowedRoles: ['ADMIN', 'GRANTEE', 'GRANT_PROVIDER'],
+});
