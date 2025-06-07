@@ -204,7 +204,7 @@ model SystemLog {
 // ENUMS
 enum UserRole {
   GRANTEE
-  Payout_provider
+  PAYOUT_PROVIDER
   EMPTY
   ADMIN
 }
