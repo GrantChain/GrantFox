@@ -1,9 +1,9 @@
 import { supabase } from "@/lib/supabase";
-import { toast } from "sonner";
-import { registerRole } from "../services/register-role.service";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import { useUser } from "../context/UserContext";
+import { registerRole } from "../services/register-role.service";
 
 interface RoleSelectionHookProps {
   onClose: () => void;

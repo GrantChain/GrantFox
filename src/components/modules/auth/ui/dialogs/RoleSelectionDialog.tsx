@@ -1,12 +1,12 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { UserCircle2, Building2 } from "lucide-react";
+import { Building2, UserCircle2 } from "lucide-react";
 import { useRoleSelection } from "../../hooks/useRoleSelection";
 
 interface RoleSelectionModalProps {
@@ -23,6 +23,9 @@ export const RoleSelectionDialog = ({
       onClose,
     });
 
+  const handleGranteeClick = () => setSelectedRole("GRANTEE");
+  const handlePayoutProviderClick = () => setSelectedRole("PAYOUT_PROVIDER");
+
   return (
     <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-[525px]">
@@ -34,13 +37,15 @@ export const RoleSelectionDialog = ({
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div
-            className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all ${
+          <button
+            type="button"
+            className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all text-left w-full ${
               selectedRole === "GRANTEE"
                 ? "border-primary bg-primary/5"
                 : "border-border hover:border-primary/50"
             }`}
-            onClick={() => setSelectedRole("GRANTEE")}
+            aria-label="Select Grantee role"
+            onClick={handleGranteeClick}
           >
             <div className="flex items-start gap-4">
               <UserCircle2 className="h-8 w-8 mt-1" />
@@ -52,15 +57,17 @@ export const RoleSelectionDialog = ({
                 </p>
               </div>
             </div>
-          </div>
+          </button>
 
-          <div
-            className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all ${
+          <button
+            type="button"
+            className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all text-left w-full ${
               selectedRole === "PAYOUT_PROVIDER"
                 ? "border-primary bg-primary/5"
                 : "border-border hover:border-primary/50"
             }`}
-            onClick={() => setSelectedRole("PAYOUT_PROVIDER")}
+            aria-label="Select Payout Provider role"
+            onClick={handlePayoutProviderClick}
           >
             <div className="flex items-start gap-4">
               <Building2 className="h-8 w-8 mt-1" />
@@ -72,7 +79,7 @@ export const RoleSelectionDialog = ({
                 </p>
               </div>
             </div>
-          </div>
+          </button>
         </div>
 
         <div className="flex justify-end gap-3">

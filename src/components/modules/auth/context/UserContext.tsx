@@ -1,16 +1,16 @@
 "use client";
 
+import type { GrantProvider } from "@/@types/grant-provider.entity";
+import type { Grantee } from "@/@types/grantee.entity";
+import type { User } from "@/@types/user.entity";
+import { supabase } from "@/lib/supabase";
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
-  useCallback,
 } from "react";
-import { supabase } from "@/lib/supabase";
-import { User } from "@/@types/user.entity";
-import { Grantee } from "@/@types/grantee.entity";
-import { GrantProvider } from "@/@types/grant-provider.entity";
 import { checkRole } from "../services/check-role.service";
 
 interface UserContextType {

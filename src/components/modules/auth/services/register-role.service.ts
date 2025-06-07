@@ -1,5 +1,8 @@
+import type {
+  AuthServiceResponse,
+  RoleResponse,
+} from "@/@types/responses.entity";
 import { http } from "@/lib/axios";
-import { AuthServiceResponse, RoleResponse } from "@/@types/responses.entity";
 
 export const registerRole = async (
   user_id: string,
@@ -17,15 +20,14 @@ export const registerRole = async (
         message: "Role registered successfully",
         data: response.data,
       };
-    } else {
-      return {
-        success: false,
-        message: "Error registering role. Please try again.",
-        data: null,
-      };
     }
+    return {
+      success: false,
+      message: "Error registering role. Please try again.",
+      data: null,
+    };
   } catch (error: unknown) {
-    if (error instanceof Error && error.hasOwnProperty("response")) {
+    if (error instanceof Error && Object.hasOwn(error, "response")) {
       const axiosError = error as { response?: { data?: { message: string } } };
       return {
         success: false,

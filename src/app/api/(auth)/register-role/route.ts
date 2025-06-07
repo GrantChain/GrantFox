@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { RolePayloadSchema } from "@/components/modules/auth/schema/role-selection.schema";
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const body = await req.json();
