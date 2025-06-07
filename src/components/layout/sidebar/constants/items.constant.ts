@@ -5,13 +5,13 @@ export const navItems = [
     title: 'Dashboard',
     url: '/dashboard',
     icon: Home,
-    roles: ['GRANT_PROVIDER', 'GRANTEE'],
+    roles: ['PAYOUT_PROVIDER', 'GRANTEE'],
   },
   {
     title: 'Grant Projects',
     url: '/dashboard/grants/projects',
     icon: Sparkles,
-    roles: ['GRANT_PROVIDER'],
+    roles: ['PAYOUT_PROVIDER'],
   },
   {
     title: 'Opportunities',
@@ -23,12 +23,12 @@ export const navItems = [
     title: 'Historic',
     url: '/history',
     icon: History,
-    roles: ['GRANT_PROVIDER', 'GRANTEE'],
+    roles: ['PAYOUT_PROVIDER', 'GRANTEE'],
   },
   {
     title: 'Help',
     url: '/dashboard/help',
     icon: HelpCircle,
-    roles: ['GRANT_PROVIDER', 'GRANTEE'],
+    roles: ['PAYOUT_PROVIDER', 'GRANTEE'],
   },
 ];

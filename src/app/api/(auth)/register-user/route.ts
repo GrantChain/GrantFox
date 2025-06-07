@@ -14,8 +14,12 @@ export async function POST(req: Request) {
 
   const { user_id, email } = parsed.data;
 
+  console.log("INFO:", parsed.data);
+
   // Generate username from email (part before @)
   const username = email.split('@')[0];
+
+  console.log("USERNAME:", username);
 
   try {
     const user = await prisma.user.create({
@@ -31,6 +35,8 @@ export async function POST(req: Request) {
         location: '',
       },
     });
+
+    console.log("USER:", user);
 
     return NextResponse.json({ user }, { status: 201 });
   } catch (error) {

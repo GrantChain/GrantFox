@@ -56,16 +56,16 @@ export const RoleSelectionDialog = ({
 
           <div
             className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all ${
-              selectedRole === "GRANT_PROVIDER"
+              selectedRole === "PAYOUT_PROVIDER"
                 ? "border-primary bg-primary/5"
                 : "border-border hover:border-primary/50"
             }`}
-            onClick={() => setSelectedRole("GRANT_PROVIDER")}
+            onClick={() => setSelectedRole("PAYOUT_PROVIDER")}
           >
             <div className="flex items-start gap-4">
               <Building2 className="h-8 w-8 mt-1" />
               <div>
-                <h3 className="font-semibold text-lg">Grant Provider</h3>
+                <h3 className="font-semibold text-lg">Payout Provider</h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   Offer grants and funding. Create grant programs and manage
                   applications from grantees.

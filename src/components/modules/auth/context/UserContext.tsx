@@ -60,9 +60,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           if (!granteeError && granteeData) {
             setGrantee(granteeData);
           }
-        } else if (role === "GRANT_PROVIDER") {
+        } else if (role === "PAYOUT_PROVIDER") {
           const { data: providerData, error: providerError } = await supabase
-            .from("grant_provider")
+            .from("payout_provider")
             .select("*")
             .eq("user_id", userId)
             .single();

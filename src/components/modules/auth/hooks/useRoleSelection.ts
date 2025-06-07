@@ -11,7 +11,7 @@ interface RoleSelectionHookProps {
 
 export const useRoleSelection = ({ onClose }: RoleSelectionHookProps) => {
   const [selectedRole, setSelectedRole] = useState<
-    "GRANT_PROVIDER" | "GRANTEE" | null
+    "PAYOUT_PROVIDER" | "GRANTEE" | null
   >(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
