@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GoogleSignInButton from "@/components/modules/auth/ui/google/GoogleSignInButton";
+import GithubSignInButton from "@/components/modules/auth/ui/github/GithubSignInButton";
 import Link from "next/link";
 import { AuthLayout } from "../shared/AuthLayout";
 import { AuthFooter } from "../shared/AuthFooter";
@@ -103,8 +104,9 @@ export const LoginForm = () => {
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <GoogleSignInButton />
+            <GithubSignInButton />
           </div>
 
           <div className="text-center text-sm mt-6">
