@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         user_id,
         email,
         username,
-        wallet_address: "",
+        wallet_address: null,
         bio: "",
         role: "EMPTY",
         profile_url: "",
