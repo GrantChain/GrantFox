@@ -13,6 +13,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { FormProvider } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleSignInButton from "@/components/modules/auth/ui/google/GoogleSignInButton";
+import GithubSignInButton from "@/components/modules/auth/ui/github/GithubSignInButton";
 import Link from "next/link";
 import { AuthLayout } from "../shared/AuthLayout";
 import { AuthFooter } from "../shared/AuthFooter";
@@ -104,8 +105,9 @@ export const SignUpForm = () => {
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <GoogleSignInButton />
+            <GithubSignInButton />
           </div>
 
           <div className="text-center text-sm mt-6">
