@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
   const { user_id, email } = parsed.data;
 
-  // Generate username from email (part before @)
+  // Generate username from email
   const username = email.split("@")[0];
 
   try {
