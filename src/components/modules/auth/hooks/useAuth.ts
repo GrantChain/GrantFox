@@ -1,14 +1,14 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { authSchema } from "../schema/auth.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { supabase } from "@/lib/supabase";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { registerUser } from "../services/register-user.service";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import type { z } from "zod";
+import { authSchema } from "../schema/auth.schema";
+import { registerUser } from "../services/register-user.service";
 import { useAuthenticationBoundedStore } from "../store/store";
 
 export const useAuth = () => {
