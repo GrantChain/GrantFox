@@ -1,13 +1,21 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -15,21 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePayoutForm } from "../../hooks/usePayoutForm";
 import { Currency, PayoutStatus, PayoutType } from "@/generated/prisma";
-import { Plus, Trash2, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { PayoutFormValues } from "../../schemas/payout.schema";
-import { useEffect, useRef } from "react";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
+import { Plus, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
+import { usePayoutForm } from "../../hooks/usePayoutForm";
+import type { PayoutFormValues } from "../../schemas/payout.schema";
 
 interface PayoutFormModalProps {
   open: boolean;
