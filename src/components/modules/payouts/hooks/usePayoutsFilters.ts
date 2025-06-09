@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { GrantsFilters } from "../@types/filters.entity";
-import { Pagination } from "@/@types/pagination.entity";
+import type { Pagination } from "@/@types/pagination.entity";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import type { PayoutFilters } from "../@types/filters.entity";
 
-const DEFAULT_FILTERS: GrantsFilters = {
+const DEFAULT_FILTERS: PayoutFilters = {
   search: "",
   minFunding: "",
   maxFunding: "",
@@ -11,11 +11,11 @@ const DEFAULT_FILTERS: GrantsFilters = {
   endDate: "",
 };
 
-export const useGrantsFilters = () => {
+export const usePayoutsFilters = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const getFiltersFromUrl = useCallback((): GrantsFilters => {
+  const getFiltersFromUrl = useCallback((): PayoutFilters => {
     return {
       search: searchParams.get("search") || DEFAULT_FILTERS.search,
       minFunding: searchParams.get("minFunding") || DEFAULT_FILTERS.minFunding,
@@ -32,24 +32,24 @@ export const useGrantsFilters = () => {
     };
   }, [searchParams]);
 
-  const [filters, setFilters] = useState<GrantsFilters>(getFiltersFromUrl());
+  const [filters, setFilters] = useState<PayoutFilters>(getFiltersFromUrl());
   const [pagination, setPagination] = useState<Pagination>(
     getPaginationFromUrl(),
   );
 
   const updateUrl = useCallback(
-    (newFilters: GrantsFilters, newPagination: Pagination) => {
+    (newFilters: PayoutFilters, newPagination: Pagination) => {
       const params = new URLSearchParams();
 
-      Object.entries(newFilters).forEach(([key, value]) => {
-        if (value && value !== DEFAULT_FILTERS[key as keyof GrantsFilters]) {
+      for (const [key, value] of Object.entries(newFilters)) {
+        if (value && value !== DEFAULT_FILTERS[key as keyof PayoutFilters]) {
           params.set(key, value);
         }
-      });
+      }
 
-      Object.entries(newPagination).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(newPagination)) {
         if (value) params.set(key, value.toString());
-      });
+      }
 
       router.push(`?${params.toString()}`);
     },
@@ -57,7 +57,7 @@ export const useGrantsFilters = () => {
   );
 
   const handleFilterChange = useCallback(
-    (newFilters: GrantsFilters) => {
+    (newFilters: PayoutFilters) => {
       setFilters(newFilters);
       setPagination((prev) => ({ ...prev, page: 1 }));
       updateUrl(newFilters, { ...pagination, page: 1 });
@@ -84,7 +84,7 @@ export const useGrantsFilters = () => {
   useEffect(() => {
     setFilters(getFiltersFromUrl());
     setPagination(getPaginationFromUrl());
-  }, [searchParams, getFiltersFromUrl, getPaginationFromUrl]);
+  }, [getFiltersFromUrl, getPaginationFromUrl]);
 
   return {
     filters,

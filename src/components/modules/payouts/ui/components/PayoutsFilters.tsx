@@ -1,26 +1,26 @@
-import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { GrantsFilters } from "../../@types/filters.entity";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
-import { DateRange } from "react-day-picker";
+import { Input } from "@/components/ui/input";
 import { Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import type { DateRange } from "react-day-picker";
+import type { PayoutFilters } from "../../@types/filters.entity";
 import {
   createEmptyFilters,
-  formatDateRangeToFilters,
   createInitialDateRange,
+  formatDateRangeToFilters,
   isThereAnyFilter,
 } from "../../utils/filter.utils";
 
-interface GrantFiltersProps {
-  onFilterChange: (filters: GrantsFilters) => void;
-  filters: GrantsFilters;
+interface PayoutsFiltersProps {
+  onFilterChange: (filters: PayoutFilters) => void;
+  filters: PayoutFilters;
 }
 
-export const GrantFilters = ({
+export const PayoutsFilters = ({
   onFilterChange,
   filters,
-}: GrantFiltersProps) => {
+}: PayoutsFiltersProps) => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(
     createInitialDateRange(filters),
   );

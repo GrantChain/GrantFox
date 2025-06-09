@@ -1,4 +1,4 @@
-export interface GrantsFilters {
+export interface PayoutFilters {
   search?: string;
   minFunding?: string;
   maxFunding?: string;

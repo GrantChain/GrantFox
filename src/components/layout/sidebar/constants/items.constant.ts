@@ -8,14 +8,14 @@ export const navItems = [
     roles: ["PAYOUT_PROVIDER", "GRANTEE"],
   },
   {
-    title: "Grant Projects",
-    url: "/dashboard/grants/projects",
+    title: "Payouts",
+    url: "/dashboard/payout-provider/payouts",
     icon: Sparkles,
     roles: ["PAYOUT_PROVIDER"],
   },
   {
-    title: "Opportunities",
-    url: "/dashboard/grants/opportunities",
+    title: "Assigned Payouts",
+    url: "/dashboard/grantee/payouts",
     icon: Sparkles,
     roles: ["GRANTEE"],
   },

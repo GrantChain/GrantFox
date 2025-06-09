@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface GrantPaginationProps {
+interface PayoutsPaginationProps {
   currentPage: number;
   totalItems: number;
   pageSize: number;
@@ -15,17 +15,17 @@ interface GrantPaginationProps {
   onPageSizeChange: (pageSize: number) => void;
 }
 
-export const GrantPagination = ({
+export const PayoutsPagination = ({
   currentPage,
   totalItems,
   pageSize,
   onPageChange,
   onPageSizeChange,
-}: GrantPaginationProps) => {
+}: PayoutsPaginationProps) => {
   const totalPages = Math.ceil(totalItems / pageSize);
 
   const handlePageSizeChange = (value: string) => {
-    const newPageSize = parseInt(value);
+    const newPageSize = Number.parseInt(value);
     onPageSizeChange(newPageSize);
     onPageChange(1);
   };

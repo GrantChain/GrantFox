@@ -1,24 +1,24 @@
 "use client";
 
-import { useGrants } from "../../hooks/useGrants";
-import { GrantFilters } from "./GrantFilters";
-import { GrantPagination } from "./GrantPagination";
-import { GrantCard } from "./GrantCard";
-import { GrantCardSkeleton } from "./GrantCardSkeleton";
-import { NoData } from "../../../../shared/NoData";
 import { ErrorFetching } from "@/components/shared/ErrorFetching";
-import { useGrantsFilters } from "../../hooks/useGrantsFilters";
+import { NoData } from "../../../../shared/NoData";
+import { usePayouts } from "../../hooks/usePayouts";
+import { usePayoutsFilters } from "../../hooks/usePayoutsFilters";
+import { PayoutsCard } from "./PayoutsCard";
+import { PayoutsCardSkeleton } from "./PayoutsCardSkeleton";
+import { PayoutsFilters } from "./PayoutsFilters";
+import { PayoutsPagination } from "./PayoutsPagination";
 
-export const GrantsSection = () => {
+export const PayoutsSection = () => {
   const {
     filters,
     pagination,
     handleFilterChange,
     handlePageChange,
     handlePageSizeChange,
-  } = useGrantsFilters();
+  } = usePayoutsFilters();
 
-  const { data, isLoading, error } = useGrants({
+  const { data, isLoading, error } = usePayouts({
     filters,
     pagination,
   });
@@ -33,7 +33,7 @@ export const GrantsSection = () => {
 
   return (
     <div className="space-y-6 max-w-[90rem] mx-auto">
-      <GrantFilters onFilterChange={handleFilterChange} filters={filters} />
+      <PayoutsFilters onFilterChange={handleFilterChange} filters={filters} />
 
       <div
         className={`grid mt-10 ${
@@ -44,19 +44,19 @@ export const GrantsSection = () => {
       >
         {isLoading ? (
           Array.from({ length: pagination.pageSize }).map((_, index) => (
-            <GrantCardSkeleton key={index} />
+            <PayoutsCardSkeleton key={`skeleton-${index}-${pagination.page}`} />
           ))
         ) : data?.data.length === 0 ? (
           <NoData />
         ) : (
-          data?.data.map((grant) => (
-            <GrantCard key={grant.grant_id} grant={grant} />
+          data?.data.map((payout) => (
+            <PayoutsCard key={payout.payout_id} payout={payout} />
           ))
         )}
       </div>
 
       {data && (
-        <GrantPagination
+        <PayoutsPagination
           currentPage={pagination.page}
           totalItems={data.total}
           pageSize={pagination.pageSize}

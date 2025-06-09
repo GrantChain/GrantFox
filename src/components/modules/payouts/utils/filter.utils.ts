@@ -1,7 +1,7 @@
-import { DateRange } from "react-day-picker";
-import { GrantsFilters } from "../@types/filters.entity";
+import type { DateRange } from "react-day-picker";
+import type { PayoutFilters } from "../@types/filters.entity";
 
-export const createEmptyFilters = (): GrantsFilters => ({
+export const createEmptyFilters = (): PayoutFilters => ({
   search: "",
   minFunding: "",
   maxFunding: "",
@@ -9,7 +9,7 @@ export const createEmptyFilters = (): GrantsFilters => ({
   endDate: "",
 });
 
-export const isThereAnyFilter = (filters: GrantsFilters): boolean => {
+export const isThereAnyFilter = (filters: PayoutFilters): boolean => {
   return (
     filters.search !== "" ||
     filters.minFunding !== "" ||
@@ -19,15 +19,15 @@ export const isThereAnyFilter = (filters: GrantsFilters): boolean => {
 
 export const formatDateRangeToFilters = (
   range: DateRange | undefined,
-  currentFilters: GrantsFilters,
-): GrantsFilters => ({
+  currentFilters: PayoutFilters,
+): PayoutFilters => ({
   ...currentFilters,
   startDate: range?.from?.toISOString().split("T")[0] || "",
   endDate: range?.to?.toISOString().split("T")[0] || "",
 });
 
 export const createInitialDateRange = (
-  filters: GrantsFilters,
+  filters: PayoutFilters,
 ): DateRange | undefined => ({
   from: filters.startDate ? new Date(filters.startDate) : undefined,
   to: filters.endDate ? new Date(filters.endDate) : undefined,

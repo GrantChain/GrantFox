@@ -1,18 +1,18 @@
 import { Card } from "@/components/ui/card";
-import { Payout } from "@/generated/prisma";
-import { CheckIcon, UserIcon, ArrowRightIcon } from "lucide-react";
+import type { Payout } from "@/generated/prisma";
+import { ArrowRightIcon, CheckIcon, UserIcon } from "lucide-react";
 import React from "react";
 
-interface GrantCardProps {
-  grant: Payout;
+interface PayoutsCardProps {
+  payout: Payout;
 }
 
-export const GrantCard = ({ grant }: GrantCardProps) => {
+export const PayoutsCard = ({ payout }: PayoutsCardProps) => {
   return (
     <Card
       className="relative overflow-hidden rounded-2xl shadow-xl bg-zinc-900 dark:bg-zinc-950 p-6 flex flex-col min-h-[400px] w-full mx-auto"
       tabIndex={0}
-      aria-label={`Grant card for ${grant.title}`}
+      aria-label={`Payout card for ${payout.title}`}
     >
       <div
         aria-hidden="true"
@@ -24,7 +24,10 @@ export const GrantCard = ({ grant }: GrantCardProps) => {
           width="100%"
           height="100%"
           xmlns="http://www.w3.org/2000/svg"
+          role="img"
+          aria-label="Decorative grid pattern background"
         >
+          <title>Decorative grid pattern background</title>
           <defs>
             <pattern
               id="grid"
@@ -52,19 +55,19 @@ export const GrantCard = ({ grant }: GrantCardProps) => {
             <span className="text-sm text-zinc-400">For freelancers</span>
           </div>
           <h2 className="text-2xl font-bold text-white leading-tight">
-            {grant.title}
+            {payout.title}
           </h2>
-          <span className="text-base text-zinc-300">{grant.description}</span>
+          <span className="text-base text-zinc-300">{payout.description}</span>
         </div>
 
         <div className="mb-6 flex flex-col gap-1">
           <span className="text-4xl font-extrabold text-white">
-            ${grant.total_funding.toString()}
+            ${payout.total_funding.toString()}
           </span>
           <span className="text-sm text-zinc-400">
-            / {grant.currency?.toLowerCase() || "month"}
+            / {payout.currency?.toLowerCase() || "month"}
           </span>
-          <span className="text-sm text-zinc-400 mt-1">{grant.metrics}</span>
+          <span className="text-sm text-zinc-400 mt-1">{payout.metrics}</span>
         </div>
 
         <ul className="space-y-2">
