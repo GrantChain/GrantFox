@@ -38,8 +38,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         .eq("user_id", userId)
         .single();
 
-      if (userError) throw userError;
-      if (!userData) return;
+      if (!userData) {
+        console.log("No user data found for userId:", userId);
+        return;
+      }
+
+      if (userError) {
+        console.error("Error fetching user data:", {
+          error: userError,
+          message: userError.message,
+          details: userError.details,
+        });
+      }
 
       setUser(userData);
 
@@ -55,7 +65,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             .eq("user_id", userId)
             .single();
 
-          if (!granteeError && granteeData) {
+          if (granteeError) {
+            console.error("Error fetching grantee data:", {
+              error: granteeError,
+              message: granteeError.message,
+              details: granteeError.details,
+              hint: granteeError.hint,
+              code: granteeError.code,
+            });
+          } else if (granteeData) {
             setGrantee(granteeData);
           }
         } else if (role === "PAYOUT_PROVIDER") {
@@ -65,13 +83,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             .eq("user_id", userId)
             .single();
 
-          if (!providerError && providerData) {
+          if (providerError) {
+            console.error("Error fetching payout provider data:", {
+              error: providerError,
+              message: providerError.message,
+              details: providerError.details,
+              hint: providerError.hint,
+              code: providerError.code,
+            });
+          } else if (providerData) {
             setPayoutProvider(providerData);
           }
         }
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error in fetchUserData:", {
+        error,
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     } finally {
       setIsLoading(false);
     }
