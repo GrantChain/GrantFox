@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import type { PayoutFilters } from "../../@types/filters.entity";
@@ -11,6 +11,7 @@ import {
   formatDateRangeToFilters,
   isThereAnyFilter,
 } from "../../utils/filter.utils";
+import { PayoutFormModal } from "./PayoutFormModal";
 
 interface PayoutsFiltersProps {
   onFilterChange: (filters: PayoutFilters) => void;
@@ -25,6 +26,7 @@ export const PayoutsFilters = ({
     createInitialDateRange(filters),
   );
   const [searchValue, setSearchValue] = useState(filters.search || "");
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const handleFilterChange = useCallback(
     (key: keyof typeof filters, value: string) => {
@@ -54,9 +56,14 @@ export const PayoutsFilters = ({
     onFilterChange(createEmptyFilters());
   };
 
+  const handleCreatePayout = (data: any) => {
+    console.log("Create payout:", data);
+    setShowCreateModal(false);
+  };
+
   return (
     <>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mb-10">
         <div className="flex flex-col md:flex-row gap-4 items-start">
           <div className="w-full flex items-center gap-4 md:w-1/3 space-y-2">
             <Input
@@ -105,9 +112,25 @@ export const PayoutsFilters = ({
                 onDateChange={handleDateRangeChange}
               />
             </div>
+
+            <div className="space-y-2">
+              <Button
+                className="gap-2"
+                onClick={() => setShowCreateModal(true)}
+              >
+                <Plus className="w-4 h-4" />
+                Create payout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
+      <PayoutFormModal
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+        onSubmit={handleCreatePayout}
+        mode="create"
+      />
     </>
   );
 };

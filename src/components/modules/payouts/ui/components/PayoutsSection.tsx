@@ -32,38 +32,42 @@ export const PayoutsSection = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-[90rem] mx-auto">
+    <section className="flex flex-col h-full">
       <PayoutsFilters onFilterChange={handleFilterChange} filters={filters} />
 
-      <div
-        className={`grid mt-10 ${
-          data?.data.length === 0
-            ? "grid-cols-1"
-            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-        } gap-10`}
-      >
+      <div className="flex-1 overflow-auto">
         {isLoading ? (
-          Array.from({ length: pagination.pageSize }).map((_, index) => (
-            <PayoutCardSkeleton key={`skeleton-${index}-${pagination.page}`} />
-          ))
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
+            {Array.from({ length: pagination.pageSize }).map((_, index) => (
+              <PayoutCardSkeleton
+                key={`skeleton-${index}-${pagination.page}`}
+              />
+            ))}
+          </div>
         ) : data?.data.length === 0 ? (
-          <NoData />
-        ) : (
-          data?.data.map((payout) => (
-            <PayoutCard key={payout.payout_id} payout={payout} />
-          ))
-        )}
+          <div className="mt-10">
+            <NoData />
+          </div>
+        ) : data?.data ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+            {data.data.map((payout) => (
+              <PayoutCard key={payout.payout_id} payout={payout} />
+            ))}
+          </div>
+        ) : null}
       </div>
 
       {data && (
-        <PayoutPagination
-          currentPage={pagination.page}
-          totalItems={data.total}
-          pageSize={pagination.pageSize}
-          onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}
-        />
+        <div className="mt-auto border-t pt-6">
+          <PayoutPagination
+            currentPage={pagination.page}
+            totalItems={data.total}
+            pageSize={pagination.pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
+        </div>
       )}
-    </div>
+    </section>
   );
 };

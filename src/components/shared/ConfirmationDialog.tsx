@@ -34,7 +34,7 @@ export function ConfirmationDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="flex flex-col md:flex-row gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {cancelText}
           </Button>

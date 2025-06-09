@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { statusColors } from "../../utils/card.utils";
 import { PayoutDetailsSheet } from "./PayoutDetailsSheet";
+import { PayoutFormModal } from "./PayoutFormModal";
 
 interface PayoutsCardProps {
   payout: Payout;
@@ -18,6 +19,7 @@ interface PayoutsCardProps {
 export function PayoutCard({ payout }: PayoutsCardProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const { user } = useUser();
 
   const statusColor =
@@ -27,6 +29,12 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
   const handleDelete = () => {
     // TODO: Implement delete functionality
     setIsDeleteDialogOpen(false);
+  };
+
+  const handleEditPayout = (data: any) => {
+    // TODO: Implement edit functionality
+    console.log("Edit payout:", data);
+    setShowEditModal(false);
   };
 
   return (
@@ -55,7 +63,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
         </div>
 
         <CardContent className="p-5">
-          <div className="flex justify-between items-center">
+          <div className="md:flex flex-col md:flex-row justify-between items-center">
             <div className="flex flex-col">
               <h2 className="text-xl font-semibold mb-2 line-clamp-1">
                 {payout.title}
@@ -70,13 +78,6 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
             </div>
           </div>
 
-          <div className="flex justify-end items-center mt-2">
-            <Calendar className="h-4 w-4 mr-1" />
-            <span className="text-xs italic">
-              {payout.created_at.toLocaleDateString()}
-            </span>
-          </div>
-
           <div className="mt-4 flex justify-between items-center">
             {user?.role === "PAYOUT_PROVIDER" && (
               <div className="flex gap-2">
@@ -86,7 +87,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
                   className="h-8 w-8"
                   onClick={(e) => {
                     e.stopPropagation();
-                    // TODO: Implement edit functionality
+                    setShowEditModal(true);
                   }}
                 >
                   <Pencil className="h-4 w-4" />
@@ -104,6 +105,12 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
                 </Button>
               </div>
             )}
+            <div className="flex gap-2">
+              <Calendar className="h-4 w-4 mr-1" />
+              <span className="text-xs italic">
+                {payout.created_at.toLocaleDateString()}
+              </span>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -121,6 +128,13 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
         title="Delete Payout"
         description="Are you sure you want to delete this payout? This action cannot be undone."
         confirmText="Delete"
+      />
+
+      <PayoutFormModal
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        onSubmit={handleEditPayout}
+        mode="edit"
       />
     </>
   );
