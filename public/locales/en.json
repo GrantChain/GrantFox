@@ -1,0 +1,11 @@
+{
+  "landing": {
+    "title": "Landing Page Title",
+    "description": "Landing page description."
+  },
+  "reusable": {
+    "button": {
+      "learnMore": "Learn More"
+    }
+  }
+} 

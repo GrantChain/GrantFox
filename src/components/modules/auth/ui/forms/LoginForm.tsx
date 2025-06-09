@@ -1,10 +1,12 @@
+import GoogleSignInButton from "@/components/modules/auth/ui/google/GoogleSignInButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GoogleSignInButton from "@/components/modules/auth/ui/google/GoogleSignInButton";
 import GithubSignInButton from "@/components/modules/auth/ui/github/GithubSignInButton";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { AuthLayout } from "../shared/AuthLayout";
 import { AuthFooter } from "../shared/AuthFooter";
+import { AuthLayout } from "../shared/AuthLayout";
 
 import {
   FormControl,
@@ -13,12 +15,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Eye, EyeOff } from "lucide-react";
 import { FormProvider } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
-import { Eye, EyeOff } from "lucide-react";
 
 export const LoginForm = () => {
-  const { form, showPassword, setShowPassword, handleLogin } = useAuth();
+  const { form, showPassword, setShowPassword, handleLogin, isLoading } =
+    useAuth();
 
   return (
     <AuthLayout
@@ -91,8 +94,15 @@ export const LoginForm = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full mt-6">
-            Login
+          <Button type="submit" className="w-full mt-6" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
           </Button>
 
           <div className="relative my-6">

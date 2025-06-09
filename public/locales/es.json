@@ -1,0 +1,11 @@
+{
+  "landing": {
+    "title": "Título de la página de aterrizaje",
+    "description": "Descripción de la página de aterrizaje."
+  },
+  "reusable": {
+    "button": {
+      "learnMore": "Aprender más"
+    }
+  }
+} 

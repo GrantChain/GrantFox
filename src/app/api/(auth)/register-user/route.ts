@@ -1,8 +1,8 @@
 // /app/api/register-user/route.ts
 
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { UserPayloadSchema } from "@/components/modules/auth/schema/register-user.schema";
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
   const { user_id, email } = parsed.data;
 
-  // Generate username from email (part before @)
+  // Generate username from email
   const username = email.split("@")[0];
 
   try {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         user_id,
         email,
         username,
-        wallet_address: "",
+        wallet_address: null,
         bio: "",
         role: "EMPTY",
         profile_url: "",
