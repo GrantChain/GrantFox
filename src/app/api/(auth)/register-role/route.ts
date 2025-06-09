@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     // Create the corresponding record in the specific table
     if (role === "PAYOUT_PROVIDER") {
-      await prisma.payout_provider.create({
+      await prisma.payoutProvider.create({
         data: {
           user_id: user_id,
         },
