@@ -1,10 +1,10 @@
-import { Grant } from "@/@types/grant.entity";
 import { Card } from "@/components/ui/card";
+import { Payout } from "@/generated/prisma";
 import { CheckIcon, UserIcon, ArrowRightIcon } from "lucide-react";
 import React from "react";
 
 interface GrantCardProps {
-  grant: Grant;
+  grant: Payout;
 }
 
 export const GrantCard = ({ grant }: GrantCardProps) => {
@@ -59,7 +59,7 @@ export const GrantCard = ({ grant }: GrantCardProps) => {
 
         <div className="mb-6 flex flex-col gap-1">
           <span className="text-4xl font-extrabold text-white">
-            ${grant.total_funding}
+            ${grant.total_funding.toString()}
           </span>
           <span className="text-sm text-zinc-400">
             / {grant.currency?.toLowerCase() || "month"}
