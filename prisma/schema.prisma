@@ -72,6 +72,7 @@ model Payout {
   payout_id      String   @id @default(cuid())
   title         String
   description   String
+  image_url     String?
   metrics       String
   status        PayoutStatus
   total_funding Decimal
