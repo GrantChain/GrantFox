@@ -1,7 +1,8 @@
+import { useUser } from "@/components/modules/auth/context/UserContext";
+import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
 import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
 import { Calendar, Pencil, Trash2 } from "lucide-react";
@@ -9,7 +10,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { statusColors } from "../../utils/card.utils";
 import { PayoutDetailsSheet } from "./PayoutDetailsSheet";
-import { useUser } from "@/components/modules/auth/context/UserContext";
 
 interface PayoutsCardProps {
   payout: Payout;
