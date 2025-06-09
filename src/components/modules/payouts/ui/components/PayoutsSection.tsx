@@ -4,10 +4,10 @@ import { ErrorFetching } from "@/components/shared/ErrorFetching";
 import { NoData } from "../../../../shared/NoData";
 import { usePayouts } from "../../hooks/usePayouts";
 import { usePayoutsFilters } from "../../hooks/usePayoutsFilters";
-import { PayoutsCard } from "./PayoutsCard";
-import { PayoutsCardSkeleton } from "./PayoutsCardSkeleton";
-import { PayoutsFilters } from "./PayoutsFilters";
-import { PayoutsPagination } from "./PayoutsPagination";
+import { PayoutCard } from "./PayoutCard";
+import { PayoutCardSkeleton } from "./PayoutCardSkeleton";
+import { PayoutsFilters } from "./PayoutFilters";
+import { PayoutPagination } from "./PayoutPagination";
 
 export const PayoutsSection = () => {
   const {
@@ -44,19 +44,19 @@ export const PayoutsSection = () => {
       >
         {isLoading ? (
           Array.from({ length: pagination.pageSize }).map((_, index) => (
-            <PayoutsCardSkeleton key={`skeleton-${index}-${pagination.page}`} />
+            <PayoutCardSkeleton key={`skeleton-${index}-${pagination.page}`} />
           ))
         ) : data?.data.length === 0 ? (
           <NoData />
         ) : (
           data?.data.map((payout) => (
-            <PayoutsCard key={payout.payout_id} payout={payout} />
+            <PayoutCard key={payout.payout_id} payout={payout} />
           ))
         )}
       </div>
 
       {data && (
-        <PayoutsPagination
+        <PayoutPagination
           currentPage={pagination.page}
           totalItems={data.total}
           pageSize={pagination.pageSize}

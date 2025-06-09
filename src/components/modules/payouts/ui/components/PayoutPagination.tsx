@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface PayoutsPaginationProps {
+interface PayoutPaginationProps {
   currentPage: number;
   totalItems: number;
   pageSize: number;
@@ -15,13 +15,13 @@ interface PayoutsPaginationProps {
   onPageSizeChange: (pageSize: number) => void;
 }
 
-export const PayoutsPagination = ({
+export const PayoutPagination = ({
   currentPage,
   totalItems,
   pageSize,
   onPageChange,
   onPageSizeChange,
-}: PayoutsPaginationProps) => {
+}: PayoutPaginationProps) => {
   const totalPages = Math.ceil(totalItems / pageSize);
 
   const handlePageSizeChange = (value: string) => {
