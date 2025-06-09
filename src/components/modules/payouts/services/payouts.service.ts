@@ -11,7 +11,7 @@ type SupabaseQuery = any;
 class PayoutsService {
   private readonly TABLE_NAME = "payout";
 
-  private transformPayout(payout: any): Payout {
+  private transformPayout(payout: Payout): Payout {
     return {
       ...payout,
       created_at: new Date(payout.created_at),
