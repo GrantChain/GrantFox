@@ -1,8 +1,8 @@
-import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useFieldArray, useForm } from "react-hook-form";
 import {
-  payoutFormSchema,
   type PayoutFormValues,
+  payoutFormSchema,
 } from "../schemas/payout.schema";
 
 interface UsePayoutFormProps {
