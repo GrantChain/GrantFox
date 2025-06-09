@@ -23,12 +23,12 @@ model User {
   bio            String?
   is_active      Boolean @default(true)
 
-  payout_provider  payout_provider?
+  payout_provider  PayoutProvider?
   grantee        Grantee?
   payouts         Payout[]     @relation("PayoutsCreatedBy")
   system_logs     SystemLog[]
 
-  milestone_submissions Milestone_submission[]
+  milestone_submissions MilestoneSubmission[]
 
   @@index([role])
   @@index([is_active])
@@ -37,7 +37,7 @@ model User {
   @@map("user")
 }
 
-model payout_provider {
+model PayoutProvider {
   user_id          String   @id @default(cuid())
   organization_name String?
   network_type     String?
@@ -108,7 +108,7 @@ model Escrow {
   roles            Json
   deployed_by      String
 
-  payout_provider   payout_provider @relation(fields: [deployed_by], references: [user_id])
+  payout_provider   PayoutProvider @relation(fields: [deployed_by], references: [user_id])
   milestones       Milestone[]
 
   @@index([deployed_by])
@@ -140,7 +140,7 @@ model Milestone {
 
   escrow          Escrow   @relation(fields: [escrow_id], references: [escrow_id])
   payout          Payout    @relation(fields: [payout_id], references: [payout_id])
-  submissions     Milestone_submission[]
+  submissions     MilestoneSubmission[]
 
   @@index([escrow_id])
   @@index([payout_id])
@@ -156,7 +156,7 @@ model Milestone {
   @@map("milestone")
 }
 
-model Milestone_submission {
+model MilestoneSubmission {
   submission_id  String   @id @default(cuid())
   milestone_id   String
   submitted_by   String
