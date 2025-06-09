@@ -1,8 +1,5 @@
 "use client";
 
-import type { GrantProvider } from "@/@types/grant-provider.entity";
-import type { Grantee } from "@/@types/grantee.entity";
-import type { User } from "@/@types/user.entity";
 import { supabase } from "@/lib/supabase";
 import {
   createContext,
@@ -12,11 +9,12 @@ import {
   useState,
 } from "react";
 import { checkRole } from "../services/check-role.service";
+import { PayoutProvider, User, Grantee } from "@/generated/prisma";
 
 interface UserContextType {
   user: User | null;
   grantee: Grantee | null;
-  grantProvider: GrantProvider | null;
+  payoutProvider: PayoutProvider | null;
   isLoading: boolean;
   refreshUser: () => Promise<void>;
 }
@@ -26,7 +24,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [grantee, setGrantee] = useState<Grantee | null>(null);
-  const [grantProvider, setGrantProvider] = useState<GrantProvider | null>(
+  const [payoutProvider, setPayoutProvider] = useState<PayoutProvider | null>(
     null,
   );
   const [isLoading, setIsLoading] = useState(true);
@@ -40,8 +38,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         .eq("user_id", userId)
         .single();
 
-      if (userError) throw userError;
-      if (!userData) return;
+      if (!userData) {
+        console.log("No user data found for userId:", userId);
+        return;
+      }
+
+      if (userError) {
+        console.error("Error fetching user data:", {
+          error: userError,
+          message: userError.message,
+          details: userError.details,
+        });
+      }
 
       setUser(userData);
 
@@ -57,7 +65,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             .eq("user_id", userId)
             .single();
 
-          if (!granteeError && granteeData) {
+          if (granteeError) {
+            console.error("Error fetching grantee data:", {
+              error: granteeError,
+              message: granteeError.message,
+              details: granteeError.details,
+              hint: granteeError.hint,
+              code: granteeError.code,
+            });
+          } else if (granteeData) {
             setGrantee(granteeData);
           }
         } else if (role === "PAYOUT_PROVIDER") {
@@ -67,13 +83,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             .eq("user_id", userId)
             .single();
 
-          if (!providerError && providerData) {
-            setGrantProvider(providerData);
+          if (providerError) {
+            console.error("Error fetching payout provider data:", {
+              error: providerError,
+              message: providerError.message,
+              details: providerError.details,
+              hint: providerError.hint,
+              code: providerError.code,
+            });
+          } else if (providerData) {
+            setPayoutProvider(providerData);
           }
         }
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error in fetchUserData:", {
+        error,
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +125,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       } else if (event === "SIGNED_OUT") {
         setUser(null);
         setGrantee(null);
-        setGrantProvider(null);
+        setPayoutProvider(null);
       }
     });
 
@@ -116,7 +144,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         grantee,
-        grantProvider,
+        payoutProvider,
         isLoading,
         refreshUser,
       }}

@@ -1,7 +1,4 @@
-import type {
-  AuthServiceResponse,
-  RoleResponse,
-} from "@/@types/responses.entity";
+import { AuthServiceResponse, RoleResponse } from "@/@types/responses.entity";
 import { http } from "@/lib/axios";
 
 export const registerRole = async (

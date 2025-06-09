@@ -26,5 +26,7 @@ export async function GET(
       { error: "Failed to get user role" },
       { status: 500 },
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
