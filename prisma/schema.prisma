@@ -23,7 +23,7 @@ model User {
   bio            String?
   is_active      Boolean @default(true)
 
-  Payout_provider  Payout_provider?
+  payout_provider  payout_provider?
   grantee        Grantee?
   payouts         Payout[]     @relation("PayoutsCreatedBy")
   system_logs     SystemLog[]
@@ -37,7 +37,7 @@ model User {
   @@map("user")
 }
 
-model Payout_provider {
+model payout_provider {
   user_id          String   @id @default(cuid())
   organization_name String?
   network_type     String?
@@ -50,7 +50,7 @@ model Payout_provider {
 
   @@index([network_type])
   @@index([created_at])
-  @@map("Payout_provider")
+  @@map("payout_provider")
 }
 
 model Grantee {
@@ -108,7 +108,7 @@ model Escrow {
   roles            Json
   deployed_by      String
 
-  Payout_provider   Payout_provider @relation(fields: [deployed_by], references: [user_id])
+  payout_provider   payout_provider @relation(fields: [deployed_by], references: [user_id])
   milestones       Milestone[]
 
   @@index([deployed_by])
@@ -204,7 +204,7 @@ model SystemLog {
 // ENUMS
 enum UserRole {
   GRANTEE
-  PAYOUT_PROVIDER
+  payout_provider
   EMPTY
   ADMIN
 }
