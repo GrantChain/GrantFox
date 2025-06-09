@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { Currency, PayoutStatus, PayoutType } from "@/generated/prisma";
+import { z } from "zod";
 
 export const metricSchema = z.object({
   name: z.string().min(1, "Metric name is required"),
