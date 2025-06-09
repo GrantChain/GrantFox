@@ -73,7 +73,7 @@ model Payout {
   title         String
   description   String
   image_url     String?
-  metrics       String
+  metrics       Json
   status        PayoutStatus
   total_funding Decimal
   currency      Currency
