@@ -1,6 +1,6 @@
+import type { AuthServiceResponse } from "@/@types/responses.entity";
+import type { User } from "@/generated/prisma";
 import { http } from "@/lib/axios";
-import { User } from "@/@types/user.entity";
-import { AuthServiceResponse } from "@/@types/responses.entity";
 
 // This function is used to register a user in the "PUBLIC" User Table
 export const registerUser = async (
