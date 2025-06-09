@@ -19,20 +19,19 @@ export const registerUser = async (
         message: "User registered successfully",
         data: response.data,
       };
-    } else {
-      return {
-        success: false,
-        message: "Error registering user. Please try again.",
-        data: response.data,
-      };
     }
+
+    return {
+      success: false,
+      message: "Error registering user. Please try again.",
+      data: response.data,
+    };
   } catch (error: unknown) {
-    if (error instanceof Error && error.hasOwnProperty("response")) {
+    if (error instanceof Error && Object.hasOwn(error, "response")) {
       const axiosError = error as { response?: { data?: { message: string } } };
       return {
         success: false,
-        message:
-          axiosError.response?.data?.message || "An unexpected error occurred",
+        message: axiosError.response?.data?.message || "An error occurred",
         data: null,
       };
     }
