@@ -19,7 +19,7 @@ export function PayoutDetailsSheet({
 }: PayoutDetailsSheetProps) {
   const statusColor =
     statusColors[payout.status as keyof typeof statusColors] ||
-    statusColors.PENDING;
+    statusColors.DRAFT;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

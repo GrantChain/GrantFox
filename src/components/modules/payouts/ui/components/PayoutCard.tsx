@@ -59,13 +59,13 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
         className="cursor-pointer hover:shadow-md transition-shadow"
         onClick={() => setIsSheetOpen(true)}
       >
-        <div className="relative w-full h-48">
+        <div className="relative w-full h-48 overflow-hidden">
           {payout.image_url ? (
             <Image
               src={payout.image_url}
               alt={payout.title}
               fill
-              className="object-cover rounded-t-lg"
+              className="object-cover rounded-t-lg hover:scale-105 transition-all duration-500"
             />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
