@@ -8,6 +8,8 @@ import { formatCurrency } from "@/utils/format.utils";
 import { Calendar, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { usePayoutMutations } from "../../hooks/usePayoutMutations";
+import type { PayoutFormValues } from "../../schemas/payout.schema";
 import { statusColors } from "../../utils/card.utils";
 import { PayoutDetailsSheet } from "./PayoutDetailsSheet";
 import { PayoutFormModal } from "./PayoutFormModal";
@@ -17,46 +19,61 @@ interface PayoutsCardProps {
 }
 
 export function PayoutCard({ payout }: PayoutsCardProps) {
+  const { user } = useUser();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const { user } = useUser();
+  const { handleUpdatePayout, handleDeletePayout, isUpdating } =
+    usePayoutMutations();
 
-  const statusColor =
-    statusColors[payout.status as keyof typeof statusColors] ||
-    statusColors.PENDING;
-
-  const handleDelete = () => {
-    // TODO: Implement delete functionality
-    setIsDeleteDialogOpen(false);
+  const handleEditPayout = async (data: PayoutFormValues) => {
+    const success = await handleUpdatePayout(payout.payout_id, data);
+    if (success) {
+      setShowEditModal(false);
+    }
   };
 
-  const handleEditPayout = (data: any) => {
-    // TODO: Implement edit functionality
-    console.log("Edit payout:", data);
-    setShowEditModal(false);
+  const handleDelete = async () => {
+    const success = await handleDeletePayout(payout.payout_id);
+    if (success) {
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
+  const initialValues: Partial<PayoutFormValues> = {
+    title: payout.title,
+    description: payout.description,
+    type: payout.type,
+    status: payout.status,
+    total_funding: payout.total_funding.toString(),
+    currency: payout.currency,
+    image_url: payout.image_url || "",
+    metrics: Array.isArray(payout.metrics)
+      ? (payout.metrics as { name: string; value: string }[])
+      : [],
   };
 
   return (
     <>
       <Card
-        className="cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+        className="cursor-pointer hover:shadow-md transition-shadow"
         onClick={() => setIsSheetOpen(true)}
       >
-        <div className="relative">
-          {payout.image_url && (
-            <div className="h-32 w-full relative overflow-hidden">
-              <Image
-                src={payout.image_url || "/placeholder.svg"}
-                alt={payout.title}
-                fill
-                className="object-cover transition-transform duration-300 hover:scale-105"
-              />
+        <div className="relative w-full h-48">
+          {payout.image_url ? (
+            <Image
+              src={payout.image_url}
+              alt={payout.title}
+              fill
+              className="object-cover rounded-t-lg"
+            />
+          ) : (
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+              <span className="text-muted-foreground">No image</span>
             </div>
           )}
           <Badge
-            className={`absolute top-2 right-2 ${statusColor}`}
-            variant="outline"
+            className={`absolute top-2 right-2 ${statusColors[payout.status]}`}
           >
             {payout.status}
           </Badge>
@@ -134,7 +151,9 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
         open={showEditModal}
         onOpenChange={setShowEditModal}
         onSubmit={handleEditPayout}
+        initialValues={initialValues}
         mode="edit"
+        isSubmitting={isUpdating}
       />
     </>
   );

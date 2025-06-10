@@ -1,6 +1,7 @@
 import type { Pagination } from "@/@types/pagination.entity";
 import type { Currency, Payout, PayoutStatus } from "@/generated/prisma";
 import { supabase } from "@/lib/supabase";
+import { createId } from "@paralleldrive/cuid2";
 import { Decimal } from "decimal.js";
 import type { PayoutFilters } from "../@types/filters.entity";
 
@@ -111,9 +112,17 @@ class PayoutsService {
     payout: Omit<Payout, "payout_id" | "created_at" | "updated_at">,
   ): Promise<Payout> {
     try {
+      const now = new Date().toISOString();
+      const payoutWithId = {
+        ...payout,
+        payout_id: createId(),
+        created_at: now,
+        updated_at: now,
+      };
+
       const { data, error } = await supabase
         .from(this.TABLE_NAME)
-        .insert([payout])
+        .insert([payoutWithId])
         .select()
         .single();
 

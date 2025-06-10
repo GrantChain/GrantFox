@@ -4,7 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
+import { toast } from "sonner";
 import type { PayoutFilters } from "../../@types/filters.entity";
+import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import {
   createEmptyFilters,
   createInitialDateRange,
@@ -27,6 +29,7 @@ export const PayoutsFilters = ({
   );
   const [searchValue, setSearchValue] = useState(filters.search || "");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const { handleCreatePayout } = usePayoutMutations();
 
   const handleFilterChange = useCallback(
     (key: keyof typeof filters, value: string) => {
@@ -56,9 +59,11 @@ export const PayoutsFilters = ({
     onFilterChange(createEmptyFilters());
   };
 
-  const handleCreatePayout = (data: any) => {
-    console.log("Create payout:", data);
-    setShowCreateModal(false);
+  const handleCreatePayoutSubmit = async (data: any) => {
+    const success = await handleCreatePayout(data);
+    if (success) {
+      setShowCreateModal(false);
+    }
   };
 
   return (
@@ -128,7 +133,7 @@ export const PayoutsFilters = ({
       <PayoutFormModal
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
-        onSubmit={handleCreatePayout}
+        onSubmit={handleCreatePayoutSubmit}
         mode="create"
       />
     </>
