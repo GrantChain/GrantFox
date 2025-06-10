@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import type { PayoutFilters } from "../../@types/filters.entity";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
+import type { PayoutFormValues } from "../../schemas/payout.schema";
 import {
   createEmptyFilters,
   createInitialDateRange,
@@ -13,7 +14,6 @@ import {
   isThereAnyFilter,
 } from "../../utils/filter.utils";
 import { PayoutFormModal } from "./PayoutFormModal";
-import { PayoutFormValues } from "../../schemas/payout.schema";
 
 interface PayoutsFiltersProps {
   onFilterChange: (filters: PayoutFilters) => void;
