@@ -69,7 +69,7 @@ export const usePayoutMutations = () => {
     try {
       await createPayout.mutateAsync(data);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -78,7 +78,7 @@ export const usePayoutMutations = () => {
     try {
       await updatePayout.mutateAsync({ id, data });
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -87,7 +87,7 @@ export const usePayoutMutations = () => {
     try {
       await deletePayout.mutateAsync(id);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   };

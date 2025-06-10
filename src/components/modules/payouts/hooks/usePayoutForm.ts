@@ -4,6 +4,10 @@ import {
   type PayoutFormValues,
   payoutFormSchema,
 } from "../schemas/payout.schema";
+import { useEffect, useRef, useState } from "react";
+import { authService } from "@/components/modules/auth/services/auth.service";
+import { GetUserServiceResponse } from "@/@types/responses.entity";
+import { User } from "@/generated/prisma";
 
 interface UsePayoutFormProps {
   initialValues?: Partial<PayoutFormValues>;
@@ -14,6 +18,11 @@ export const usePayoutForm = ({
   initialValues,
   onSubmit,
 }: UsePayoutFormProps) => {
+  const [isValidating, setIsValidating] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const form = useForm<PayoutFormValues>({
     resolver: zodResolver(payoutFormSchema),
     defaultValues: {
@@ -31,15 +40,49 @@ export const usePayoutForm = ({
     mode: "onChange",
   });
 
-  const { control, handleSubmit, formState, reset } = form;
+  const { control, handleSubmit, formState, reset, setError, clearErrors } =
+    form;
   const metricsFieldArray = useFieldArray({
     control,
     name: "metrics",
   });
 
-  const grantee = form.watch("grantee_id");
+  const granteeEmail = form.watch("grantee_id");
+  console.log(user);
+  useEffect(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-  console.log(grantee);
+    if (!granteeEmail) {
+      setIsValidating(false);
+      clearErrors("grantee_id");
+      setUser(null);
+      return;
+    }
+
+    timeoutRef.current = setTimeout(async () => {
+      setIsValidating(true);
+      const result: GetUserServiceResponse =
+        await authService.checkUserByEmail(granteeEmail);
+
+      if (result.exists) {
+        setUser(result.user);
+        clearErrors("grantee_id");
+        setIsSuccess(true);
+      } else {
+        setUser(null);
+        setError("grantee_id", {
+          type: "manual",
+          message: result.message,
+        });
+        setIsSuccess(false);
+      }
+      setIsValidating(false);
+    }, 2000); // 2 seconds
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [granteeEmail, setError, clearErrors]);
 
   const handleFormSubmit = handleSubmit(onSubmit);
 
@@ -49,5 +92,8 @@ export const usePayoutForm = ({
     handleFormSubmit,
     reset,
     formState,
+    isValidating,
+    isSuccess,
+    user,
   };
 };
