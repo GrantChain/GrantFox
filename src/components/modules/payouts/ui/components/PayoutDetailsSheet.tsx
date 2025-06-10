@@ -23,7 +23,7 @@ export function PayoutDetailsSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-lg p-0 flex flex-col">
+      <SheetContent className="w-full sm:max-w-lg p-0 flex flex-col [&>button]:hidden">
         <div className="relative h-72 w-full">
           {payout.image_url ? (
             <>
