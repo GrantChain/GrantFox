@@ -22,10 +22,10 @@ import { Currency, PayoutStatus, PayoutType } from "@/generated/prisma";
 import { cn } from "@/lib/utils";
 import { Check, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
 import { usePayoutForm } from "../../hooks/usePayoutForm";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
-import Link from "next/link";
 
 interface PayoutFormProps {
   initialValues?: Partial<PayoutFormValues>;
