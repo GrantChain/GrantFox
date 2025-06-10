@@ -1,9 +1,17 @@
-export interface RoleResponse {
-  role: string;
-}
+import { User } from "@/generated/prisma";
 
-export interface AuthServiceResponse {
-  success: boolean;
-  message: string;
-  data: RoleResponse | null;
-}
+export type GetUserServiceResponse =
+  | { exists: true; user: User }
+  | { exists: false; message: string };
+
+export type RegisterUserServiceResponse =
+  | { success: true; user: User }
+  | { success: false; message: string };
+
+export type RegisterRoleServiceResponse =
+  | { success: true; message: string }
+  | { success: false; message: string };
+
+export type CheckRoleServiceResponse =
+  | { success: true; role: string }
+  | { success: false; message: string };
