@@ -1,127 +1,89 @@
-import type { AuthServiceResponse } from "@/@types/responses.entity";
-import type { RoleResponse } from "@/@types/responses.entity";
+import {
+  CheckRoleServiceResponse,
+  GetUserServiceResponse,
+  RegisterRoleServiceResponse,
+  RegisterUserServiceResponse,
+} from "@/@types/responses.entity";
+import { extractErrorMessage } from "@/errors/mapping.utils";
 import type { User } from "@/generated/prisma";
 import { http } from "@/lib/axios";
-
 class AuthService {
   async registerUser(
     user_id: string,
     email: string,
-  ): Promise<AuthServiceResponse> {
+  ): Promise<RegisterUserServiceResponse> {
     try {
-      const response = await http.post<User>("/register-user", {
+      const response = await http.post<{ user: User }>("/register-user", {
         user_id,
         email,
       });
-
-      if (response.status === 201) {
-        return {
-          success: true,
-          message: "User registered successfully",
-          data: response.data,
-        };
+      if (response.status === 201 && response.data.user) {
+        return { success: true, user: response.data.user };
       }
-
       return {
         success: false,
         message: "Error registering user. Please try again.",
-        data: response.data,
       };
     } catch (error: unknown) {
-      if (error instanceof Error && Object.hasOwn(error, "response")) {
-        const axiosError = error as {
-          response?: { data?: { message: string } };
-        };
-        return {
-          success: false,
-          message: axiosError.response?.data?.message || "An error occurred",
-          data: null,
-        };
-      }
-      return {
-        success: false,
-        message: "An unexpected error occurred",
-        data: null,
-      };
+      return { success: false, message: extractErrorMessage(error) };
     }
   }
 
   async registerRole(
     user_id: string,
     role: "PAYOUT_PROVIDER" | "GRANTEE",
-  ): Promise<AuthServiceResponse> {
+  ): Promise<RegisterRoleServiceResponse> {
     try {
-      const response = await http.post<RoleResponse>("/register-role", {
+      const response = await http.post<{ user: User }>("/register-role", {
         user_id,
         role,
       });
-
       if (response.status === 200) {
-        return {
-          success: true,
-          message: "Role registered successfully",
-          data: response.data,
-        };
+        return { success: true, message: "Role registered successfully" };
       }
       return {
         success: false,
         message: "Error registering role. Please try again.",
-        data: null,
       };
     } catch (error: unknown) {
-      if (error instanceof Error && Object.hasOwn(error, "response")) {
-        const axiosError = error as {
-          response?: { data?: { message: string } };
-        };
-        return {
-          success: false,
-          message:
-            axiosError.response?.data?.message ||
-            "An unexpected error occurred",
-          data: null,
-        };
-      }
-      return {
-        success: false,
-        message: "An unexpected error occurred",
-        data: null,
-      };
+      return { success: false, message: extractErrorMessage(error) };
     }
   }
 
-  async checkRole(user_id: string): Promise<AuthServiceResponse> {
+  async checkRole(user_id: string): Promise<CheckRoleServiceResponse> {
     try {
-      const response = await http.get<RoleResponse>(`/check-role/${user_id}`);
-      if (response.status === 200) {
-        return {
-          success: true,
-          message: "Role checked successfully",
-          data: response.data,
-        };
+      const response = await http.get<{ role: string }>(
+        `/check-role/${user_id}`,
+      );
+      if (response.status === 200 && response.data.role) {
+        return { success: true, role: response.data.role };
       }
       return {
         success: false,
         message: "Error checking role. Please try again.",
-        data: null,
       };
     } catch (error: unknown) {
-      if (error instanceof Error && Object.hasOwn(error, "response")) {
-        const axiosError = error as {
-          response?: { data?: { message: string } };
-        };
-        return {
-          success: false,
-          message:
-            axiosError.response?.data?.message ||
-            "An unexpected error occurred",
-          data: null,
-        };
-      }
+      return { success: false, message: extractErrorMessage(error) };
+    }
+  }
+
+  async checkUserByEmail(email: string): Promise<GetUserServiceResponse> {
+    try {
+      const response = await http.get<{ user: User }>(
+        `/get-user?email=${encodeURIComponent(email)}`,
+      );
       return {
-        success: false,
-        message: "An unexpected error occurred",
-        data: null,
+        exists: true,
+        user: response.data.user,
       };
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as {
+          response: { data: GetUserServiceResponse };
+        };
+        return axiosError.response.data;
+      }
+      return { exists: false, message: "Failed to check user" };
     }
   }
 }
