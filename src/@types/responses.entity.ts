@@ -1,4 +1,4 @@
-import { User } from "@/generated/prisma";
+import type { User } from "@/generated/prisma";
 
 export type GetUserServiceResponse =
   | { exists: true; user: User }
