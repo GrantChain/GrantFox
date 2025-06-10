@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
 import type { User } from "@/generated/prisma";
+import { type ReactNode, createContext, useContext, useState } from "react";
 
 interface PayoutContextType {
   user: User | null;

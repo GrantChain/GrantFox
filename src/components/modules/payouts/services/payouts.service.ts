@@ -1,7 +1,7 @@
 import type { Pagination } from "@/@types/pagination.entity";
 import type { Currency, Payout, PayoutStatus } from "@/generated/prisma";
+import { http } from "@/lib/axios";
 import { supabase } from "@/lib/supabase";
-import { createId } from "@paralleldrive/cuid2";
 import { Decimal } from "decimal.js";
 import type { PayoutFilters } from "../@types/filters.entity";
 
@@ -112,29 +112,8 @@ class PayoutsService {
     payout: Omit<Payout, "payout_id" | "created_at" | "updated_at">,
   ): Promise<Payout> {
     try {
-      const now = new Date().toISOString();
-      const payoutWithId = {
-        ...payout,
-        payout_id: createId(),
-        created_at: now,
-        updated_at: now,
-      };
-
-      const { data, error } = await supabase
-        .from(this.TABLE_NAME)
-        .insert([payoutWithId])
-        .select()
-        .single();
-
-      if (error) {
-        throw new Error(`Error creating payout: ${error.message}`);
-      }
-
-      if (!data) {
-        throw new Error("Failed to create payout");
-      }
-
-      return this.transformPayout(data);
+      const response = await http.post<Payout>("/payout/create", payout);
+      return this.transformPayout(response.data);
     } catch (error) {
       console.error("Error in create:", error);
       throw error;
@@ -143,22 +122,8 @@ class PayoutsService {
 
   async update(id: string, payout: Partial<Payout>): Promise<Payout> {
     try {
-      const { data, error } = await supabase
-        .from(this.TABLE_NAME)
-        .update(payout)
-        .eq("payout_id", id)
-        .select()
-        .single();
-
-      if (error) {
-        throw new Error(`Error updating payout: ${error.message}`);
-      }
-
-      if (!data) {
-        throw new Error(`Payout with ID ${id} not found`);
-      }
-
-      return this.transformPayout(data);
+      const response = await http.put<Payout>(`/payout/update/${id}`, payout);
+      return this.transformPayout(response.data);
     } catch (error) {
       console.error("Error in update:", error);
       throw error;
@@ -167,14 +132,7 @@ class PayoutsService {
 
   async delete(id: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from(this.TABLE_NAME)
-        .delete()
-        .eq("payout_id", id);
-
-      if (error) {
-        throw new Error(`Error deleting payout: ${error.message}`);
-      }
+      await http.delete(`/payout/delete/${id}`);
     } catch (error) {
       console.error("Error in delete:", error);
       throw error;

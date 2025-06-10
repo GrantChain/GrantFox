@@ -88,6 +88,11 @@ export function PayoutDetailsSheet({
             ))} */}
             <p>METRICS</p>
           </div>
+
+          <div className="space-y-4">
+            {/* <GranteeDetailsCard user={payout.grantee} showLink={false} /> */}
+            <p>GRANTEE</p>
+          </div>
         </div>
 
         <div className="p-6 border-t">

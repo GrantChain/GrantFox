@@ -23,15 +23,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const { handleUpdatePayout, handleDeletePayout, isUpdating } =
-    usePayoutMutations();
-
-  const handleEditPayout = async (data: PayoutFormValues) => {
-    const success = await handleUpdatePayout(payout.payout_id, data);
-    if (success) {
-      setShowEditModal(false);
-    }
-  };
+  const { handleDeletePayout, isDeleting } = usePayoutMutations();
 
   const handleDelete = async () => {
     const success = await handleDeletePayout(payout.payout_id);
@@ -65,7 +57,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
               src={payout.image_url}
               alt={payout.title}
               fill
-              className="object-cover rounded-t-lg hover:scale-105 transition-all duration-500"
+              className="object-cover hover:scale-105 transition-all duration-300"
             />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -73,7 +65,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
             </div>
           )}
           <Badge
-            className={`absolute top-2 right-2 ${statusColors[payout.status]}`}
+            className={`absolute top-2 right-2 ${statusColors[payout.status]} hover:${statusColors[payout.status]}`}
           >
             {payout.status}
           </Badge>
@@ -145,15 +137,15 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
         title="Delete Payout"
         description="Are you sure you want to delete this payout? This action cannot be undone."
         confirmText="Delete"
+        isLoading={isDeleting}
       />
 
       <PayoutFormModal
+        payout={payout}
         open={showEditModal}
         onOpenChange={setShowEditModal}
-        onSubmit={handleEditPayout}
         initialValues={initialValues}
         mode="edit"
-        isSubmitting={isUpdating}
       />
     </>
   );

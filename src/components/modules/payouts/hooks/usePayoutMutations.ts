@@ -2,16 +2,22 @@ import { useUser } from "@/components/modules/auth/context/UserContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Decimal } from "decimal.js";
 import { toast } from "sonner";
+import { usePayout } from "../context/PayoutContext";
 import type { PayoutFormValues } from "../schemas/payout.schema";
 import { payoutsService } from "../services/payouts.service";
 
 export const usePayoutMutations = () => {
   const queryClient = useQueryClient();
   const { user, payoutProvider } = useUser();
+  const { user: grantee } = usePayout();
 
   const createPayout = useMutation({
     mutationFn: (data: PayoutFormValues) => {
       if (!user || !payoutProvider) {
+        console.error("User or payout provider missing:", {
+          user,
+          payoutProvider,
+        });
         throw new Error("User must be a payout provider to create payouts");
       }
 
@@ -19,7 +25,7 @@ export const usePayoutMutations = () => {
         ...data,
         total_funding: new Decimal(data.total_funding),
         created_by: user.user_id,
-        grantee_id: null, // TODO: get from the form input email
+        grantee_id: grantee?.user_id || null,
         image_url: data.image_url || null,
       });
     },
@@ -28,7 +34,7 @@ export const usePayoutMutations = () => {
       toast.success("Payout created successfully");
     },
     onError: (error: Error) => {
-      console.error("Error creating payout:", error);
+      console.error("Error in createPayout mutation:", error);
       toast.error(error.message || "Failed to create payout");
     },
   });
@@ -38,6 +44,8 @@ export const usePayoutMutations = () => {
       return payoutsService.update(id, {
         ...data,
         total_funding: new Decimal(data.total_funding),
+        grantee_id: grantee?.user_id || null,
+        updated_at: new Date(),
         metrics: data.metrics,
       });
     },
@@ -69,7 +77,8 @@ export const usePayoutMutations = () => {
     try {
       await createPayout.mutateAsync(data);
       return true;
-    } catch {
+    } catch (error) {
+      console.error("Error in handleCreatePayout:", error);
       return false;
     }
   };
@@ -100,5 +109,7 @@ export const usePayoutMutations = () => {
     handleUpdatePayout,
     handleDeletePayout,
     isUpdating: updatePayout.isPending,
+    isCreating: createPayout.isPending,
+    isDeleting: deletePayout.isPending,
   };
 };

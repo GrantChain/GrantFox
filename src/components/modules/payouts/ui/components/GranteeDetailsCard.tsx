@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
 import type { User } from "@/generated/prisma";
+import Link from "next/link";
 
 interface GranteeDetailsCardProps {
   user: User | null;

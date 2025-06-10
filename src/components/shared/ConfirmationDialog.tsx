@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Loader2 } from "lucide-react";
 
 interface ConfirmationDialogProps {
   open: boolean;
@@ -16,6 +17,7 @@ interface ConfirmationDialogProps {
   description: string;
   confirmText?: string;
   cancelText?: string;
+  isLoading?: boolean;
 }
 
 export function ConfirmationDialog({
@@ -26,6 +28,7 @@ export function ConfirmationDialog({
   description,
   confirmText = "Confirm",
   cancelText = "Cancel",
+  isLoading = false,
 }: ConfirmationDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -38,8 +41,19 @@ export function ConfirmationDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {cancelText}
           </Button>
-          <Button variant="destructive" onClick={onConfirm}>
-            {confirmText}
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Deleting...
+              </>
+            ) : (
+              confirmText
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
