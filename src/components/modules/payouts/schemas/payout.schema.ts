@@ -15,6 +15,7 @@ export const payoutFormSchema = z.object({
   total_funding: z.string().min(1, "Total funding is required"),
   currency: z.nativeEnum(Currency),
   metrics: z.array(metricSchema).min(1, "At least one metric is required"),
+  grantee_id: z.string().email("Must be a valid email").optional(),
 });
 
 export type PayoutFormValues = z.infer<typeof payoutFormSchema>;

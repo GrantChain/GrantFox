@@ -1,5 +1,6 @@
 "use client";
 
+import type { Grantee, PayoutProvider, User } from "@/generated/prisma";
 import { supabase } from "@/lib/supabase";
 import {
   createContext,
@@ -8,8 +9,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { checkRole } from "../services/check-role.service";
-import { PayoutProvider, User, Grantee } from "@/generated/prisma";
+import { authService } from "../services/auth.service";
 
 interface UserContextType {
   user: User | null;
@@ -54,7 +54,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setUser(userData);
 
       // Check role and fetch role-specific data
-      const roleResponse = await checkRole(userId);
+      const roleResponse = await authService.checkRole(userId);
       if (roleResponse.success && roleResponse.data) {
         const { role } = roleResponse.data;
 

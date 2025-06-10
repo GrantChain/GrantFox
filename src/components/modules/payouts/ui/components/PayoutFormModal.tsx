@@ -49,14 +49,14 @@ export const PayoutFormModal = ({
   isSubmitting: externalIsSubmitting,
 }: PayoutFormModalProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const form = usePayoutForm({ initialValues, onSubmit });
   const {
     control,
     formState: { errors, isSubmitting: formIsSubmitting },
     metricsFieldArray,
     handleFormSubmit,
-    register,
     reset,
-  } = usePayoutForm({ initialValues, onSubmit });
+  } = form;
 
   const isSubmitting = externalIsSubmitting ?? formIsSubmitting;
 
@@ -69,7 +69,7 @@ export const PayoutFormModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl w-full">
-        <Form {...usePayoutForm({ initialValues, onSubmit })}>
+        <Form {...form}>
           <form onSubmit={handleFormSubmit} className="space-y-6">
             <DialogHeader>
               <DialogTitle>
@@ -155,6 +155,25 @@ export const PayoutFormModal = ({
                           {...field}
                           placeholder="Enter payout description"
                           aria-label="Description"
+                          tabIndex={0}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={control}
+                  name="grantee_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Grantee Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Enter the grantee's email"
+                          aria-label="Grantee Email"
                           tabIndex={0}
                         />
                       </FormControl>

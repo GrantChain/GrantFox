@@ -19,11 +19,12 @@ export const usePayoutForm = ({
     defaultValues: {
       title: "",
       description: "",
+      grantee_id: "",
       image_url: "",
-      type: undefined,
-      status: undefined,
+      type: "GRANT",
+      status: "DRAFT",
       total_funding: "",
-      currency: undefined,
+      currency: "USDC",
       metrics: [{ name: "", value: "" }],
       ...initialValues,
     },
@@ -35,6 +36,10 @@ export const usePayoutForm = ({
     control,
     name: "metrics",
   });
+
+  const grantee = form.watch("grantee_id");
+
+  console.log(grantee);
 
   const handleFormSubmit = handleSubmit(onSubmit);
 

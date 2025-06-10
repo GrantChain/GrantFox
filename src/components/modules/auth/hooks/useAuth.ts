@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 import { authSchema } from "../schema/auth.schema";
-import { registerUser } from "../services/register-user.service";
+import { authService } from "../services/auth.service";
 import { useAuthenticationBoundedStore } from "../store/store";
 
 export const useAuth = () => {
@@ -89,7 +89,7 @@ export const useAuth = () => {
         try {
           setEmail(payload.email);
 
-          const { success } = await registerUser(
+          const { success } = await authService.registerUser(
             data.user.id,
             data.user.email || "",
           );

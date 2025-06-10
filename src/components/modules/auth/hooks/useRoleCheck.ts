@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { checkRole } from "../services/check-role.service";
+import { useEffect, useState } from "react";
+import { authService } from "../services/auth.service";
 
 export function useRoleCheck() {
   const [shouldShowModal, setShouldShowModal] = useState(false);
@@ -18,7 +18,7 @@ export function useRoleCheck() {
           return;
         }
 
-        const response = await checkRole(user.id);
+        const response = await authService.checkRole(user.id);
 
         if (response.success) {
           const { role } = response.data as { role: string };
