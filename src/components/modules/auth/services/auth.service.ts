@@ -98,15 +98,14 @@ class AuthService {
           message: "Role checked successfully",
           data: response.data,
         };
-      } else {
-        return {
-          success: false,
-          message: "Error checking role. Please try again.",
-          data: null,
-        };
       }
+      return {
+        success: false,
+        message: "Error checking role. Please try again.",
+        data: null,
+      };
     } catch (error: unknown) {
-      if (error instanceof Error && error.hasOwnProperty("response")) {
+      if (error instanceof Error && Object.hasOwn(error, "response")) {
         const axiosError = error as {
           response?: { data?: { message: string } };
         };
