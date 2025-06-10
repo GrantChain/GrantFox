@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
-import { toast } from "sonner";
 import type { PayoutFilters } from "../../@types/filters.entity";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import {
@@ -14,6 +13,7 @@ import {
   isThereAnyFilter,
 } from "../../utils/filter.utils";
 import { PayoutFormModal } from "./PayoutFormModal";
+import { PayoutFormValues } from "../../schemas/payout.schema";
 
 interface PayoutsFiltersProps {
   onFilterChange: (filters: PayoutFilters) => void;
@@ -59,7 +59,7 @@ export const PayoutsFilters = ({
     onFilterChange(createEmptyFilters());
   };
 
-  const handleCreatePayoutSubmit = async (data: any) => {
+  const handleCreatePayoutSubmit = async (data: PayoutFormValues) => {
     const success = await handleCreatePayout(data);
     if (success) {
       setShowCreateModal(false);

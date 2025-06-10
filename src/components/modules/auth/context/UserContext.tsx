@@ -55,8 +55,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       // Check role and fetch role-specific data
       const roleResponse = await authService.checkRole(userId);
-      if (roleResponse.success && roleResponse.data) {
-        const { role } = roleResponse.data;
+      if (roleResponse.success && roleResponse.role) {
+        const { role } = roleResponse;
 
         if (role === "GRANTEE") {
           const { data: granteeData, error: granteeError } = await supabase
@@ -136,8 +136,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
   }, [fetchUserData, refreshUser]);
-
-  console.log(user);
 
   return (
     <UserContext.Provider

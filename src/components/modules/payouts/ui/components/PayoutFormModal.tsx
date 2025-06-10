@@ -5,8 +5,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PayoutForm } from "./PayoutForm";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
+import { PayoutForm } from "./PayoutForm";
 
 interface PayoutFormModalProps {
   open: boolean;

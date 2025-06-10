@@ -20,12 +20,8 @@ export function useRoleCheck() {
 
         const response = await authService.checkRole(user.id);
 
-        if (response.success) {
-          const { role } = response.data as { role: string };
-
-          if (role === "EMPTY") {
-            setShouldShowModal(true);
-          }
+        if (response.success && response.role === "EMPTY") {
+          setShouldShowModal(true);
         }
 
         setIsLoading(false);
