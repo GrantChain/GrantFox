@@ -67,10 +67,30 @@ class AuthService {
     }
   }
 
-  async checkUserByEmail(email: string): Promise<GetUserServiceResponse> {
+  async getUserByEmail(email: string): Promise<GetUserServiceResponse> {
     try {
       const response = await http.get<{ user: User }>(
-        `/get-user?email=${encodeURIComponent(email)}`,
+        `/get-user-by-email?email=${encodeURIComponent(email)}&role=GRANTEE`,
+      );
+      return {
+        exists: true,
+        user: response.data.user,
+      };
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as {
+          response: { data: GetUserServiceResponse };
+        };
+        return axiosError.response.data;
+      }
+      return { exists: false, message: "Failed to check user" };
+    }
+  }
+
+  async getUserById(user_id: string): Promise<GetUserServiceResponse> {
+    try {
+      const response = await http.get<{ user: User }>(
+        `/get-user-by-id?user_id=${encodeURIComponent(user_id)}&role=GRANTEE`,
       );
       return {
         exists: true,
