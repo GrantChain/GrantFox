@@ -51,15 +51,7 @@ export function PayoutDetailsSheet({
     };
 
     loadData();
-  }, [
-    open,
-    payout.grantee_id,
-    payout.created_by,
-    fetchUser,
-    fetchCreator,
-    setUser,
-    setCreator,
-  ]);
+  }, [open, payout.grantee_id, payout.created_by, fetchUser]);
 
   const handleOpenChange = (newOpen: boolean) => {
     setUser(null);

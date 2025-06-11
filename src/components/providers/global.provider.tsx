@@ -1,5 +1,7 @@
+"use client";
+
 import { ThemeProvider } from "@/components/providers/theme.provider";
-import { PayoutProvider } from "../modules/payouts/context/PayoutContext";
+import { PayoutContextProvider } from "../modules/payouts/context/PayoutContext";
 import { PostHogProvider } from "./posthog.provider";
 import { TanstackProvider } from "./tanstack.provider";
 
@@ -8,7 +10,7 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
     <ThemeProvider defaultTheme="system">
       <PostHogProvider>
         <TanstackProvider>
-          <PayoutProvider>{children}</PayoutProvider>
+          <PayoutContextProvider>{children}</PayoutContextProvider>
         </TanstackProvider>
       </PostHogProvider>
     </ThemeProvider>
