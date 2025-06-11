@@ -8,6 +8,9 @@
       "recommended": true,
       "suspicious": {
         "noExplicitAny": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
       }
     }
   },
