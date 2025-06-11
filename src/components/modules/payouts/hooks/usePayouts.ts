@@ -1,8 +1,8 @@
 import type { Pagination } from "@/@types/pagination.entity";
+import type { UserRole } from "@/generated/prisma";
 import { useQuery } from "@tanstack/react-query";
 import type { PayoutFilters } from "../@types/filters.entity";
 import { payoutsService } from "../services/payouts.service";
-import { UserRole } from "@/generated/prisma";
 
 interface UsePayoutsOptions {
   filters?: PayoutFilters;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@/components/modules/auth/context/UserContext";
 import { ErrorFetching } from "@/components/shared/ErrorFetching";
 import { NoData } from "../../../../shared/NoData";
 import { usePayouts } from "../../hooks/usePayouts";
@@ -8,7 +9,6 @@ import { PayoutCard } from "./PayoutCard";
 import { PayoutCardSkeleton } from "./PayoutCardSkeleton";
 import { PayoutsFilters } from "./PayoutFilters";
 import { PayoutPagination } from "./PayoutPagination";
-import { useUser } from "@/components/modules/auth/context/UserContext";
 
 export const PayoutsSection = () => {
   const {
