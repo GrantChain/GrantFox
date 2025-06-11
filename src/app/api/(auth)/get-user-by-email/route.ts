@@ -1,3 +1,4 @@
+import { UserRole } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -5,6 +6,14 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get("email");
+    const role = searchParams.get("role");
+
+    if (!role) {
+      return NextResponse.json(
+        { exists: false, message: "Role parameter is required" },
+        { status: 400 },
+      );
+    }
 
     if (!email) {
       return NextResponse.json(
@@ -14,7 +23,7 @@ export async function GET(request: Request) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email, role: "GRANTEE" },
+      where: { email, role: role as UserRole },
       select: {
         user_id: true,
         email: true,

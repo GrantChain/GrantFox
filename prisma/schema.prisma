@@ -75,7 +75,7 @@ model Payout {
   description   String
   image_url     String?
   type          PayoutType
-  metrics       Json?
+  milestones    Json?
   status        PayoutStatus
   total_funding Decimal
   currency      Currency
@@ -86,7 +86,6 @@ model Payout {
 
   user          User     @relation("PayoutsCreatedBy", fields: [created_by], references: [user_id])
   grantee       Grantee? @relation(fields: [grantee_id], references: [user_id])
-  milestones    Milestone[]
 
   @@index([created_by])
   @@index([grantee_id])
@@ -143,7 +142,6 @@ model Milestone {
   updated_at      DateTime @updatedAt
 
   escrow          Escrow   @relation(fields: [escrow_id], references: [escrow_id])
-  payout          Payout    @relation(fields: [payout_id], references: [payout_id])
   submissions     MilestoneSubmission[]
 
   @@index([escrow_id])
