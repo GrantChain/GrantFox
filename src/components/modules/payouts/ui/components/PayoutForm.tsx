@@ -422,7 +422,7 @@ export const PayoutForm = ({
                   <FormControl>
                     <div className="flex flex-col gap-4">
                       <div className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-dashed border-muted-foreground/25 bg-muted/5">
-                        {field.value && field.value !== "" ? (
+                        {field.value && field.value.trim() !== "" ? (
                           <Image
                             src={field.value}
                             alt="Payout preview"
@@ -435,7 +435,7 @@ export const PayoutForm = ({
                             <span className="text-sm">No image selected</span>
                           </div>
                         )}
-                        {field.value && field.value !== "" && (
+                        {field.value && field.value.trim() !== "" && (
                           <Button
                             type="button"
                             variant="ghost"

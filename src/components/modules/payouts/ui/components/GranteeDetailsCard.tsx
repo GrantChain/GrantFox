@@ -30,7 +30,7 @@ export const GranteeDetailsCard = ({
           <div className="flex items-center space-x-4">
             <Avatar className="h-12 w-12">
               <AvatarImage
-                src={user?.profile_url || undefined}
+                src={user?.profile_url?.trim() ? user.profile_url : undefined}
                 alt={user?.username || user?.email}
               />
               <AvatarFallback className="bg-muted text-muted-foreground">
