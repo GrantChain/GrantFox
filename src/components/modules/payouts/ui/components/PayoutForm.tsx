@@ -19,7 +19,7 @@ import { Currency, PayoutStatus, PayoutType } from "@/generated/prisma";
 import { cn } from "@/lib/utils";
 import { Check, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { usePayout } from "../../context/PayoutContext";
 import { usePayoutForm } from "../../hooks/usePayoutForm";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
@@ -43,13 +43,28 @@ export const PayoutForm = ({
   const {
     control,
     formState: { errors, isSubmitting: formIsSubmitting },
-    metricsFieldArray,
+    milestoneFieldArray,
     isValidating,
     isSuccess,
     handleSubmit,
+    watch,
+    setValue,
   } = formContext;
 
   const isSubmitting = externalIsSubmitting ?? formIsSubmitting;
+
+  // Watch milestone amounts and calculate total
+  const milestones = watch("milestones");
+  useEffect(() => {
+    const total = milestones.reduce((sum, milestone) => {
+      const amount =
+        typeof milestone.amount === "string"
+          ? Number.parseFloat(milestone.amount)
+          : milestone.amount;
+      return sum + (Number.isNaN(amount) ? 0 : amount);
+    }, 0);
+    setValue("total_funding", total.toString());
+  }, [milestones, setValue]);
 
   return (
     <Form {...formContext}>
@@ -218,27 +233,6 @@ export const PayoutForm = ({
 
               <FormField
                 control={control}
-                name="total_funding"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Total Funding</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number"
-                        step="any"
-                        placeholder="Enter total funding amount"
-                        aria-label="Total Funding"
-                        tabIndex={0}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
                 name="currency"
                 render={({ field }) => (
                   <FormItem>
@@ -275,6 +269,29 @@ export const PayoutForm = ({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={control}
+                name="total_funding"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Total Funding</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        step="any"
+                        disabled
+                        placeholder="Total funding amount"
+                        aria-label="Total Funding"
+                        tabIndex={0}
+                        className="bg-muted"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <FormField
@@ -284,7 +301,7 @@ export const PayoutForm = ({
                 <FormItem>
                   <FormLabel>Milestones</FormLabel>
                   <div className="space-y-2">
-                    {metricsFieldArray.fields.map((field, idx) => (
+                    {milestoneFieldArray.fields.map((field, idx) => (
                       <div key={field.id} className="flex gap-2 items-center">
                         <FormField
                           control={control}
@@ -328,6 +345,26 @@ export const PayoutForm = ({
                                   field.onChange(
                                     value === "" ? "" : Number(value),
                                   );
+                                  // Calculate total immediately
+                                  const currentMilestones = [...milestones];
+                                  currentMilestones[idx] = {
+                                    ...currentMilestones[idx],
+                                    amount: value === "" ? 0 : Number(value),
+                                  };
+                                  const total = currentMilestones.reduce(
+                                    (sum, milestone) => {
+                                      const amount =
+                                        typeof milestone.amount === "string"
+                                          ? Number.parseFloat(milestone.amount)
+                                          : milestone.amount;
+                                      return (
+                                        sum +
+                                        (Number.isNaN(amount) ? 0 : amount)
+                                      );
+                                    },
+                                    0,
+                                  );
+                                  setValue("total_funding", total.toString());
                                 }}
                               />
                             </FormControl>
@@ -338,10 +375,10 @@ export const PayoutForm = ({
                           variant="ghost"
                           size="icon"
                           className="text-destructive hover:text-destructive/80"
-                          aria-label="Remove metric"
+                          aria-label="Remove milestone"
                           tabIndex={0}
-                          onClick={() => metricsFieldArray.remove(idx)}
-                          disabled={metricsFieldArray.fields.length === 1}
+                          onClick={() => milestoneFieldArray.remove(idx)}
+                          disabled={milestoneFieldArray.fields.length === 1}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -352,12 +389,15 @@ export const PayoutForm = ({
                       variant="outline"
                       className="gap-2 mt-2"
                       onClick={() =>
-                        metricsFieldArray.append({ description: "", amount: 0 })
+                        milestoneFieldArray.append({
+                          description: "",
+                          amount: 0,
+                        })
                       }
-                      aria-label="Add metric"
+                      aria-label="Add milestone"
                       tabIndex={0}
                     >
-                      <Plus className="w-4 h-4" /> Add Metric
+                      <Plus className="w-4 h-4" /> Add Milestone
                     </Button>
                     {typeof errors.milestones === "object" &&
                       !Array.isArray(errors.milestones) && (
@@ -382,7 +422,7 @@ export const PayoutForm = ({
                   <FormControl>
                     <div className="flex flex-col gap-4">
                       <div className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-dashed border-muted-foreground/25 bg-muted/5">
-                        {field.value ? (
+                        {field.value && field.value !== "" ? (
                           <Image
                             src={field.value}
                             alt="Payout preview"
@@ -395,14 +435,14 @@ export const PayoutForm = ({
                             <span className="text-sm">No image selected</span>
                           </div>
                         )}
-                        {field.value && (
+                        {field.value && field.value !== "" && (
                           <Button
                             type="button"
                             variant="ghost"
                             size="icon"
                             className="absolute top-2 right-2 text-destructive hover:text-destructive/80"
                             onClick={() => {
-                              field.onChange("");
+                              field.onChange(null);
                               if (fileInputRef.current) {
                                 fileInputRef.current.value = "";
                               }

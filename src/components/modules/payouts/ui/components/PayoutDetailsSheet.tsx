@@ -1,17 +1,19 @@
+import { useUser } from "@/components/modules/auth/context/UserContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
-import { Calendar, DollarSign, FileText, Wallet } from "lucide-react";
+import { Calendar, DollarSign, FileText, User, Wallet } from "lucide-react";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePayout } from "../../context/PayoutContext";
 import { usePayoutSheet } from "../../hooks/usePayoutSheet";
 import { statusColors } from "../../utils/card.utils";
 import { GranteeDetailsCard } from "./GranteeDetailsCard";
 
+// todo: add from tw
 type Milestone = {
   description: string;
   amount: number;
@@ -32,17 +34,40 @@ export function PayoutDetailsSheet({
     statusColors[payout.status as keyof typeof statusColors] ||
     statusColors.DRAFT;
 
-  const { fetchUser, isLoading, error } = usePayoutSheet();
-  const { user } = usePayout();
+  const { fetchUser, fetchCreator, isLoading, isLoadingCreator, error } =
+    usePayoutSheet();
+  const { user: grantee, creator, setUser, setCreator } = usePayout();
+  const { user } = useUser();
 
   useEffect(() => {
-    if (payout.grantee_id) {
-      fetchUser(payout.grantee_id);
-    }
-  }, [payout.grantee_id, fetchUser]);
+    const loadData = async () => {
+      setUser(null);
+      setCreator(null);
+
+      if (open && payout.grantee_id && payout.created_by) {
+        await fetchUser(payout.grantee_id);
+        await fetchCreator(payout.created_by);
+      }
+    };
+
+    loadData();
+  }, [
+    open,
+    payout.grantee_id,
+    payout.created_by,
+    fetchUser,
+    fetchCreator,
+    setUser,
+    setCreator,
+  ]);
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setUser(null);
+    onOpenChange(newOpen);
+  };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent className="w-full sm:max-w-lg p-0 flex flex-col [&>button]:hidden">
         <div className="relative h-48 w-full">
           {payout.image_url ? (
@@ -81,7 +106,7 @@ export function PayoutDetailsSheet({
           </div>
         </div>
 
-        <div className="flex-1 p-4 space-y-4">
+        <div className="flex-1 p-4 space-y-4 overflow-y-auto">
           <div className="grid grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
@@ -105,11 +130,60 @@ export function PayoutDetailsSheet({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-sm text-muted-foreground">
-                  {payout.created_at.toLocaleDateString()}
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">
+                    {payout.created_at.toLocaleDateString()}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {payout.created_at.toLocaleTimeString()}
+                  </div>
                 </div>
               </CardContent>
             </Card>
+
+            {user?.role === "GRANTEE" && (
+              <Card className="col-span-2">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Created By
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingCreator ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                  ) : creator ? (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">
+                          Organization:
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {creator?.organization_name || "No set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">
+                          Network Type:
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {creator?.network_type || "No set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">Email:</span>
+                        <span className="text-sm text-muted-foreground">
+                          {creator?.email || "No set"}
+                        </span>
+                      </div>
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <Card>
@@ -131,7 +205,7 @@ export function PayoutDetailsSheet({
               <CardTitle className="text-base">Milestones</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 max-h-[100px] overflow-y-auto pr-2">
+              <div className="space-y-3 pr-2">
                 {(payout?.milestones as Milestone[])?.map(
                   (milestone, index) => (
                     <div
@@ -171,8 +245,8 @@ export function PayoutDetailsSheet({
                 <div className="text-destructive">
                   Error loading user details: {error.message}
                 </div>
-              ) : user ? (
-                <GranteeDetailsCard user={user} showTitle={false} />
+              ) : grantee ? (
+                <GranteeDetailsCard user={grantee} showTitle={false} lessInfo />
               ) : null}
             </CardContent>
           </Card>

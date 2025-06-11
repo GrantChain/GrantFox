@@ -37,7 +37,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
   });
 
   const { control, formState, reset, setError, clearErrors } = form;
-  const metricsFieldArray = useFieldArray({
+  const milestoneFieldArray = useFieldArray({
     control,
     name: "milestones",
   });
@@ -129,7 +129,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
 
   return {
     ...form,
-    metricsFieldArray,
+    milestoneFieldArray,
     reset,
     formState,
     isValidating,

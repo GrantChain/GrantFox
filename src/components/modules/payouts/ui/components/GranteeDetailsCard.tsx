@@ -7,12 +7,14 @@ interface GranteeDetailsCardProps {
   user: User | null;
   showLink?: boolean;
   showTitle?: boolean;
+  lessInfo?: boolean;
 }
 
 export const GranteeDetailsCard = ({
   user,
   showLink = true,
   showTitle = true,
+  lessInfo = false,
 }: GranteeDetailsCardProps) => {
   const content = (
     <Card>
@@ -74,14 +76,18 @@ export const GranteeDetailsCard = ({
               </span>
             </div>
 
-            <div className="flex flex-col justify-start items-start w-full">
-              <span className="text-sm text-muted-foreground">Bio</span>
-              <span className="text-sm line-clamp-4 w-full text-foreground">
-                {user?.bio || (
-                  <span className="text-muted-foreground italic">Not set</span>
-                )}
-              </span>
-            </div>
+            {!lessInfo && (
+              <div className="flex flex-col justify-start items-start w-full">
+                <span className="text-sm text-muted-foreground">Bio</span>
+                <span className="text-sm line-clamp-4 w-full text-foreground">
+                  {user?.bio || (
+                    <span className="text-muted-foreground italic">
+                      Not set
+                    </span>
+                  )}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

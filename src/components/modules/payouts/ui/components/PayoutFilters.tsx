@@ -1,3 +1,4 @@
+import { useUser } from "@/components/modules/auth/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ export const PayoutsFilters = ({
   );
   const [searchValue, setSearchValue] = useState(filters.search || "");
   const { showCreateModal, setShowCreateModal } = usePayout();
+  const { user } = useUser();
 
   const handleFilterChange = useCallback(
     (key: keyof typeof filters, value: string) => {
@@ -111,15 +113,17 @@ export const PayoutsFilters = ({
               />
             </div>
 
-            <div className="space-y-2">
-              <Button
-                className="gap-2"
-                onClick={() => setShowCreateModal(true)}
-              >
-                <Plus className="w-4 h-4" />
-                Create payout
-              </Button>
-            </div>
+            {user?.role === "PAYOUT_PROVIDER" && (
+              <div className="space-y-2">
+                <Button
+                  className="gap-2"
+                  onClick={() => setShowCreateModal(true)}
+                >
+                  <Plus className="w-4 h-4" />
+                  Create payout
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

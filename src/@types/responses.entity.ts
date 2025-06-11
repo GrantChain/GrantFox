@@ -1,4 +1,4 @@
-import type { User } from "@/generated/prisma";
+import type { Grantee, PayoutProvider, User } from "@/generated/prisma";
 
 export type GetUserServiceResponse =
   | { exists: true; user: User }
@@ -14,4 +14,8 @@ export type RegisterRoleServiceResponse =
 
 export type CheckRoleServiceResponse =
   | { success: true; role: string }
+  | { success: false; message: string };
+
+export type GetUserRoleServiceResponse =
+  | { success: true; user: User | Grantee | PayoutProvider }
   | { success: false; message: string };

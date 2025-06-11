@@ -1,11 +1,17 @@
 import type {
   CheckRoleServiceResponse,
+  GetUserRoleServiceResponse,
   GetUserServiceResponse,
   RegisterRoleServiceResponse,
   RegisterUserServiceResponse,
 } from "@/@types/responses.entity";
 import { extractErrorMessage } from "@/errors/mapping.utils";
-import type { User } from "@/generated/prisma";
+import type {
+  Grantee,
+  PayoutProvider,
+  User,
+  UserRole,
+} from "@/generated/prisma";
 import { http } from "@/lib/axios";
 class AuthService {
   async registerUser(
@@ -104,6 +110,25 @@ class AuthService {
         return axiosError.response.data;
       }
       return { exists: false, message: "Failed to check user" };
+    }
+  }
+
+  async getUserRoleById(
+    user_id: string,
+    role: UserRole,
+  ): Promise<GetUserRoleServiceResponse> {
+    try {
+      const response = await http.get<{
+        user: User | Grantee | PayoutProvider;
+      }>(
+        `/get-user-role-by-id?user_id=${encodeURIComponent(user_id)}&role=${role}`,
+      );
+      return {
+        success: true,
+        user: response.data.user,
+      };
+    } catch (error: unknown) {
+      return { success: false, message: extractErrorMessage(error) };
     }
   }
 }

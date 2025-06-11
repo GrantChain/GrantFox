@@ -6,13 +6,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Payout } from "@/generated/prisma";
+import { useEffect } from "react";
 import { usePayout } from "../../context/PayoutContext";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
 import { PayoutForm } from "./PayoutForm";
 
 interface PayoutFormModalProps {
-  payout: Payout;
+  payout?: Payout;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialValues?: Partial<PayoutFormValues>;
@@ -28,9 +29,19 @@ export const PayoutFormModal = ({
 }: PayoutFormModalProps) => {
   const { handleCreatePayout, handleUpdatePayout, isUpdating, isCreating } =
     usePayoutMutations();
-  const { setShowCreateModal } = usePayout();
+  const { setShowCreateModal, setUser } = usePayout();
+
+  useEffect(() => {
+    setUser(null);
+  }, [setUser]);
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setUser(null);
+    onOpenChange(newOpen);
+  };
 
   const handleCreatePayoutSubmit = async (data: PayoutFormValues) => {
+    setUser(null);
     const success = await handleCreatePayout(data);
     if (success) {
       setShowCreateModal(false);
@@ -38,6 +49,8 @@ export const PayoutFormModal = ({
   };
 
   const handleEditPayout = async (data: PayoutFormValues) => {
+    if (!payout) return;
+    setUser(null);
     const success = await handleUpdatePayout(payout.payout_id, data);
     if (success) {
       onOpenChange(false);
@@ -45,7 +58,7 @@ export const PayoutFormModal = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-6xl w-full">
         <DialogHeader>
           <DialogTitle>
