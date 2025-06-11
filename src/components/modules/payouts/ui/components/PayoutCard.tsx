@@ -1,13 +1,14 @@
 import { useUser } from "@/components/modules/auth/context/UserContext";
+import { authService } from "@/components/modules/auth/services/auth.service";
 import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
-import { Calendar, Pencil, Trash2 } from "lucide-react";
+import { Calendar, Loader2, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
 import { statusColors } from "../../utils/card.utils";
@@ -24,11 +25,39 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const { handleDeletePayout, isDeleting } = usePayoutMutations();
+  const [granteeEmail, setGranteeEmail] = useState<string>("");
+  const [isLoadingEmail, setIsLoadingEmail] = useState(false);
+
+  useEffect(() => {
+    const fetchGranteeEmail = async () => {
+      if (payout.grantee_id) {
+        setIsLoadingEmail(true);
+        try {
+          const result = await authService.getUserById(payout.grantee_id);
+          if (result.exists && result.user) {
+            setGranteeEmail(result.user.email);
+          }
+        } catch (error) {
+          console.error("Error fetching grantee email:", error);
+        } finally {
+          setIsLoadingEmail(false);
+        }
+      }
+    };
+    fetchGranteeEmail();
+  }, [payout.grantee_id]);
 
   const handleDelete = async () => {
     const success = await handleDeletePayout(payout.payout_id);
     if (success) {
       setIsDeleteDialogOpen(false);
+    }
+  };
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isLoadingEmail) {
+      setShowEditModal(true);
     }
   };
 
@@ -40,8 +69,12 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
     total_funding: payout.total_funding.toString(),
     currency: payout.currency,
     image_url: payout.image_url || "",
-    metrics: Array.isArray(payout.metrics)
-      ? (payout.metrics as { name: string; value: string }[])
+    grantee_id: granteeEmail,
+    milestones: Array.isArray(payout.milestones)
+      ? payout.milestones.map((milestone) => ({
+          description: (milestone as { description: string }).description,
+          amount: Number((milestone as { amount: number }).amount),
+        }))
       : [],
   };
 
@@ -94,12 +127,14 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
                   variant="outline"
                   size="icon"
                   className="h-8 w-8"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowEditModal(true);
-                  }}
+                  onClick={handleEdit}
+                  disabled={isLoadingEmail}
                 >
-                  <Pencil className="h-4 w-4" />
+                  {isLoadingEmail ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Pencil className="w-4 h-4" />
+                  )}
                 </Button>
                 <Button
                   variant="outline"

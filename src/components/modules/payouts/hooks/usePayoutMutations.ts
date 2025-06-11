@@ -31,6 +31,7 @@ export const usePayoutMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payouts"] });
+      queryClient.refetchQueries({ queryKey: ["payouts"] });
       toast.success("Payout created successfully");
     },
     onError: (error: Error) => {
@@ -46,11 +47,12 @@ export const usePayoutMutations = () => {
         total_funding: new Decimal(data.total_funding),
         grantee_id: grantee?.user_id || null,
         updated_at: new Date(),
-        metrics: data.metrics,
+        milestones: data.milestones,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payouts"] });
+      queryClient.refetchQueries({ queryKey: ["payouts"] });
       toast.success("Payout updated successfully");
     },
     onError: (error: Error) => {
@@ -65,6 +67,7 @@ export const usePayoutMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payouts"] });
+      queryClient.refetchQueries({ queryKey: ["payouts"] });
       toast.success("Payout deleted successfully");
     },
     onError: (error: Error) => {

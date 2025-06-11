@@ -30,7 +30,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
       status: "DRAFT",
       total_funding: "",
       currency: "USDC",
-      metrics: [{ name: "", value: "" }],
+      milestones: [{ description: "", amount: 0 }],
       ...initialValues,
     },
     mode: "onChange",
@@ -39,10 +39,47 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
   const { control, formState, reset, setError, clearErrors } = form;
   const metricsFieldArray = useFieldArray({
     control,
-    name: "metrics",
+    name: "milestones",
   });
 
   const granteeEmail = form.watch("grantee_id");
+
+  // Load user when initial values are provided
+  useEffect(() => {
+    const loadInitialUser = async () => {
+      if (initialValues?.grantee_id) {
+        setIsValidating(true);
+        try {
+          const result = await authService.getUserByEmail(
+            initialValues.grantee_id,
+          );
+          if (result.exists) {
+            setUser(result.user);
+            clearErrors("grantee_id");
+            setIsSuccess(true);
+          } else {
+            setUser(null);
+            setError("grantee_id", {
+              type: "manual",
+              message: result.message,
+            });
+            setIsSuccess(false);
+          }
+        } catch (error) {
+          console.error("Error loading initial user:", error);
+          setUser(null);
+          setError("grantee_id", {
+            type: "manual",
+            message: "Failed to load user",
+          });
+          setIsSuccess(false);
+        } finally {
+          setIsValidating(false);
+        }
+      }
+    };
+    loadInitialUser();
+  }, [initialValues?.grantee_id, setUser, setError, clearErrors]);
 
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -56,22 +93,33 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
 
     timeoutRef.current = setTimeout(async () => {
       setIsValidating(true);
-      const result: GetUserServiceResponse =
-        await authService.checkUserByEmail(granteeEmail);
+      try {
+        const result: GetUserServiceResponse =
+          await authService.getUserByEmail(granteeEmail);
 
-      if (result.exists) {
-        setUser(result.user);
-        clearErrors("grantee_id");
-        setIsSuccess(true);
-      } else {
+        if (result.exists) {
+          setUser(result.user);
+          clearErrors("grantee_id");
+          setIsSuccess(true);
+        } else {
+          setUser(null);
+          setError("grantee_id", {
+            type: "manual",
+            message: result.message,
+          });
+          setIsSuccess(false);
+        }
+      } catch (error) {
+        console.error("Error validating email:", error);
         setUser(null);
         setError("grantee_id", {
           type: "manual",
-          message: result.message,
+          message: "Failed to validate email",
         });
         setIsSuccess(false);
+      } finally {
+        setIsValidating(false);
       }
-      setIsValidating(false);
     }, 2000); // 2 seconds
 
     return () => {

@@ -1,7 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -22,11 +19,9 @@ import { Currency, PayoutStatus, PayoutType } from "@/generated/prisma";
 import { cn } from "@/lib/utils";
 import { Check, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRef } from "react";
 import { usePayout } from "../../context/PayoutContext";
 import { usePayoutForm } from "../../hooks/usePayoutForm";
-import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
 import { GranteeDetailsCard } from "./GranteeDetailsCard";
 
@@ -284,26 +279,26 @@ export const PayoutForm = ({
 
             <FormField
               control={control}
-              name="metrics"
+              name="milestones"
               render={() => (
                 <FormItem>
-                  <FormLabel>Metrics</FormLabel>
+                  <FormLabel>Milestones</FormLabel>
                   <div className="space-y-2">
                     {metricsFieldArray.fields.map((field, idx) => (
                       <div key={field.id} className="flex gap-2 items-center">
                         <FormField
                           control={control}
-                          name={`metrics.${idx}.name`}
+                          name={`milestones.${idx}.description`}
                           render={({ field }) => (
                             <FormControl>
                               <Input
                                 {...field}
-                                placeholder="Metric name"
-                                aria-label="Metric name"
+                                placeholder="Milestone description"
+                                aria-label="Milestone description"
                                 tabIndex={0}
                                 className={cn(
                                   "flex-1",
-                                  errors.metrics?.[idx]?.name &&
+                                  errors.milestones?.[idx]?.description &&
                                     "border-destructive",
                                 )}
                               />
@@ -312,19 +307,28 @@ export const PayoutForm = ({
                         />
                         <FormField
                           control={control}
-                          name={`metrics.${idx}.value`}
+                          name={`milestones.${idx}.amount`}
                           render={({ field }) => (
                             <FormControl>
                               <Input
                                 {...field}
-                                placeholder="Metric value"
-                                aria-label="Metric value"
+                                placeholder="Milestone amount"
+                                aria-label="Milestone amount"
+                                type="number"
+                                step="any"
                                 tabIndex={0}
                                 className={cn(
                                   "flex-1",
-                                  errors.metrics?.[idx]?.value &&
+                                  errors.milestones?.[idx]?.amount &&
                                     "border-destructive",
                                 )}
+                                value={field.value?.toString() || ""}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  field.onChange(
+                                    value === "" ? "" : Number(value),
+                                  );
+                                }}
                               />
                             </FormControl>
                           )}
@@ -348,17 +352,17 @@ export const PayoutForm = ({
                       variant="outline"
                       className="gap-2 mt-2"
                       onClick={() =>
-                        metricsFieldArray.append({ name: "", value: "" })
+                        metricsFieldArray.append({ description: "", amount: 0 })
                       }
                       aria-label="Add metric"
                       tabIndex={0}
                     >
                       <Plus className="w-4 h-4" /> Add Metric
                     </Button>
-                    {typeof errors.metrics === "object" &&
-                      !Array.isArray(errors.metrics) && (
+                    {typeof errors.milestones === "object" &&
+                      !Array.isArray(errors.milestones) && (
                         <FormMessage>
-                          {(errors.metrics as { message: string })?.message}
+                          {(errors.milestones as { message: string })?.message}
                         </FormMessage>
                       )}
                   </div>
