@@ -1,6 +1,14 @@
 "use client";
 
+import type {
+  Grantee,
+  PayoutProvider,
+  User,
+  UserRole,
+} from "@/generated/prisma";
+import { http } from "@/lib/axios";
 import { supabase } from "@/lib/supabase";
+import axios from "axios";
 import {
   createContext,
   useCallback,
@@ -8,8 +16,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { checkRole } from "../services/check-role.service";
-import { PayoutProvider, User, Grantee } from "@/generated/prisma";
+import { authService } from "../services/auth.service";
 
 interface UserContextType {
   user: User | null;
@@ -17,6 +24,16 @@ interface UserContextType {
   payoutProvider: PayoutProvider | null;
   isLoading: boolean;
   refreshUser: () => Promise<void>;
+}
+
+interface UserResponse {
+  exists: boolean;
+  user: User;
+}
+
+interface RoleDataResponse {
+  exists: boolean;
+  user: Grantee | PayoutProvider;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -31,70 +48,55 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserData = useCallback(async (userId: string) => {
     try {
-      // Fetch user data
-      const { data: userData, error: userError } = await supabase
-        .from("user")
-        .select("*")
-        .eq("user_id", userId)
-        .single();
+      // First check the role
+      const roleResponse = await authService.checkRole(userId);
+      if (!roleResponse.success || !roleResponse.role) {
+        console.log("No role found for userId:", userId);
+        return;
+      }
 
-      if (!userData) {
+      const { role } = roleResponse;
+
+      // Then fetch user data with the correct role
+      const response = await http.get<UserResponse>("/get-user-by-id", {
+        params: {
+          user_id: userId,
+          role,
+        },
+      });
+
+      if (!response.data.exists || !response.data.user) {
         console.log("No user data found for userId:", userId);
         return;
       }
 
-      if (userError) {
-        console.error("Error fetching user data:", {
-          error: userError,
-          message: userError.message,
-          details: userError.details,
-        });
-      }
+      // Ensure the user has the correct role
+      const userWithRole = {
+        ...response.data.user,
+        role: role as UserRole,
+      };
+      setUser(userWithRole);
 
-      setUser(userData);
+      try {
+        const roleDataResponse = await http.get<RoleDataResponse>(
+          "/get-user-role-by-id",
+          {
+            params: {
+              user_id: userId,
+              role,
+            },
+          },
+        );
 
-      // Check role and fetch role-specific data
-      const roleResponse = await checkRole(userId);
-      if (roleResponse.success && roleResponse.data) {
-        const { role } = roleResponse.data;
-
-        if (role === "GRANTEE") {
-          const { data: granteeData, error: granteeError } = await supabase
-            .from("grantee")
-            .select("*")
-            .eq("user_id", userId)
-            .single();
-
-          if (granteeError) {
-            console.error("Error fetching grantee data:", {
-              error: granteeError,
-              message: granteeError.message,
-              details: granteeError.details,
-              hint: granteeError.hint,
-              code: granteeError.code,
-            });
-          } else if (granteeData) {
-            setGrantee(granteeData);
-          }
-        } else if (role === "PAYOUT_PROVIDER") {
-          const { data: providerData, error: providerError } = await supabase
-            .from("payout_provider")
-            .select("*")
-            .eq("user_id", userId)
-            .single();
-
-          if (providerError) {
-            console.error("Error fetching payout provider data:", {
-              error: providerError,
-              message: providerError.message,
-              details: providerError.details,
-              hint: providerError.hint,
-              code: providerError.code,
-            });
-          } else if (providerData) {
-            setPayoutProvider(providerData);
+        if (roleDataResponse.data.exists && roleDataResponse.data.user) {
+          if (role === "GRANTEE") {
+            setGrantee(roleDataResponse.data.user as Grantee);
+          } else if (role === "PAYOUT_PROVIDER") {
+            setPayoutProvider(roleDataResponse.data.user as PayoutProvider);
           }
         }
+      } catch (error) {
+        console.error("Error fetching role data:", error);
       }
     } catch (error) {
       console.error("Error in fetchUserData:", {
@@ -136,8 +138,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe();
     };
   }, [fetchUserData, refreshUser]);
-
-  console.log(user);
 
   return (
     <UserContext.Provider

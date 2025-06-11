@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useUser } from "../context/UserContext";
-import { registerRole } from "../services/register-role.service";
+import { authService } from "../services/auth.service";
 
 interface RoleSelectionHookProps {
   onClose: () => void;
@@ -33,7 +33,7 @@ export const useRoleSelection = ({ onClose }: RoleSelectionHookProps) => {
         throw new Error("User not authenticated");
       }
 
-      const result = await registerRole(user.id, selectedRole);
+      const result = await authService.registerRole(user.id, selectedRole);
 
       if (result.success) {
         toast.success("Role registered successfully");

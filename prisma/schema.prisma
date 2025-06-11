@@ -62,6 +62,7 @@ model Grantee {
   updated_at     DateTime @updatedAt
 
   user           User   @relation(fields: [user_id], references: [user_id])
+  payouts        Payout[]
 
   @@index([name])
   @@index([created_at])
@@ -72,18 +73,22 @@ model Payout {
   payout_id      String   @id @default(cuid())
   title         String
   description   String
-  metrics       String
+  image_url     String?
+  type          PayoutType
+  milestones    Json?
   status        PayoutStatus
   total_funding Decimal
   currency      Currency
   created_by    String
+  grantee_id    String?
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
   user          User     @relation("PayoutsCreatedBy", fields: [created_by], references: [user_id])
-  milestones    Milestone[]
+  grantee       Grantee? @relation(fields: [grantee_id], references: [user_id])
 
   @@index([created_by])
+  @@index([grantee_id])
   @@index([status])
   @@index([currency])
   @@index([created_at])
@@ -94,8 +99,7 @@ model Payout {
 
 model Escrow {
   escrow_id        String      @id @default(cuid())
-  engagement_id    String
-  application_id   String      
+  engagement_id    String   
   platform_fee     Decimal     @default(5)
   title            String
   description      String
@@ -113,7 +117,6 @@ model Escrow {
 
   @@index([deployed_by])
   @@index([engagement_id])
-  @@index([application_id])
   @@index([contract_id])
   @@index([created_at])
   @@index([deployed_by, created_at])
@@ -139,7 +142,6 @@ model Milestone {
   updated_at      DateTime @updatedAt
 
   escrow          Escrow   @relation(fields: [escrow_id], references: [escrow_id])
-  payout          Payout    @relation(fields: [payout_id], references: [payout_id])
   submissions     MilestoneSubmission[]
 
   @@index([escrow_id])
