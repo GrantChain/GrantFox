@@ -13,6 +13,21 @@ interface UsePayoutFormProps {
   initialValues?: Partial<PayoutFormValues>;
 }
 
+const DEVELOPMENT_TEMPLATE: PayoutFormValues = {
+  title: "Development Template",
+  description: "This is a development template for testing purposes",
+  grantee_id: "test@example.com",
+  image_url: "",
+  type: "GRANT",
+  status: "DRAFT",
+  total_funding: "1000",
+  currency: "USDC",
+  milestones: [
+    { description: "Milestone 1", amount: 500 },
+    { description: "Milestone 2", amount: 500 },
+  ],
+};
+
 export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
   const [isValidating, setIsValidating] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -43,6 +58,12 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
   });
 
   const granteeEmail = form.watch("grantee_id");
+
+  const loadTemplate = () => {
+    if (process.env.NEXT_PUBLIC_ENV === "DEV") {
+      reset(DEVELOPMENT_TEMPLATE);
+    }
+  };
 
   // Load user when initial values are provided
   useEffect(() => {
@@ -134,5 +155,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
     formState,
     isValidating,
     isSuccess,
+    loadTemplate:
+      process.env.NODE_ENV === "development" ? loadTemplate : undefined,
   };
 };

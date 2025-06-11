@@ -8,6 +8,7 @@ import { PayoutCard } from "./PayoutCard";
 import { PayoutCardSkeleton } from "./PayoutCardSkeleton";
 import { PayoutsFilters } from "./PayoutFilters";
 import { PayoutPagination } from "./PayoutPagination";
+import { useUser } from "@/components/modules/auth/context/UserContext";
 
 export const PayoutsSection = () => {
   const {
@@ -17,11 +18,18 @@ export const PayoutsSection = () => {
     handlePageChange,
     handlePageSizeChange,
   } = usePayoutsFilters();
+  const { user } = useUser();
 
-  const { data, isLoading, error } = usePayouts({
-    filters,
-    pagination,
-  });
+  const { data, isLoading, error } = usePayouts(
+    user
+      ? {
+          filters,
+          pagination,
+          role: user.role,
+          userId: user.user_id,
+        }
+      : undefined,
+  );
 
   if (error) {
     return (

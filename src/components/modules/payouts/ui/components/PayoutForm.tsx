@@ -492,7 +492,17 @@ export const PayoutForm = ({
           </div>
         </div>
 
-        <div className="flex w-full justify-end">
+        <div className="flex w-full justify-end gap-4">
+          {process.env.NEXT_PUBLIC_ENV === "DEV" && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => formContext.loadTemplate?.()}
+              className="w-full md:w-1/5"
+            >
+              Use Template
+            </Button>
+          )}
           <Button
             type="submit"
             disabled={isSubmitting || isValidating}
