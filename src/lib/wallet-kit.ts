@@ -1,8 +1,8 @@
 import {
-  StellarWalletsKit,
-  WalletNetwork,
   FREIGHTER_ID,
   FreighterModule,
+  StellarWalletsKit,
+  WalletNetwork,
 } from "@creit.tech/stellar-wallets-kit";
 
 export const kit: StellarWalletsKit = new StellarWalletsKit({
@@ -10,3 +10,27 @@ export const kit: StellarWalletsKit = new StellarWalletsKit({
   selectedWalletId: FREIGHTER_ID,
   modules: [new FreighterModule()],
 });
+
+interface signTransactionProps {
+  unsignedTransaction: string;
+  address: string;
+}
+
+/**
+ * Sign a transaction
+ *
+ * @Flow:
+ * 1. Sign the unsigned transaction
+ * 2. Return the signed transaction
+ */
+export const signTransaction = async ({
+  unsignedTransaction,
+  address,
+}: signTransactionProps): Promise<string> => {
+  const { signedTxXdr } = await kit.signTransaction(unsignedTransaction, {
+    address,
+    networkPassphrase: WalletNetwork.TESTNET,
+  });
+
+  return signedTxXdr;
+};

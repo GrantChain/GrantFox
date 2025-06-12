@@ -1,4 +1,4 @@
-import { Trustline } from "@trustless-work/escrow/types";
+import type { Trustline } from "@trustless-work/escrow/types";
 
 /**
  *
