@@ -21,11 +21,9 @@ export async function POST(req: Request) {
 
     // Create the corresponding record in the specific table
     if (role === "PAYOUT_PROVIDER") {
-      await prisma.payout_provider.create({
+      await prisma.payoutProvider.create({
         data: {
           user_id: user_id,
-          created_at: new Date(),
-          updated_at: new Date(),
         },
       });
     } else if (role === "GRANTEE") {
@@ -43,5 +41,7 @@ export async function POST(req: Request) {
       { error: "Failed to register role" },
       { status: 500 },
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }

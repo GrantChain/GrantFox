@@ -24,17 +24,22 @@ model User {
   is_active      Boolean @default(true)
 
   grant_provider  Grant_provider?
+=======
+  payout_provider  PayoutProvider?
+
   grantee        Grantee?
   grants         Grant[]     @relation("GrantsCreatedBy")
   teams          Team[]      @relation("UserTeams")
   system_logs     SystemLog[]
 
-  milestone_submissions Milestone_submission[]
+  milestone_submissions MilestoneSubmission[]
 
   @@map("user")
 }
 
+
 model Grant_provider {
+
   user_id          String   @id @default(cuid())
   organization_name String?
   network_type     String?
@@ -58,6 +63,7 @@ model Grantee {
   updated_at     DateTime @updatedAt
 
   user           User   @relation(fields: [user_id], references: [user_id])
+
   team           Team?   @relation(fields: [linked_team_id], references: [team_id])
   applications   Application[]
 
@@ -111,13 +117,15 @@ model Grant {
   grant_id      String   @id @default(cuid())
   title         String
   description   String
+
   metrics       String
   status        GrantStatus
-  total_funding Decimal
-  currency      Currency
-  created_by    String
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+=======
+  image_url     String?
+  type          PayoutType
+  milestones    Json?
+  status        PayoutStatus
+
 
   user          User     @relation("GrantsCreatedBy", fields: [created_by], references: [user_id])
   milestones    Milestone[]
@@ -145,12 +153,13 @@ model Application {
   escrow          Escrow    @relation(fields: [escrow_id], references: [escrow_id])
 
   @@map("application")
+=======
+ 
 }
 
 model Escrow {
   escrow_id        String      @id @default(cuid())
-  engagement_id    String
-  application_id   String      
+  engagement_id    String   
   platform_fee     Decimal     @default(5)
   title            String
   description      String
@@ -166,6 +175,16 @@ model Escrow {
   application      Application? @relation()
   grant_provider   Grant_provider @relation(fields: [deployed_by], references: [user_id])
   milestones       Milestone[]
+
+=======
+  payout_provider   PayoutProvider @relation(fields: [deployed_by], references: [user_id])
+  milestones       Milestone[]
+
+  @@index([deployed_by])
+  @@index([engagement_id])
+  @@index([contract_id])
+  @@index([created_at])
+  @@index([deployed_by, created_at])
 
   @@map("escrow")
 }
@@ -189,13 +208,17 @@ model Milestone {
   updated_at      DateTime @updatedAt
 
   escrow          Escrow   @relation(fields: [escrow_id], references: [escrow_id])
+
   grant           Grant    @relation(fields: [grant_id], references: [grant_id])
   submissions     Milestone_submission[]
+=======
+  submissions     MilestoneSubmission[]
+
 
   @@map("milestone")
 }
 
-model Milestone_submission {
+model MilestoneSubmission {
   submission_id  String   @id @default(cuid())
   milestone_id   String
   submitted_by   String

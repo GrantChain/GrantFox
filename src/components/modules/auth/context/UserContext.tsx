@@ -1,9 +1,14 @@
 "use client";
 
-import type { GrantProvider } from "@/@types/grant-provider.entity";
-import type { Grantee } from "@/@types/grantee.entity";
-import type { User } from "@/@types/user.entity";
+import type {
+  Grantee,
+  PayoutProvider,
+  User,
+  UserRole,
+} from "@/generated/prisma";
+import { http } from "@/lib/axios";
 import { supabase } from "@/lib/supabase";
+import axios from "axios";
 import {
   createContext,
   useCallback,
@@ -11,14 +16,24 @@ import {
   useEffect,
   useState,
 } from "react";
-import { checkRole } from "../services/check-role.service";
+import { authService } from "../services/auth.service";
 
 interface UserContextType {
   user: User | null;
   grantee: Grantee | null;
-  grantProvider: GrantProvider | null;
+  payoutProvider: PayoutProvider | null;
   isLoading: boolean;
   refreshUser: () => Promise<void>;
+}
+
+interface UserResponse {
+  exists: boolean;
+  user: User;
+}
+
+interface RoleDataResponse {
+  exists: boolean;
+  user: Grantee | PayoutProvider;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -26,54 +41,69 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [grantee, setGrantee] = useState<Grantee | null>(null);
-  const [grantProvider, setGrantProvider] = useState<GrantProvider | null>(
+  const [payoutProvider, setPayoutProvider] = useState<PayoutProvider | null>(
     null,
   );
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchUserData = useCallback(async (userId: string) => {
     try {
-      // Fetch user data
-      const { data: userData, error: userError } = await supabase
-        .from("user")
-        .select("*")
-        .eq("user_id", userId)
-        .single();
+      // First check the role
+      const roleResponse = await authService.checkRole(userId);
+      if (!roleResponse.success || !roleResponse.role) {
+        console.log("No role found for userId:", userId);
+        return;
+      }
 
-      if (userError) throw userError;
-      if (!userData) return;
+      const { role } = roleResponse;
 
-      setUser(userData);
+      // Then fetch user data with the correct role
+      const response = await http.get<UserResponse>("/get-user-by-id", {
+        params: {
+          user_id: userId,
+          role,
+        },
+      });
 
-      // Check role and fetch role-specific data
-      const roleResponse = await checkRole(userId);
-      if (roleResponse.success && roleResponse.data) {
-        const { role } = roleResponse.data;
+      if (!response.data.exists || !response.data.user) {
+        console.log("No user data found for userId:", userId);
+        return;
+      }
 
-        if (role === "GRANTEE") {
-          const { data: granteeData, error: granteeError } = await supabase
-            .from("grantee")
-            .select("*")
-            .eq("user_id", userId)
-            .single();
+      // Ensure the user has the correct role
+      const userWithRole = {
+        ...response.data.user,
+        role: role as UserRole,
+      };
+      setUser(userWithRole);
 
-          if (!granteeError && granteeData) {
-            setGrantee(granteeData);
-          }
-        } else if (role === "PAYOUT_PROVIDER") {
-          const { data: providerData, error: providerError } = await supabase
-            .from("payout_provider")
-            .select("*")
-            .eq("user_id", userId)
-            .single();
+      try {
+        const roleDataResponse = await http.get<RoleDataResponse>(
+          "/get-user-role-by-id",
+          {
+            params: {
+              user_id: userId,
+              role,
+            },
+          },
+        );
 
-          if (!providerError && providerData) {
-            setGrantProvider(providerData);
+        if (roleDataResponse.data.exists && roleDataResponse.data.user) {
+          if (role === "GRANTEE") {
+            setGrantee(roleDataResponse.data.user as Grantee);
+          } else if (role === "PAYOUT_PROVIDER") {
+            setPayoutProvider(roleDataResponse.data.user as PayoutProvider);
           }
         }
+      } catch (error) {
+        console.error("Error fetching role data:", error);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error in fetchUserData:", {
+        error,
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +127,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       } else if (event === "SIGNED_OUT") {
         setUser(null);
         setGrantee(null);
-        setGrantProvider(null);
+        setPayoutProvider(null);
       }
     });
 
@@ -109,14 +139,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
   }, [fetchUserData, refreshUser]);
 
-  console.log(user);
-
   return (
     <UserContext.Provider
       value={{
         user,
         grantee,
-        grantProvider,
+        payoutProvider,
         isLoading,
         refreshUser,
       }}

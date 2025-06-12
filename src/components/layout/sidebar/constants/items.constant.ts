@@ -1,4 +1,4 @@
-import { HelpCircle, History, Home, Sparkles } from "lucide-react";
+import { HelpCircle, History, Home, Sparkles, UserCircle } from "lucide-react";
 
 export const navItems = [
   {
@@ -8,14 +8,14 @@ export const navItems = [
     roles: ["PAYOUT_PROVIDER", "GRANTEE"],
   },
   {
-    title: "Grant Projects",
-    url: "/dashboard/grants/projects",
+    title: "Payouts",
+    url: "/dashboard/payout-provider/payouts",
     icon: Sparkles,
     roles: ["PAYOUT_PROVIDER"],
   },
   {
-    title: "Opportunities",
-    url: "/dashboard/grants/opportunities",
+    title: "Assigned Payouts",
+    url: "/dashboard/grantee/payouts",
     icon: Sparkles,
     roles: ["GRANTEE"],
   },
@@ -24,6 +24,12 @@ export const navItems = [
     url: "/history",
     icon: History,
     roles: ["PAYOUT_PROVIDER", "GRANTEE"],
+  },
+  {
+    title: "Profile",
+    url: "/dashboard/profile",
+    icon: UserCircle,
+    roles: ["GRANT_PROVIDER", "GRANTEE"],
   },
   {
     title: "Help",
