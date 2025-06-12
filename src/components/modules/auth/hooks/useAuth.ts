@@ -1,14 +1,14 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { authSchema } from "../schema/auth.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { supabase } from "@/lib/supabase";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { registerUser } from "../services/register-user.service";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import type { z } from "zod";
+import { authSchema } from "../schema/auth.schema";
+import { registerUser } from "../services/register-user.service";
 import { useAuthenticationBoundedStore } from "../store/store";
 
 export const useAuth = () => {
@@ -28,6 +28,7 @@ export const useAuth = () => {
   });
 
   const handleLogin = async (payload: z.infer<typeof authSchema>) => {
+    setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: payload.email,
@@ -42,10 +43,13 @@ export const useAuth = () => {
     } catch (error) {
       if (error) console.error(error);
       toast.error("Failed to sign in");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -60,6 +64,8 @@ export const useAuth = () => {
     } catch (err) {
       console.error("Google login error:", err);
       toast.error("Failed to sign in with Google");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -82,6 +88,7 @@ export const useAuth = () => {
   };
 
   const handleSignUp = async (payload: z.infer<typeof authSchema>) => {
+    setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
         email: payload.email,
@@ -119,10 +126,13 @@ export const useAuth = () => {
     } catch (error) {
       if (error) console.error(error);
       toast.error("Failed to sign up");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleLogout = async () => {
+    setIsLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
 
@@ -134,6 +144,8 @@ export const useAuth = () => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to sign out");
+    } finally {
+      setIsLoading(false);
     }
   };
 

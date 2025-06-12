@@ -9,17 +9,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Eye, EyeOff } from 'lucide-react';
-import Link from 'next/link';
-import { FormProvider } from 'react-hook-form';
-import { useAuth } from '../../hooks/useAuth';
-import { AuthFooter } from '../shared/AuthFooter';
-import { AuthLayout } from '../shared/AuthLayout';
+} from "@/components/ui/form";
+import { useAuth } from "../../hooks/useAuth";
+import { FormProvider } from "react-hook-form";
+import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { AuthLayout } from "../shared/AuthLayout";
+import { AuthFooter } from "../shared/AuthFooter";
 
 export const SignUpForm = () => {
-  const { form, showPassword, setShowPassword, handleSignUp } = useAuth();
+  const { form, showPassword, setShowPassword, handleSignUp, isLoading } =
+    useAuth();
 
   return (
     <AuthLayout
@@ -92,8 +92,15 @@ export const SignUpForm = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full mt-6">
-            Sign Up
+          <Button type="submit" className="w-full mt-6" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing up...
+              </>
+            ) : (
+              "Sign Up"
+            )}
           </Button>
 
           <div className="relative my-6">

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   FormControl,
   FormField,
@@ -9,12 +8,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { FormProvider } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { FormProvider } from "react-hook-form";
 import { useForgotPassword } from "../../hooks/useForgotPassword";
-import { AuthLayout } from "../shared/AuthLayout";
 import { AuthFooter } from "../shared/AuthFooter";
+import { AuthLayout } from "../shared/AuthLayout";
 
 export const ForgotPasswordForm = () => {
   const { form, isLoading, isSuccess, handleRequestReset } =
@@ -37,7 +37,10 @@ export const ForgotPasswordForm = () => {
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  aria-label="Success checkmark"
+                  role="img"
                 >
+                  <title>Success checkmark</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -84,7 +87,14 @@ export const ForgotPasswordForm = () => {
                 className="w-full mt-6"
                 disabled={isLoading}
               >
-                {isLoading ? "Sending..." : "Send Reset Link"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  "Send Reset Link"
+                )}
               </Button>
 
               <div className="flex justify-center mt-6">

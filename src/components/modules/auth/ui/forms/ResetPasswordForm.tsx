@@ -1,19 +1,19 @@
 "use client";
 
 import { useResetPassword } from "@/components/modules/auth/hooks/useResetPassword";
-import { FormProvider } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
-import { AuthLayout } from "../shared/AuthLayout";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { FormProvider } from "react-hook-form";
 import { AuthFooter } from "../shared/AuthFooter";
+import { AuthLayout } from "../shared/AuthLayout";
 
 export const ResetPasswordForm = () => {
   const {
@@ -106,7 +106,14 @@ export const ResetPasswordForm = () => {
           </div>
 
           <Button type="submit" className="w-full mt-6" disabled={isLoading}>
-            {isLoading ? "Resetting..." : "Reset Password"}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Resetting...
+              </>
+            ) : (
+              "Reset Password"
+            )}
           </Button>
         </form>
       </FormProvider>
