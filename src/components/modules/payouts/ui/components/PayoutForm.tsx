@@ -1,3 +1,4 @@
+import TooltipInfo from "@/components/shared/TooltipInfo";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,7 +25,6 @@ import { usePayout } from "../../context/PayoutContext";
 import { usePayoutForm } from "../../hooks/usePayoutForm";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
 import { GranteeDetailsCard } from "./GranteeDetailsCard";
-import TooltipInfo from "@/components/shared/TooltipInfo";
 
 interface PayoutFormProps {
   initialValues?: Partial<PayoutFormValues>;

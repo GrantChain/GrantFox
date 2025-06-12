@@ -1,11 +1,11 @@
 "use client";
 
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
-import { RoleSelectionProvider } from "@/components/providers/role-selection.provider";
-import { AuthProvider } from "@/components/modules/auth/context/AuthContext";
 import { Footer } from "@/components/layout/footer/Footer";
 import { Header } from "@/components/layout/header/Header";
+import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
+import { AuthProvider } from "@/components/modules/auth/context/AuthContext";
+import { RoleSelectionProvider } from "@/components/providers/role-selection.provider";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
