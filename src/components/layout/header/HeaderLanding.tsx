@@ -10,39 +10,13 @@ export const HeaderLanding = () => {
         <div className="flex items-center gap-2">
           <Image
             src="/favicon.ico"
-            alt="GrantChain Logo"
+            alt="GrantFox Logo"
             width={40}
             height={40}
             className="rounded-md"
           />
-          <span className="text-xl font-bold">GrantChain</span>
+          <span className="text-xl font-bold">GrantFox</span>
         </div>
-        <nav className="hidden md:flex items-center gap-6">
-          <Link
-            href="#features"
-            className="text-sm font-medium hover:text-primary"
-          >
-            Features
-          </Link>
-          <Link
-            href="#how-it-works"
-            className="text-sm font-medium hover:text-primary"
-          >
-            How It Works
-          </Link>
-          <Link
-            href="#use-cases"
-            className="text-sm font-medium hover:text-primary"
-          >
-            Use Cases
-          </Link>
-          <Link
-            href="#get-started"
-            className="text-sm font-medium hover:text-primary"
-          >
-            Get Started
-          </Link>
-        </nav>
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <Link href="/login" className="flex items-center">
