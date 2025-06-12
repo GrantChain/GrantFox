@@ -37,6 +37,7 @@
     "@supabase/supabase-js": "^2.49.1",
     "@tanstack/react-query": "^5.75.4",
     "@tanstack/react-table": "^8.21.3",
+    "@trustless-work/escrow": "^0.3.6",
     "axios": "^1.8.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
