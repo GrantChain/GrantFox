@@ -8,17 +8,17 @@ interface UsePayoutSheetResult {
   isLoading: boolean;
   isLoadingCreator: boolean;
   error: Error | null;
-  fetchUser: (userId: string) => Promise<void>;
+  fetchSelectedGrantee: (userId: string) => Promise<void>;
   fetchCreator: (userId: string) => Promise<void>;
 }
 
 export const usePayoutSheet = (): UsePayoutSheetResult => {
-  const { setUser, setCreator } = usePayout();
+  const { setSelectedGrantee, setCreator } = usePayout();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingCreator, setIsLoadingCreator] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchUser = useCallback(
+  const fetchSelectedGrantee = useCallback(
     async (userId: string) => {
       try {
         setIsLoading(true);
@@ -28,19 +28,19 @@ export const usePayoutSheet = (): UsePayoutSheetResult => {
           await authService.getUserById(userId);
 
         if (result.exists) {
-          setUser(result.user);
+          setSelectedGrantee(result.user);
         } else {
-          throw new Error("User not found");
+          throw new Error("Grantee not found");
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err : new Error("Failed to fetch user"),
+          err instanceof Error ? err : new Error("Failed to fetch grantee"),
         );
       } finally {
         setIsLoading(false);
       }
     },
-    [setUser],
+    [setSelectedGrantee],
   );
 
   const fetchCreator = async (userId: string) => {
@@ -74,7 +74,7 @@ export const usePayoutSheet = (): UsePayoutSheetResult => {
     isLoading,
     isLoadingCreator,
     error,
-    fetchUser,
+    fetchSelectedGrantee,
     fetchCreator,
   };
 };

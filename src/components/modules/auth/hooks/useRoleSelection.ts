@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useUser } from "../context/UserContext";
+import { useAuth } from "../context/AuthContext";
 import { authService } from "../services/auth.service";
 
 interface RoleSelectionHookProps {
@@ -15,7 +15,7 @@ export const useRoleSelection = ({ onClose }: RoleSelectionHookProps) => {
   >(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { refreshUser } = useUser();
+  const { refreshUser } = useAuth();
 
   const handleSubmit = async () => {
     if (!selectedRole) {

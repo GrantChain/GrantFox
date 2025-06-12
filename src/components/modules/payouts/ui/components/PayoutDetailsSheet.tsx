@@ -1,4 +1,4 @@
-import { useUser } from "@/components/modules/auth/context/UserContext";
+import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
@@ -7,7 +7,7 @@ import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
 import { Calendar, DollarSign, FileText, User, Wallet } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { usePayout } from "../../context/PayoutContext";
 import { usePayoutSheet } from "../../hooks/usePayoutSheet";
 import { statusColors } from "../../utils/card.utils";
@@ -34,27 +34,33 @@ export function PayoutDetailsSheet({
     statusColors[payout.status as keyof typeof statusColors] ||
     statusColors.DRAFT;
 
-  const { fetchUser, fetchCreator, isLoading, isLoadingCreator, error } =
-    usePayoutSheet();
-  const { user: grantee, creator, setUser, setCreator } = usePayout();
-  const { user } = useUser();
+  const {
+    fetchSelectedGrantee,
+    fetchCreator,
+    isLoading,
+    isLoadingCreator,
+    error,
+  } = usePayoutSheet();
+  const { selectedGrantee, creator, setSelectedGrantee, setCreator } =
+    usePayout();
+  const { user } = useAuth();
 
   useEffect(() => {
     const loadData = async () => {
-      setUser(null);
+      setSelectedGrantee(null);
       setCreator(null);
 
       if (open && payout.grantee_id && payout.created_by) {
-        await fetchUser(payout.grantee_id);
+        await fetchSelectedGrantee(payout.grantee_id);
         await fetchCreator(payout.created_by);
       }
     };
 
     loadData();
-  }, [open, payout.grantee_id, payout.created_by, fetchUser]);
+  }, [open, payout.grantee_id, payout.created_by, fetchSelectedGrantee]);
 
   const handleOpenChange = (newOpen: boolean) => {
-    setUser(null);
+    setSelectedGrantee(null);
     onOpenChange(newOpen);
   };
 
@@ -237,8 +243,12 @@ export function PayoutDetailsSheet({
                 <div className="text-destructive">
                   Error loading user details: {error.message}
                 </div>
-              ) : grantee ? (
-                <GranteeDetailsCard user={grantee} showTitle={false} lessInfo />
+              ) : selectedGrantee ? (
+                <GranteeDetailsCard
+                  selectedGrantee={selectedGrantee}
+                  showTitle={false}
+                  lessInfo
+                />
               ) : null}
             </CardContent>
           </Card>

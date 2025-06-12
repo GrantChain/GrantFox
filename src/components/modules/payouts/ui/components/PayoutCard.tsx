@@ -1,4 +1,4 @@
-import { useUser } from "@/components/modules/auth/context/UserContext";
+import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { authService } from "@/components/modules/auth/services/auth.service";
 import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,7 @@ interface PayoutsCardProps {
 }
 
 export function PayoutCard({ payout }: PayoutsCardProps) {
-  const { user } = useUser();
+  const { user } = useAuth();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);

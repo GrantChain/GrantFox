@@ -1,4 +1,4 @@
-import { useUser } from "@/components/modules/auth/context/UserContext";
+import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Decimal } from "decimal.js";
 import { toast } from "sonner";
@@ -8,8 +8,8 @@ import { payoutsService } from "../services/payouts.service";
 
 export const usePayoutMutations = () => {
   const queryClient = useQueryClient();
-  const { user, payoutProvider } = useUser();
-  const { user: grantee } = usePayout();
+  const { user, payoutProvider } = useAuth();
+  const { selectedGrantee } = usePayout();
 
   const createPayout = useMutation({
     mutationFn: (data: PayoutFormValues) => {
@@ -25,7 +25,7 @@ export const usePayoutMutations = () => {
         ...data,
         total_funding: new Decimal(data.total_funding),
         created_by: user.user_id,
-        grantee_id: grantee?.user_id || null,
+        grantee_id: selectedGrantee?.user_id || null,
         image_url: data.image_url || null,
       });
     },
@@ -45,7 +45,7 @@ export const usePayoutMutations = () => {
       return payoutsService.update(id, {
         ...data,
         total_funding: new Decimal(data.total_funding),
-        grantee_id: grantee?.user_id || null,
+        grantee_id: selectedGrantee?.user_id || null,
         updated_at: new Date(),
         milestones: data.milestones,
       });

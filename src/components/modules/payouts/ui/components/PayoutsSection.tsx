@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@/components/modules/auth/context/UserContext";
+import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { ErrorFetching } from "@/components/shared/ErrorFetching";
 import { NoData } from "../../../../shared/NoData";
 import { usePayouts } from "../../hooks/usePayouts";
@@ -18,7 +18,7 @@ export const PayoutsSection = () => {
     handlePageChange,
     handlePageSizeChange,
   } = usePayoutsFilters();
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const { data, isLoading, error } = usePayouts(
     user
@@ -43,7 +43,7 @@ export const PayoutsSection = () => {
     <section className="flex flex-col h-full">
       <PayoutsFilters onFilterChange={handleFilterChange} filters={filters} />
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1">
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
             {Array.from({ length: 6 }).map((_, index) => (
@@ -66,7 +66,7 @@ export const PayoutsSection = () => {
       </div>
 
       {data && (
-        <div className="mt-auto border-t pt-6">
+        <div className="my-10 border-t pt-6">
           <PayoutPagination
             currentPage={pagination.page}
             totalItems={data.total}

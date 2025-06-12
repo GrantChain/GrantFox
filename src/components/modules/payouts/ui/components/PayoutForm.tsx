@@ -24,21 +24,24 @@ import { usePayout } from "../../context/PayoutContext";
 import { usePayoutForm } from "../../hooks/usePayoutForm";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
 import { GranteeDetailsCard } from "./GranteeDetailsCard";
+import TooltipInfo from "@/components/shared/TooltipInfo";
 
 interface PayoutFormProps {
   initialValues?: Partial<PayoutFormValues>;
   isSubmitting?: boolean;
+  mode?: "create" | "edit";
   onSubmit: (data: PayoutFormValues) => void;
 }
 
 export const PayoutForm = ({
   initialValues,
   isSubmitting: externalIsSubmitting,
+  mode,
   onSubmit,
 }: PayoutFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formContext = usePayoutForm({ initialValues });
-  const { user } = usePayout();
+  const { selectedGrantee } = usePayout();
 
   const {
     control,
@@ -77,7 +80,7 @@ export const PayoutForm = ({
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Payout Grantee */}
           <div className="md:col-span-1 space-y-6">
-            <GranteeDetailsCard user={user} />
+            <GranteeDetailsCard selectedGrantee={selectedGrantee} />
           </div>
 
           {/* Payout Details */}
@@ -88,7 +91,10 @@ export const PayoutForm = ({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <div className="flex items-center gap-1">
+                      <FormLabel>Title</FormLabel>
+                      <TooltipInfo content="Enter a descriptive title for this payout that clearly identifies its purpose" />
+                    </div>
                     <FormControl>
                       <Input
                         {...field}
@@ -107,7 +113,10 @@ export const PayoutForm = ({
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Type</FormLabel>
+                    <div className="flex items-center gap-1">
+                      <FormLabel>Type</FormLabel>
+                      <TooltipInfo content="Select the type of payout. This determines how the funds will be distributed" />
+                    </div>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -145,7 +154,10 @@ export const PayoutForm = ({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <div className="flex items-center gap-1">
+                    <FormLabel>Description</FormLabel>
+                    <TooltipInfo content="Provide a detailed description of what this payout is for and its objectives" />
+                  </div>
                   <FormControl>
                     <Input
                       {...field}
@@ -164,12 +176,16 @@ export const PayoutForm = ({
               name="grantee_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Grantee Email</FormLabel>
+                  <div className="flex items-center gap-1">
+                    <FormLabel>Grantee Email</FormLabel>
+                    <TooltipInfo content="Enter the email address of the grantee who will receive this payout" />
+                  </div>
                   <FormControl>
                     <div className="relative">
                       <Input
                         {...field}
                         placeholder="Enter the grantee's email"
+                        disabled={mode === "edit"}
                         aria-label="Grantee Email"
                         tabIndex={0}
                         className={cn(
@@ -199,7 +215,10 @@ export const PayoutForm = ({
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <div className="flex items-center gap-1">
+                      <FormLabel>Status</FormLabel>
+                      <TooltipInfo content="Current status of the payout. This indicates where the payout is in its lifecycle" />
+                    </div>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -236,7 +255,10 @@ export const PayoutForm = ({
                 name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Currency</FormLabel>
+                    <div className="flex items-center gap-1">
+                      <FormLabel>Currency</FormLabel>
+                      <TooltipInfo content="Select the currency in which the payout will be made" />
+                    </div>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -275,7 +297,10 @@ export const PayoutForm = ({
                 name="total_funding"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Total Funding</FormLabel>
+                    <div className="flex items-center gap-1">
+                      <FormLabel>Total Funding</FormLabel>
+                      <TooltipInfo content="Total amount of funding for this payout. This is automatically calculated from milestone amounts" />
+                    </div>
                     <FormControl>
                       <Input
                         {...field}
@@ -299,7 +324,10 @@ export const PayoutForm = ({
               name="milestones"
               render={() => (
                 <FormItem>
-                  <FormLabel>Milestones</FormLabel>
+                  <div className="flex items-center gap-1">
+                    <FormLabel>Milestones</FormLabel>
+                    <TooltipInfo content="Add milestones to break down the payout into smaller, trackable deliverables" />
+                  </div>
                   <div className="space-y-2">
                     {milestoneFieldArray.fields.map((field, idx) => (
                       <div key={field.id} className="flex gap-2 items-center">
@@ -418,7 +446,10 @@ export const PayoutForm = ({
               name="image_url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Image</FormLabel>
+                  <div className="flex items-center gap-1">
+                    <FormLabel>Image</FormLabel>
+                    <TooltipInfo content="Upload an image that represents or is related to this payout" />
+                  </div>
                   <FormControl>
                     <div className="flex flex-col gap-4">
                       <div className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-dashed border-muted-foreground/25 bg-muted/5">

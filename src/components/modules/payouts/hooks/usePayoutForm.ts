@@ -31,7 +31,7 @@ const DEVELOPMENT_TEMPLATE: PayoutFormValues = {
 export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
   const [isValidating, setIsValidating] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { setUser } = usePayout();
+  const { setSelectedGrantee } = usePayout();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const form = useForm<PayoutFormValues>({
@@ -75,11 +75,11 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
             initialValues.grantee_id,
           );
           if (result.exists) {
-            setUser(result.user);
+            setSelectedGrantee(result.user);
             clearErrors("grantee_id");
             setIsSuccess(true);
           } else {
-            setUser(null);
+            setSelectedGrantee(null);
             setError("grantee_id", {
               type: "manual",
               message: result.message,
@@ -88,7 +88,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
           }
         } catch (error) {
           console.error("Error loading initial user:", error);
-          setUser(null);
+          setSelectedGrantee(null);
           setError("grantee_id", {
             type: "manual",
             message: "Failed to load user",
@@ -100,7 +100,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
       }
     };
     loadInitialUser();
-  }, [initialValues?.grantee_id, setUser, setError, clearErrors]);
+  }, [initialValues?.grantee_id, setSelectedGrantee, setError, clearErrors]);
 
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -108,7 +108,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
     if (!granteeEmail) {
       setIsValidating(false);
       clearErrors("grantee_id");
-      setUser(null);
+      setSelectedGrantee(null);
       return;
     }
 
@@ -119,11 +119,11 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
           await authService.getUserByEmail(granteeEmail);
 
         if (result.exists) {
-          setUser(result.user);
+          setSelectedGrantee(result.user);
           clearErrors("grantee_id");
           setIsSuccess(true);
         } else {
-          setUser(null);
+          setSelectedGrantee(null);
           setError("grantee_id", {
             type: "manual",
             message: result.message,
@@ -132,7 +132,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
         }
       } catch (error) {
         console.error("Error validating email:", error);
-        setUser(null);
+        setSelectedGrantee(null);
         setError("grantee_id", {
           type: "manual",
           message: "Failed to validate email",
@@ -146,7 +146,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [granteeEmail, setError, clearErrors, setUser]);
+  }, [granteeEmail, setError, clearErrors, setSelectedGrantee]);
 
   return {
     ...form,
@@ -156,6 +156,6 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
     isValidating,
     isSuccess,
     loadTemplate:
-      process.env.NODE_ENV === "development" ? loadTemplate : undefined,
+      process.env.NEXT_PUBLIC_ENV === "DEV" ? loadTemplate : undefined,
   };
 };

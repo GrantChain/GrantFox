@@ -4,8 +4,8 @@ import type { PayoutProvider, User } from "@/generated/prisma";
 import { type ReactNode, createContext, useContext, useState } from "react";
 
 interface PayoutContextType {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  selectedGrantee: User | null;
+  setSelectedGrantee: (selectedGrantee: User | null) => void;
   creator: PayoutProvider | null;
   setCreator: (creator: PayoutProvider | null) => void;
   showCreateModal: boolean;
@@ -15,15 +15,15 @@ interface PayoutContextType {
 const PayoutContext = createContext<PayoutContextType | undefined>(undefined);
 
 export function PayoutContextProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [selectedGrantee, setSelectedGrantee] = useState<User | null>(null);
   const [creator, setCreator] = useState<PayoutProvider | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   return (
     <PayoutContext.Provider
       value={{
-        user,
-        setUser,
+        selectedGrantee,
+        setSelectedGrantee,
         creator,
         setCreator,
         showCreateModal,

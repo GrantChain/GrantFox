@@ -32,7 +32,12 @@ export const payoutFormSchema = z.object({
   milestones: z
     .array(milestoneSchema)
     .min(1, "At least one milestone is required"),
-  grantee_id: z.string().email("Must be a valid email").optional(),
+  grantee_id: z
+    .string()
+    .refine((val) => val === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      message: "Must be a valid email",
+    })
+    .optional(),
 });
 
 export type PayoutFormValues = z.infer<typeof payoutFormSchema>;

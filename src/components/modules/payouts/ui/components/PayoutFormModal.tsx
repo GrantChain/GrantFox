@@ -29,19 +29,23 @@ export const PayoutFormModal = ({
 }: PayoutFormModalProps) => {
   const { handleCreatePayout, handleUpdatePayout, isUpdating, isCreating } =
     usePayoutMutations();
-  const { setShowCreateModal, setUser } = usePayout();
+  const { setShowCreateModal, setSelectedGrantee } = usePayout();
 
   useEffect(() => {
-    setUser(null);
-  }, [setUser]);
+    setSelectedGrantee(null);
+  }, [setSelectedGrantee]);
 
   const handleOpenChange = (newOpen: boolean) => {
-    setUser(null);
+    setSelectedGrantee(null);
     onOpenChange(newOpen);
   };
 
   const handleCreatePayoutSubmit = async (data: PayoutFormValues) => {
-    setUser(null);
+    setSelectedGrantee(null);
+
+    // Initialize an escrow
+    console.log(!data.grantee_id);
+
     const success = await handleCreatePayout(data);
     if (success) {
       setShowCreateModal(false);
@@ -50,7 +54,11 @@ export const PayoutFormModal = ({
 
   const handleEditPayout = async (data: PayoutFormValues) => {
     if (!payout) return;
-    setUser(null);
+    setSelectedGrantee(null);
+
+    // Initialize an escrow
+    console.log(!data.grantee_id);
+
     const success = await handleUpdatePayout(payout.payout_id, data);
     if (success) {
       onOpenChange(false);
@@ -77,6 +85,7 @@ export const PayoutFormModal = ({
           onSubmit={
             mode === "edit" ? handleEditPayout : handleCreatePayoutSubmit
           }
+          mode={mode}
         />
       </DialogContent>
     </Dialog>

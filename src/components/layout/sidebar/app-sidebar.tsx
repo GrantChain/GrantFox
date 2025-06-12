@@ -1,37 +1,37 @@
-'use client';
+"use client";
 
-import { useUser } from '@/components/modules/auth/context/UserContext';
-import TooltipInfo from '@/components/shared/TooltipInfo';
-import { Separator } from '@/components/ui/separator';
+import { useAuth } from "@/components/modules/auth/context/AuthContext";
+import TooltipInfo from "@/components/shared/TooltipInfo";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from "@/components/ui/sidebar";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from '@/components/ui/sidebar';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useWallet } from '@/components/wallet/hooks/useWallet';
-import { AlertTriangle } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import type * as React from 'react';
-import { useMemo } from 'react';
-import { navItems } from './constants/items.constant';
-import { NavUser } from './nav-user';
+} from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useWallet } from "@/components/wallet/hooks/useWallet";
+import { AlertTriangle } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import type * as React from "react";
+import { useMemo } from "react";
+import { navItems } from "./constants/items.constant";
+import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { account } = useWallet();
   const isConnected = Boolean(account);
   const { open } = useSidebar();
-  const { user, isLoading } = useUser();
+  const { user, isLoading } = useAuth();
 
   const filteredNavItems = useMemo(() => {
     if (isLoading || !user?.role) return [];
@@ -97,15 +97,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <TooltipInfo
                 content={
                   !isConnected
-                    ? 'Connect your wallet to access this section'
-                    : ''
+                    ? "Connect your wallet to access this section"
+                    : ""
                 }
               >
                 <div className="w-full">
                   <SidebarMenuButton asChild disabled={!isConnected}>
                     <Link
-                      href={isConnected ? item.url : '#'}
-                      className={`flex items-center gap-2 ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      href={isConnected ? item.url : "#"}
+                      className={`flex items-center gap-2 ${!isConnected ? "opacity-50 cursor-not-allowed" : ""}`}
                       onClick={(e) => !isConnected && e.preventDefault()}
                     >
                       <item.icon className="h-4 w-4" />
@@ -137,10 +137,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <Separator className="my-1" />
           <NavUser
             user={{
-              name: user?.username || 'User',
-              email: user?.email || '',
-              avatar: user?.profile_url || '',
-              role: user?.role || '',
+              name: user?.username || "User",
+              email: user?.email || "",
+              avatar: user?.profile_url || "",
+              role: user?.role || "",
             }}
           />
         </div>

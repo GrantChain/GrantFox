@@ -1,4 +1,4 @@
-import { useUser } from "@/components/modules/auth/context/UserContext";
+import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,7 @@ export const PayoutsFilters = ({
   );
   const [searchValue, setSearchValue] = useState(filters.search || "");
   const { showCreateModal, setShowCreateModal } = usePayout();
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const handleFilterChange = useCallback(
     (key: keyof typeof filters, value: string) => {

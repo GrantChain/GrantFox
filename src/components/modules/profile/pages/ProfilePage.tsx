@@ -1,67 +1,67 @@
-'use client';
+"use client";
 
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
-import { useUser } from '../../auth/context/UserContext';
-import type { ProfileUpdateData } from '../@types/profile';
-import { GeneralInfoForm } from '../components/GeneralInfoForm';
-import { GrantProviderForm } from '../components/GrantProviderForm';
-import { GranteeForm } from '../components/GranteeForm';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "../../auth/context/AuthContext";
+import type { ProfileUpdateData } from "../@types/profile";
+import { GeneralInfoForm } from "../components/GeneralInfoForm";
+import { GrantProviderForm } from "../components/GrantProviderForm";
+import { GranteeForm } from "../components/GranteeForm";
 import type {
   GeneralInfoFormData,
   GrantProviderFormData,
   GranteeFormData,
-} from '../schemas/profile.schema';
+} from "../schemas/profile.schema";
 
 export default function ProfilePage() {
-  const { user, grantee, grantProvider, isLoading } = useUser();
+  const { user, grantee, grantProvider, isLoading } = useAuth();
 
   const updateProfile = async (payload: ProfileUpdateData) => {
-    const res = await fetch('/api/profile', {
-      method: 'PATCH',
+    const res = await fetch("/api/profile", {
+      method: "PATCH",
       // biome-ignore lint/style/noNonNullAssertion: we validated `user` is not null above
       body: JSON.stringify({ userId: user!.user_id, ...payload }),
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     if (!res.ok) {
       const { error } = await res.json();
-      throw new Error(error || 'Error updating profile');
+      throw new Error(error || "Error updating profile");
     }
   };
 
   const handleGeneralInfoSubmit = async (data: GeneralInfoFormData) => {
     try {
       await updateProfile({ user: data });
-      toast.success('General information updated successfully');
+      toast.success("General information updated successfully");
     } catch (err) {
       console.error(err);
-      toast.error('Failed to update general information');
+      toast.error("Failed to update general information");
     }
   };
 
   const handleGrantProviderSubmit = async (data: GrantProviderFormData) => {
     try {
       await updateProfile({ user: {}, grantProvider: data });
-      toast.success('Grant provider information updated successfully');
+      toast.success("Grant provider information updated successfully");
     } catch (err) {
       console.error(err);
-      toast.error('Failed to update grant provider information');
+      toast.error("Failed to update grant provider information");
     }
   };
 
   const handleGranteeSubmit = async (data: GranteeFormData) => {
     try {
       await updateProfile({ user: {}, grantee: data });
-      toast.success('Grantee information updated successfully');
+      toast.success("Grantee information updated successfully");
     } catch (err) {
       console.error(err);
-      toast.error('Failed to update grantee information');
+      toast.error("Failed to update grantee information");
     }
   };
 
@@ -109,14 +109,14 @@ export default function ProfilePage() {
         <GeneralInfoForm user={user} onSubmit={handleGeneralInfoSubmit} />
 
         {/* Role-Specific Forms */}
-        {user.role === 'GRANT_PROVIDER' && (
+        {user.role === "GRANT_PROVIDER" && (
           <GrantProviderForm
             grantProvider={grantProvider ?? undefined}
             onSubmit={handleGrantProviderSubmit}
           />
         )}
 
-        {user.role === 'GRANTEE' && (
+        {user.role === "GRANTEE" && (
           <GranteeForm
             grantee={grantee ?? undefined}
             onSubmit={handleGranteeSubmit}

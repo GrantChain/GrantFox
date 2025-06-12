@@ -8,7 +8,6 @@ import type {
 } from "@/generated/prisma";
 import { http } from "@/lib/axios";
 import { supabase } from "@/lib/supabase";
-import axios from "axios";
 import {
   createContext,
   useCallback,
@@ -18,7 +17,7 @@ import {
 } from "react";
 import { authService } from "../services/auth.service";
 
-interface UserContextType {
+interface AuthContextType {
   user: User | null;
   grantee: Grantee | null;
   payoutProvider: PayoutProvider | null;
@@ -36,9 +35,9 @@ interface RoleDataResponse {
   user: Grantee | PayoutProvider;
 }
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [grantee, setGrantee] = useState<Grantee | null>(null);
   const [payoutProvider, setPayoutProvider] = useState<PayoutProvider | null>(
@@ -140,7 +139,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, [fetchUserData, refreshUser]);
 
   return (
-    <UserContext.Provider
+    <AuthContext.Provider
       value={{
         user,
         grantee,
@@ -150,14 +149,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
 }
 
-export function useUser() {
-  const context = useContext(UserContext);
+export function useAuth() {
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useUser must be used within a UserProvider");
+    throw new Error("useAuth must be used within a AuthProvider");
   }
   return context;
 }
