@@ -1,14 +1,13 @@
 "use client";
 
-import React from "react";
 import {
-  // development environment = "https://dev.api.trustlesswork.com"
-  development,
-
   // mainnet environment = "https://api.trustlesswork.com"
   // mainNet,
   TrustlessWorkConfig,
+  // development environment = "https://dev.api.trustlesswork.com"
+  development,
 } from "@trustless-work/escrow";
+import type React from "react";
 
 interface TrustlessWorkProviderProps {
   children: React.ReactNode;
