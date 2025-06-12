@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import GithubSignInButton from '@/components/modules/auth/ui/github/GithubSignInButton';
+import GoogleSignInButton from '@/components/modules/auth/ui/google/GoogleSignInButton';
+import { Button } from '@/components/ui/button';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { useAuth } from "../../hooks/useAuth";
-import { FormProvider } from "react-hook-form";
-import { Eye, EyeOff } from "lucide-react";
-import GoogleSignInButton from "@/components/modules/auth/ui/google/GoogleSignInButton";
-import GithubSignInButton from "@/components/modules/auth/ui/github/GithubSignInButton";
-import Link from "next/link";
-import { AuthLayout } from "../shared/AuthLayout";
-import { AuthFooter } from "../shared/AuthFooter";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
+import { FormProvider } from 'react-hook-form';
+import { useAuth } from '../../hooks/useAuth';
+import { AuthFooter } from '../shared/AuthFooter';
+import { AuthLayout } from '../shared/AuthLayout';
 
 export const SignUpForm = () => {
   const { form, showPassword, setShowPassword, handleSignUp } = useAuth();
@@ -67,7 +67,7 @@ export const SignUpForm = () => {
                   <FormControl>
                     <div className="relative">
                       <Input
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Enter password"
                         {...field}
                         onChange={(e) => field.onChange(e)}
@@ -111,7 +111,7 @@ export const SignUpForm = () => {
           </div>
 
           <div className="text-center text-sm mt-6">
-            Do you have an account?{" "}
+            Do you have an account?{' '}
             <Link href="/login" className="underline underline-offset-4">
               Login
             </Link>
