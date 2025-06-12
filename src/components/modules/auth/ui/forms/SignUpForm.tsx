@@ -16,6 +16,8 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { AuthLayout } from "../shared/AuthLayout";
 import { AuthFooter } from "../shared/AuthFooter";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
 export const SignUpForm = () => {
   const { form, showPassword, setShowPassword, handleSignUp, isLoading } =
