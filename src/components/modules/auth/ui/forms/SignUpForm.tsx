@@ -1,5 +1,6 @@
 "use client";
 
+import GithubSignInButton from "@/components/modules/auth/ui/github/GithubSignInButton";
 import GoogleSignInButton from "@/components/modules/auth/ui/google/GoogleSignInButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +11,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { FormProvider } from "react-hook-form";
 import { useAuth } from "../../hooks/useAuth";
@@ -112,8 +114,9 @@ export const SignUpForm = () => {
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <GoogleSignInButton />
+            <GithubSignInButton />
           </div>
 
           <div className="text-center text-sm mt-6">
