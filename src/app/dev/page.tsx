@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { DndContext } from '@dnd-kit/core';
-import { KanbanColumn } from '@/components/ui/kanban/KanbanColumn';
-import { useKanbanParams } from '@/hooks/useKanbanParams';
+import { KanbanColumn } from "@/components/ui/kanban/KanbanColumn";
+import { useKanbanParams } from "@/hooks/useKanbanParams";
+import { DndContext } from "@dnd-kit/core";
 
 export default function App() {
   const { COLUMNS, tasks, handleDragEnd } = useKanbanParams();

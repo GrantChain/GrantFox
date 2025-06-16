@@ -1,6 +1,6 @@
-import { useDroppable } from '@dnd-kit/core';
-import { DraggableCard } from './DraggableCard';
-import { Column, Item } from '@/interfaces/kanban.interface';
+import type { Column, Item } from "@/interfaces/kanban.interface";
+import { useDroppable } from "@dnd-kit/core";
+import { DraggableCard } from "./DraggableCard";
 
 type ColumnProps = {
   column: Column;
