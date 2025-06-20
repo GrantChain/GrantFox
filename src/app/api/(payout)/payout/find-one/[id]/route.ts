@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { handleDatabaseError, prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -23,10 +23,7 @@ export async function GET(
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error in find one payout route:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    const { message, status } = handleDatabaseError(error);
+    return NextResponse.json({ error: message }, { status });
   }
 }

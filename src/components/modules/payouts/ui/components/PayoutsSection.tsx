@@ -21,7 +21,7 @@ export const PayoutsSection = () => {
   const { user } = useAuth();
 
   const { data, isLoading, error } = usePayouts(
-    user
+    user?.user_id
       ? {
           filters,
           pagination,
@@ -30,6 +30,8 @@ export const PayoutsSection = () => {
         }
       : undefined,
   );
+
+  console.log(data);
 
   if (error) {
     return (
@@ -44,7 +46,7 @@ export const PayoutsSection = () => {
       <PayoutsFilters onFilterChange={handleFilterChange} filters={filters} />
 
       <div className="flex-1">
-        {isLoading ? (
+        {isLoading && !data ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
             {Array.from({ length: 6 }).map((_, index) => (
               <PayoutCardSkeleton

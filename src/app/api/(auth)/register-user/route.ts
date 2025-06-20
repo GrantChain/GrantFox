@@ -1,9 +1,8 @@
 // /app/api/register-user/route.ts
 
 import { UserPayloadSchema } from "@/components/modules/auth/schema/register-user.schema";
-import { prisma } from "@/lib/prisma";
+import { handleDatabaseError, prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export async function POST(req: Request) {
   try {
@@ -46,23 +45,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ user }, { status: 201 });
-  } catch (error: unknown) {
-    console.error("Error creating user:", error);
-    if (
-      error instanceof PrismaClientKnownRequestError &&
-      error.code === "42P05"
-    ) {
-      return NextResponse.json(
-        { error: "Database connection error. Please try again." },
-        { status: 503 },
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Failed to create user" },
-      { status: 500 },
-    );
-  } finally {
-    await prisma.$disconnect();
+  } catch (error) {
+    const { message, status } = handleDatabaseError(error);
+    return NextResponse.json({ error: message }, { status });
   }
 }

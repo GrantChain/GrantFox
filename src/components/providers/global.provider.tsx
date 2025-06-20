@@ -7,12 +7,12 @@ import { TrustlessWorkProvider } from "./trustless-work.provider";
 
 export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   return (
-    <ThemeProvider defaultTheme="system">
-      <PostHogProvider>
-        <TanstackProvider>
-          <TrustlessWorkProvider>{children}</TrustlessWorkProvider>
-        </TanstackProvider>
-      </PostHogProvider>
-    </ThemeProvider>
+    <TrustlessWorkProvider>
+      <ThemeProvider defaultTheme="system">
+        <PostHogProvider>
+          <TanstackProvider>{children}</TanstackProvider>
+        </PostHogProvider>
+      </ThemeProvider>
+    </TrustlessWorkProvider>
   );
 };

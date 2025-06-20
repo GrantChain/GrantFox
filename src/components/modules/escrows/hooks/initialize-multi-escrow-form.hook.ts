@@ -30,12 +30,6 @@ export const useInitializeMultiEscrowForm = () => {
         signer: address || "",
       };
 
-      /**
-       * API call by using the trustless work hooks
-       * @Note:
-       * - We need to pass the payload to the deployEscrow function
-       * - The result will be an unsigned transaction
-       */
       const { unsignedTransaction } = await deployEscrow({
         payload: finalPayload,
         type: "multi-release",
@@ -47,11 +41,6 @@ export const useInitializeMultiEscrowForm = () => {
         );
       }
 
-      /**
-       * @Note:
-       * - We need to sign the transaction using your private key
-       * - The result will be a signed transaction
-       */
       const signedXdr = await signTransaction({
         unsignedTransaction,
         address: address || "",
@@ -61,27 +50,7 @@ export const useInitializeMultiEscrowForm = () => {
         throw new Error("Signed transaction is missing.");
       }
 
-      /**
-       * @Note:
-       * - We need to send the signed transaction to the API
-       * - The data will be an SendTransactionResponse
-       */
-      const data = await sendTransaction(signedXdr);
-
-      /**
-       * @Responses:
-       * data.status === "SUCCESS"
-       * - Escrow created successfully
-       * - Set the escrow in the context
-       * - Set the active tab to "escrow"
-       * - Show a success toast
-       *
-       * data.status == "ERROR"
-       * - Show an error toast
-       */
-      if (data && data.status === "SUCCESS") {
-        toast.success("Escrow Created");
-      }
+      await sendTransaction(signedXdr);
     } catch (error: unknown) {
       const mappedError = handleError(error as AxiosError | WalletError);
       console.error("Error:", mappedError.message);

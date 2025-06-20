@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
+import { OptimizedLoading } from "@/components/shared/OptimizedLoading";
 import TooltipInfo from "@/components/shared/TooltipInfo";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -17,7 +18,6 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useWallet } from "@/components/wallet/hooks/useWallet";
 import { AlertTriangle } from "lucide-react";
 import Image from "next/image";
@@ -34,11 +34,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isLoading } = useAuth();
 
   const filteredNavItems = useMemo(() => {
-    if (isLoading || !user?.role) return [];
-    return navItems.filter((item) => item.roles.includes(user.role));
-  }, [user?.role, isLoading]);
+    if (user?.role) {
+      return navItems.filter((item) => item.roles.includes(user.role));
+    }
 
-  if (isLoading) {
+    if (!isLoading && user) {
+      return navItems.filter(
+        (item) =>
+          item.roles.includes("PAYOUT_PROVIDER") ||
+          item.roles.includes("GRANTEE"),
+      );
+    }
+
+    return [];
+  }, [user?.role, isLoading, user]);
+
+  if (isLoading && !user) {
     return (
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader className="p-3 group-data-[collapsible=icon]:p-2">
@@ -59,11 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarHeader>
         <SidebarContent>
           <div className="flex items-center justify-center p-4">
-            <div className="animate-pulse space-y-4 w-full">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-10 w-full" />
-              ))}
-            </div>
+            <OptimizedLoading count={3} />
           </div>
         </SidebarContent>
       </Sidebar>

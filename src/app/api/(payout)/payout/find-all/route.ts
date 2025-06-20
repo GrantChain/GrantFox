@@ -1,6 +1,6 @@
 import type { Prisma } from "@/generated/prisma";
 import { UserRole } from "@/generated/prisma";
-import { prisma } from "@/lib/prisma";
+import { handleDatabaseError, prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -51,66 +51,39 @@ export async function POST(request: Request) {
     const pageSize = pagination?.pageSize || 10;
     const skip = (page - 1) * pageSize;
 
-    try {
-      // First, try to get the count
-      const total = await prisma.payout.count({ where });
+    // First, try to get the count
+    const total = await prisma.payout.count({ where });
 
-      // Then, get the data
-      const data = await prisma.payout.findMany({
-        where,
-        skip,
-        take: pageSize,
-        orderBy: {
-          created_at: "desc",
-        },
-        include: {
-          user: {
-            select: {
-              user_id: true,
-              email: true,
-              username: true,
-              profile_url: true,
-            },
-          },
-          grantee: {
-            select: {
-              user_id: true,
-              name: true,
-              position_title: true,
-            },
-          },
-        },
-      });
-
-      return NextResponse.json({ data, total });
-    } catch (error) {
-      console.error("Prisma query error:", error);
-
-      // Check if it's a connection error
-      if (
-        error instanceof Error &&
-        error.message.includes("prepared statement")
-      ) {
-        return NextResponse.json(
-          { error: "Database connection error. Please try again." },
-          { status: 503 },
-        );
-      }
-
-      return NextResponse.json(
-        {
-          error: `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        },
-        { status: 500 },
-      );
-    }
-  } catch (error) {
-    console.error("Error in find all payouts route:", error);
-    return NextResponse.json(
-      {
-        error: `Internal server error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    // Then, get the data
+    const data = await prisma.payout.findMany({
+      where,
+      skip,
+      take: pageSize,
+      orderBy: {
+        created_at: "desc",
       },
-      { status: 500 },
-    );
+      include: {
+        user: {
+          select: {
+            user_id: true,
+            email: true,
+            username: true,
+            profile_url: true,
+          },
+        },
+        grantee: {
+          select: {
+            user_id: true,
+            name: true,
+            position_title: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({ data, total });
+  } catch (error) {
+    const { message, status } = handleDatabaseError(error);
+    return NextResponse.json({ error: message }, { status });
   }
 }

@@ -1,3 +1,4 @@
+import { useInitializeMultiEscrowForm } from "@/components/modules/escrows/hooks/initialize-multi-escrow-form.hook";
 import {
   Dialog,
   DialogContent,
@@ -5,8 +6,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
+import { buildEscrowPayload } from "@/utils/build-escrow.utils";
 import { useEffect } from "react";
+import { toast } from "sonner";
 import { usePayout } from "../../context/PayoutContext";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
@@ -30,6 +34,8 @@ export const PayoutFormModal = ({
   const { handleCreatePayout, handleUpdatePayout, isUpdating, isCreating } =
     usePayoutMutations();
   const { setShowCreateModal, setSelectedGrantee } = usePayout();
+  const { address } = useGlobalWalletStore();
+  const { onSubmit: initializeEscrow } = useInitializeMultiEscrowForm();
 
   useEffect(() => {
     setSelectedGrantee(null);
@@ -40,15 +46,35 @@ export const PayoutFormModal = ({
     onOpenChange(newOpen);
   };
 
+  const handleInitializeEscrow = async (data: PayoutFormValues) => {
+    if (data.grantee_id) {
+      const payload = buildEscrowPayload(data, address);
+      await initializeEscrow(payload);
+    }
+  };
+
   const handleCreatePayoutSubmit = async (data: PayoutFormValues) => {
     setSelectedGrantee(null);
 
-    // Initialize an escrow
-    console.log(!data.grantee_id);
+    try {
+      const [payoutResult, escrowResult] = await Promise.allSettled([
+        handleCreatePayout(data),
+        data.grantee_id ? handleInitializeEscrow(data) : Promise.resolve(),
+      ]);
 
-    const success = await handleCreatePayout(data);
-    if (success) {
-      setShowCreateModal(false);
+      if (payoutResult.status === "fulfilled" && payoutResult.value) {
+        if (escrowResult.status === "fulfilled") {
+          toast.success("Payout created successfully");
+        } else if (escrowResult.status === "rejected") {
+          toast.error("Payout created but escrow initialization failed");
+        }
+        setShowCreateModal(false);
+      } else {
+        toast.error("Failed to create payout");
+      }
+    } catch (error) {
+      console.error("Error in handleCreatePayoutSubmit:", error);
+      toast.error("An unexpected error occurred");
     }
   };
 
@@ -56,12 +82,25 @@ export const PayoutFormModal = ({
     if (!payout) return;
     setSelectedGrantee(null);
 
-    // Initialize an escrow
-    console.log(!data.grantee_id);
+    try {
+      const [payoutResult, escrowResult] = await Promise.allSettled([
+        handleUpdatePayout(payout.payout_id, data),
+        data.grantee_id ? handleInitializeEscrow(data) : Promise.resolve(),
+      ]);
 
-    const success = await handleUpdatePayout(payout.payout_id, data);
-    if (success) {
-      onOpenChange(false);
+      if (payoutResult.status === "fulfilled" && payoutResult.value) {
+        if (escrowResult.status === "fulfilled") {
+          toast.success("Payout updated successfully");
+        } else if (escrowResult.status === "rejected") {
+          toast.error("Payout updated but escrow initialization failed");
+        }
+        onOpenChange(false);
+      } else {
+        toast.error("Failed to update payout");
+      }
+    } catch (error) {
+      console.error("Error in handleEditPayout:", error);
+      toast.error("An unexpected error occurred");
     }
   };
 

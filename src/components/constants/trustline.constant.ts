@@ -20,9 +20,6 @@ export const trustlines = [
   // you can add more trustlines here
 ];
 
-export const trustlinesOptions = trustlines.map(
-  (trustline: Trustline & { name?: string }) => ({
-    value: trustline.address,
-    label: trustline.name,
-  }),
-);
+export const trustlineSelected = (currency: string) => {
+  return trustlines.find((trustline) => trustline.name === currency);
+};

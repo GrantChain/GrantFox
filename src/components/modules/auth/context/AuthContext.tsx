@@ -6,7 +6,6 @@ import type {
   User,
   UserRole,
 } from "@/generated/prisma";
-import { http } from "@/lib/axios";
 import { supabase } from "@/lib/supabase";
 import {
   createContext,
@@ -15,7 +14,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { authService } from "../services/auth.service";
+import { useAuthMutations } from "../hooks/useAuthMutations";
 
 interface AuthContextType {
   user: User | null;
@@ -23,16 +22,6 @@ interface AuthContextType {
   payoutProvider: PayoutProvider | null;
   isLoading: boolean;
   refreshUser: () => Promise<void>;
-}
-
-interface UserResponse {
-  exists: boolean;
-  user: User;
-}
-
-interface RoleDataResponse {
-  exists: boolean;
-  user: Grantee | PayoutProvider;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -44,78 +33,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     null,
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  const { useCompleteUserData, handleRefreshUser, handleClearCache } =
+    useAuthMutations();
+
+  // Usar TanStack Query para obtener datos del usuario
+  const {
+    user: userData,
+    grantee: granteeData,
+    payoutProvider: payoutProviderData,
+    isLoading: isDataLoading,
+  } = useCompleteUserData(currentUserId || "");
+
+  // Actualizar estado cuando cambien los datos de TanStack Query
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+    }
+    if (granteeData && userData?.role === "GRANTEE") {
+      setGrantee(granteeData);
+    }
+    if (payoutProviderData && userData?.role === "PAYOUT_PROVIDER") {
+      setPayoutProvider(payoutProviderData);
+    }
+  }, [userData, granteeData, payoutProviderData]);
+
+  // Actualizar loading state
+  useEffect(() => {
+    setIsLoading(isDataLoading);
+  }, [isDataLoading]);
 
   const fetchUserData = useCallback(async (userId: string) => {
-    try {
-      // First check the role
-      const roleResponse = await authService.checkRole(userId);
-      if (!roleResponse.success || !roleResponse.role) {
-        console.log("No role found for userId:", userId);
-        return;
-      }
-
-      const { role } = roleResponse;
-
-      // Then fetch user data with the correct role
-      const response = await http.get<UserResponse>("/get-user-by-id", {
-        params: {
-          user_id: userId,
-          role,
-        },
-      });
-
-      if (!response.data.exists || !response.data.user) {
-        console.log("No user data found for userId:", userId);
-        return;
-      }
-
-      // Ensure the user has the correct role
-      const userWithRole = {
-        ...response.data.user,
-        role: role as UserRole,
-      };
-      setUser(userWithRole);
-
-      try {
-        const roleDataResponse = await http.get<RoleDataResponse>(
-          "/get-user-role-by-id",
-          {
-            params: {
-              user_id: userId,
-              role,
-            },
-          },
-        );
-
-        if (roleDataResponse.data.exists && roleDataResponse.data.user) {
-          if (role === "GRANTEE") {
-            setGrantee(roleDataResponse.data.user as Grantee);
-          } else if (role === "PAYOUT_PROVIDER") {
-            setPayoutProvider(roleDataResponse.data.user as PayoutProvider);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching role data:", error);
-      }
-    } catch (error) {
-      console.error("Error in fetchUserData:", {
-        error,
-        message: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    setCurrentUserId(userId);
   }, []);
 
   const refreshUser = useCallback(async () => {
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser();
-    if (authUser) {
-      await fetchUserData(authUser.id);
+    try {
+      if (currentUserId) {
+        await handleRefreshUser(currentUserId);
+      }
+    } catch (error) {
+      console.error("Error refreshing user:", error);
     }
-  }, [fetchUserData]);
+  }, [handleRefreshUser, currentUserId]);
 
   useEffect(() => {
     const {
@@ -127,16 +88,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         setGrantee(null);
         setPayoutProvider(null);
+        setCurrentUserId(null);
+        await handleClearCache();
       }
     });
 
-    // Initial fetch
-    refreshUser();
+    // Petición inicial
+    const initializeAuth = async () => {
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+      if (authUser) {
+        await fetchUserData(authUser.id);
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [fetchUserData, refreshUser]);
+  }, [fetchUserData, handleClearCache]);
 
   return (
     <AuthContext.Provider

@@ -1,53 +1,26 @@
-import type { WalletError } from "@/@types/errors.entity";
-import { handleError } from "@/errors/utils/handle-errors";
-import { useEscrowContext } from "@/providers/escrow.provider";
-import { useTabsContext } from "@/providers/tabs.provider";
-import { useWalletContext } from "@/providers/wallet.provider";
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { WalletError } from "@/@types/error.entity";
+import { useGlobalWalletStore } from "@/components/wallet/store/store";
+import { handleError } from "@/errors/mapping.utils";
+import { signTransaction } from "@/lib/wallet-kit";
 import {
   useApproveMilestone,
   useSendTransaction,
 } from "@trustless-work/escrow/hooks";
-import {
-  type ApproveMilestonePayload,
-  type EscrowRequestResponse,
-  type MultiReleaseEscrow,
-  type MultiReleaseMilestone,
-  type SingleReleaseEscrow,
-  SingleReleaseMilestone,
+import type {
+  ApproveMilestonePayload,
+  EscrowRequestResponse,
 } from "@trustless-work/escrow/types";
 import type { AxiosError } from "axios";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import type { z } from "zod";
-import { signTransaction } from "../../auth/helpers/stellar-wallet-kit.helper";
-import { formSchema } from "../schemas/change-milestone-flag-form.schema";
 
 export const useApproveMilestoneForm = () => {
-  const { escrow, setEscrow } = useEscrowContext();
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<EscrowRequestResponse | null>(null);
-  const { walletAddress } = useWalletContext();
   const { approveMilestone } = useApproveMilestone();
   const { sendTransaction } = useSendTransaction();
-  const { activeEscrowType } = useTabsContext();
 
-  // Default milestones if escrow is undefined
-  const milestones = escrow?.milestones || [
-    { description: "Initial setup", status: "pending" },
-    { description: "Development phase", status: "pending" },
-  ];
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      contractId: escrow?.contractId || "CAZ6UQX7DEMO123",
-      milestoneIndex: "",
-      newFlag: true,
-      approver: escrow?.roles.approver || "GAPPROVER123456789",
-    },
-  });
+  const { address } = useGlobalWalletStore();
 
   const onSubmit = async (payload: ApproveMilestonePayload) => {
     setLoading(true);
@@ -62,7 +35,7 @@ export const useApproveMilestoneForm = () => {
        */
       const { unsignedTransaction } = await approveMilestone({
         payload,
-        type: activeEscrowType,
+        type: "multi-release",
       });
 
       if (!unsignedTransaction) {
@@ -78,7 +51,7 @@ export const useApproveMilestoneForm = () => {
        */
       const signedXdr = await signTransaction({
         unsignedTransaction,
-        address: walletAddress || "",
+        address: address || "",
       });
 
       if (!signedXdr) {
@@ -102,31 +75,12 @@ export const useApproveMilestoneForm = () => {
        * data.status == "ERROR"
        * - Show an error toast
        */
-      if (data.status === "SUCCESS" && escrow) {
-        const escrowUpdated = {
-          ...escrow,
-          milestones: escrow.milestones.map((milestone, index) =>
-            index === Number(payload.milestoneIndex)
-              ? activeEscrowType === "single-release"
-                ? { ...milestone, approved: payload.newFlag }
-                : {
-                    ...(milestone as MultiReleaseMilestone),
-                    flags: {
-                      ...(milestone as MultiReleaseMilestone).flags,
-                      approved: payload.newFlag,
-                    },
-                  }
-              : milestone,
-          ),
-        } as SingleReleaseEscrow | MultiReleaseEscrow;
-
-        setEscrow(escrowUpdated);
-
+      if (data.status === "SUCCESS") {
         toast.success(
           `Milestone index - ${payload.milestoneIndex} has been approved`,
         );
+
         setResponse(data);
-        form.reset();
       }
     } catch (error: unknown) {
       const mappedError = handleError(error as AxiosError | WalletError);
@@ -140,5 +94,5 @@ export const useApproveMilestoneForm = () => {
     }
   };
 
-  return { form, milestones, loading, response, onSubmit };
+  return { loading, response, onSubmit };
 };

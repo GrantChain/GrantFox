@@ -27,6 +27,14 @@ export const usePayouts = (options?: UsePayoutsOptions) => {
         options?.role,
         options?.userId,
       ),
-    enabled: !!options?.role && !!options?.userId,
+    enabled: !!options?.userId,
+    retry: (failureCount, error) => {
+      if (!options?.role && failureCount < 3) {
+        return true;
+      }
+      return failureCount < 2;
+    },
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 };
