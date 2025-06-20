@@ -11,8 +11,8 @@ export const OptimizedLoading = ({
 }: OptimizedLoadingProps) => {
   return (
     <div className="animate-pulse space-y-4 w-full">
-      {Array.from({ length: count }).map((_, index) => (
-        <Skeleton key={index} className={className} />
+      {Array.from({ length: count }).map(() => (
+        <Skeleton key={crypto.randomUUID()} className={className} />
       ))}
     </div>
   );
