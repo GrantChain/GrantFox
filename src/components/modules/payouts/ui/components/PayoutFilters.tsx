@@ -63,7 +63,7 @@ export const PayoutsFilters = ({
 
   return (
     <>
-      <div className="flex flex-col gap-4 mb-10">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row gap-4 items-start">
           <div className="w-full flex items-center gap-4 md:w-1/3 space-y-2">
             <Input

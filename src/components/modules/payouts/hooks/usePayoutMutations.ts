@@ -32,7 +32,6 @@ export const usePayoutMutations = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payouts"] });
       queryClient.refetchQueries({ queryKey: ["payouts"] });
-      toast.success("Payout created successfully");
     },
     onError: (error: Error) => {
       console.error("Error in createPayout mutation:", error);
@@ -53,7 +52,6 @@ export const usePayoutMutations = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payouts"] });
       queryClient.refetchQueries({ queryKey: ["payouts"] });
-      toast.success("Payout updated successfully");
     },
     onError: (error: Error) => {
       console.error("Error updating payout:", error);

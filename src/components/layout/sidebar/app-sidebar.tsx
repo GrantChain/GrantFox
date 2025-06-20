@@ -41,7 +41,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const filteredPayoutItems = useMemo(() => {
     if (user?.role) {
       return payoutItems.filter((item) => item.roles.includes(user.role));
-    } else if (!isLoading && user) {
+    }
+    if (!isLoading && user) {
       return payoutItems.filter(
         (item) =>
           item.roles.includes("PAYOUT_PROVIDER") ||
