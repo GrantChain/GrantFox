@@ -66,7 +66,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
     description: payout.description,
     type: payout.type,
     status: payout.status,
-    total_funding: payout.total_funding.toString(),
+    total_funding: Number(payout.total_funding),
     currency: payout.currency,
     image_url: payout.image_url || "",
     grantee_id: granteeEmail,

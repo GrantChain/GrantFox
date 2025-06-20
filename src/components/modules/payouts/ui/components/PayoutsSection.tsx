@@ -31,8 +31,6 @@ export const PayoutsSection = () => {
       : undefined,
   );
 
-  console.log(data);
-
   if (error) {
     return (
       <div className="grid grid-cols-1 gap-4">

@@ -60,13 +60,9 @@ export const PayoutForm = ({
   const milestones = watch("milestones");
   useEffect(() => {
     const total = milestones.reduce((sum, milestone) => {
-      const amount =
-        typeof milestone.amount === "string"
-          ? Number.parseFloat(milestone.amount)
-          : milestone.amount;
-      return sum + (Number.isNaN(amount) ? 0 : amount);
+      return sum + (milestone.amount || 0);
     }, 0);
-    setValue("total_funding", total.toString());
+    setValue("total_funding", total);
   }, [milestones, setValue]);
 
   return (
@@ -392,7 +388,7 @@ export const PayoutForm = ({
                                     },
                                     0,
                                   );
-                                  setValue("total_funding", total.toString());
+                                  setValue("total_funding", total);
                                 }}
                               />
                             </FormControl>

@@ -13,7 +13,7 @@ export const buildEscrowPayload = (
     description: data.description,
     milestones: data.milestones.map((milestone) => ({
       description: milestone.description,
-      amount: milestone.amount.toString() || "0",
+      amount: milestone.amount || 0,
     })),
     signer: address,
     engagementId: "data.engagementId", // org name - grantee name, ex: stellar-customer
@@ -25,7 +25,7 @@ export const buildEscrowPayload = (
       releaseSigner: process.env.NEXT_PUBLIC_PLATFORM_RELEASE_RESOLVER || "",
       disputeResolver: process.env.NEXT_PUBLIC_PLATFORM_RELEASE_RESOLVER || "",
     },
-    platformFee: process.env.NEXT_PUBLIC_PLATFORM_FEE || "",
+    platformFee: Number(process.env.NEXT_PUBLIC_PLATFORM_FEE) || 0,
     trustline: {
       address: trustline?.address || "",
       decimals: trustline?.decimals || 0,

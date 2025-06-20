@@ -20,7 +20,7 @@ const DEVELOPMENT_TEMPLATE: PayoutFormValues = {
   image_url: "",
   type: "GRANT",
   status: "DRAFT",
-  total_funding: "1000",
+  total_funding: 1000,
   currency: "USDC",
   milestones: [
     { description: "Milestone 1", amount: 500 },
@@ -43,7 +43,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
       image_url: "",
       type: "GRANT",
       status: "DRAFT",
-      total_funding: "",
+      total_funding: 1000,
       currency: "USDC",
       milestones: [{ description: "", amount: 0 }],
       ...initialValues,
