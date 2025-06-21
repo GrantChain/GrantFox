@@ -33,16 +33,21 @@ export const PayoutFormModal = ({
 }: PayoutFormModalProps) => {
   const { handleCreatePayout, handleUpdatePayout, isUpdating, isCreating } =
     usePayoutMutations();
-  const { setShowCreateModal, setSelectedGrantee } = usePayout();
+  const { setShowCreateModal, setSelectedGrantee, selectedGrantee } =
+    usePayout();
   const { address } = useGlobalWalletStore();
   const { onSubmit: initializeEscrow } = useInitializeMultiEscrowForm();
 
   useEffect(() => {
-    setSelectedGrantee(null);
-  }, [setSelectedGrantee]);
+    if (mode === "create") {
+      setSelectedGrantee(null);
+    }
+  }, [setSelectedGrantee, mode]);
 
   const handleOpenChange = (newOpen: boolean) => {
-    setSelectedGrantee(null);
+    if (mode === "create") {
+      setSelectedGrantee(null);
+    }
     onOpenChange(newOpen);
   };
 
@@ -54,12 +59,15 @@ export const PayoutFormModal = ({
   };
 
   const handleCreatePayoutSubmit = async (data: PayoutFormValues) => {
-    setSelectedGrantee(null);
-
     try {
+      const payload = {
+        ...data,
+        grantee_id: selectedGrantee?.user_id || "",
+      };
+
       const [payoutResult, escrowResult] = await Promise.allSettled([
-        handleCreatePayout(data),
-        data.grantee_id ? handleInitializeEscrow(data) : Promise.resolve(),
+        handleCreatePayout(payload),
+        handleInitializeEscrow(payload),
       ]);
 
       if (payoutResult.status === "fulfilled" && payoutResult.value) {
@@ -75,17 +83,23 @@ export const PayoutFormModal = ({
     } catch (error) {
       console.error("Error in handleCreatePayoutSubmit:", error);
       toast.error("An unexpected error occurred");
+    } finally {
+      setSelectedGrantee(null);
     }
   };
 
   const handleEditPayout = async (data: PayoutFormValues) => {
     if (!payout) return;
-    setSelectedGrantee(null);
 
     try {
+      const payload = {
+        ...data,
+        grantee_id: data.grantee_id || payout.grantee_id || "",
+      };
+
       const [payoutResult, escrowResult] = await Promise.allSettled([
-        handleUpdatePayout(payout.payout_id, data),
-        data.grantee_id ? handleInitializeEscrow(data) : Promise.resolve(),
+        handleUpdatePayout(payout.payout_id, payload),
+        handleInitializeEscrow(payload),
       ]);
 
       if (payoutResult.status === "fulfilled" && payoutResult.value) {
@@ -101,6 +115,7 @@ export const PayoutFormModal = ({
     } catch (error) {
       console.error("Error in handleEditPayout:", error);
       toast.error("An unexpected error occurred");
+    } finally {
     }
   };
 

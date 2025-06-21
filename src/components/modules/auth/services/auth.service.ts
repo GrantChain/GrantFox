@@ -93,10 +93,13 @@ class AuthService {
     }
   }
 
-  async getUserById(user_id: string): Promise<GetUserServiceResponse> {
+  async getUserById(
+    user_id: string,
+    role: UserRole,
+  ): Promise<GetUserServiceResponse> {
     try {
       const response = await http.get<{ user: User }>(
-        `/get-user-by-id?user_id=${encodeURIComponent(user_id)}&role=GRANTEE`,
+        `/get-user-by-id?user_id=${encodeURIComponent(user_id)}&role=${role}`,
       );
       return {
         exists: true,

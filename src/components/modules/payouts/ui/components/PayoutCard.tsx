@@ -25,15 +25,18 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const { handleDeletePayout, isDeleting } = usePayoutMutations();
-  const [granteeEmail, setGranteeEmail] = useState<string>("");
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
+  const [granteeEmail, setGranteeEmail] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGranteeEmail = async () => {
       if (payout.grantee_id) {
         setIsLoadingEmail(true);
         try {
-          const result = await authService.getUserById(payout.grantee_id);
+          const result = await authService.getUserById(
+            payout.grantee_id,
+            "GRANTEE",
+          );
           if (result.exists && result.user) {
             setGranteeEmail(result.user.email);
           }
@@ -69,7 +72,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
     total_funding: Number(payout.total_funding),
     currency: payout.currency,
     image_url: payout.image_url || "",
-    grantee_id: granteeEmail,
+    grantee_id: granteeEmail || "",
     milestones: Array.isArray(payout.milestones)
       ? payout.milestones.map((milestone) => ({
           description: (milestone as { description: string }).description,

@@ -6,6 +6,8 @@ import { type ReactNode, createContext, useContext, useState } from "react";
 interface PayoutContextType {
   selectedGrantee: User | null;
   setSelectedGrantee: (selectedGrantee: User | null) => void;
+  selectedPayoutProvider: User | null;
+  setSelectedPayoutProvider: (selectedPayoutProvider: User | null) => void;
   creator: PayoutProvider | null;
   setCreator: (creator: PayoutProvider | null) => void;
   showCreateModal: boolean;
@@ -16,6 +18,8 @@ const PayoutContext = createContext<PayoutContextType | undefined>(undefined);
 
 export function PayoutContextProvider({ children }: { children: ReactNode }) {
   const [selectedGrantee, setSelectedGrantee] = useState<User | null>(null);
+  const [selectedPayoutProvider, setSelectedPayoutProvider] =
+    useState<User | null>(null);
   const [creator, setCreator] = useState<PayoutProvider | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -24,6 +28,8 @@ export function PayoutContextProvider({ children }: { children: ReactNode }) {
       value={{
         selectedGrantee,
         setSelectedGrantee,
+        selectedPayoutProvider,
+        setSelectedPayoutProvider,
         creator,
         setCreator,
         showCreateModal,

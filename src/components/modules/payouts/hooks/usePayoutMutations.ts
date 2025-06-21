@@ -21,11 +21,13 @@ export const usePayoutMutations = () => {
         throw new Error("User must be a payout provider to create payouts");
       }
 
+      const { grantee_id, ...restData } = data;
+
       return payoutsService.create({
-        ...data,
+        ...restData,
         total_funding: new Decimal(data.total_funding),
         created_by: user.user_id,
-        grantee_id: selectedGrantee?.user_id || null,
+        grantee_id: data.grantee_id || null,
         image_url: data.image_url || null,
       });
     },
@@ -41,10 +43,12 @@ export const usePayoutMutations = () => {
 
   const updatePayout = useMutation({
     mutationFn: ({ id, data }: { id: string; data: PayoutFormValues }) => {
+      const { grantee_id, ...restData } = data;
+
       return payoutsService.update(id, {
-        ...data,
+        ...restData,
         total_funding: new Decimal(data.total_funding),
-        grantee_id: selectedGrantee?.user_id || null,
+        grantee_id: data.grantee_id || null,
         updated_at: new Date(),
         milestones: data.milestones,
       });
