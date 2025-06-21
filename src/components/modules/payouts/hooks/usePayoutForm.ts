@@ -1,15 +1,15 @@
 import type { GetUserServiceResponse } from "@/@types/responses.entity";
 import { authService } from "@/components/modules/auth/services/auth.service";
+import type { User } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { useAuth } from "../../auth/context/AuthContext";
 import { usePayout } from "../context/PayoutContext";
 import {
   type PayoutFormValues,
   payoutFormSchema,
 } from "../schemas/payout.schema";
-import { User } from "@/generated/prisma";
-import { useAuth } from "../../auth/context/AuthContext";
 
 interface UsePayoutFormProps {
   initialValues?: Partial<PayoutFormValues>;
