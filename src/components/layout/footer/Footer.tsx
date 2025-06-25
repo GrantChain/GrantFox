@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Github, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Linkedin, Github, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Footer = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -16,7 +16,7 @@ export const Footer = () => {
   return (
     <footer className="w-full border-t bg-background">
       <div className="container mx-auto py-8 md:py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* Branding Section */}
           <div className="flex flex-col items-center md:items-start">
             <div className="flex items-center gap-2 mb-4">
@@ -88,6 +88,7 @@ export const Footer = () => {
                     strokeLinejoin="round"
                     className="h-5 w-5"
                   >
+                    <title>X (formerly Twitter)</title>
                     <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
                     <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
                   </svg>
