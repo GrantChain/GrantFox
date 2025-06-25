@@ -69,6 +69,24 @@ export const useAuth = () => {
     }
   };
 
+  const handleGithubLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message);
+      }
+    } catch (err) {
+      console.error("GitHub login error:", err);
+      toast.error("Failed to sign in with GitHub");
+    }
+  };
+
   const handleSignUp = async (payload: z.infer<typeof authSchema>) => {
     setIsLoading(true);
     try {
@@ -169,6 +187,7 @@ export const useAuth = () => {
     handleSignUp,
     handleLogout,
     handleGoogleLogin,
+    handleGithubLogin,
     handleResend,
     isLoading,
   };
