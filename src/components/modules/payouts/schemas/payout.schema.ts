@@ -27,7 +27,7 @@ export const payoutFormSchema = z.object({
   image_url: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   type: z.nativeEnum(PayoutType),
   status: z.nativeEnum(PayoutStatus),
-  total_funding: z.string().min(1, "Total funding is required"),
+  total_funding: z.number().min(1, "Total funding is required"),
   currency: z.nativeEnum(Currency),
   milestones: z
     .array(milestoneSchema)

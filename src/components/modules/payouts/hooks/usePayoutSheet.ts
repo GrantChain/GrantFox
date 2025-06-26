@@ -24,8 +24,10 @@ export const usePayoutSheet = (): UsePayoutSheetResult => {
         setIsLoading(true);
         setError(null);
 
-        const result: GetUserServiceResponse =
-          await authService.getUserById(userId);
+        const result: GetUserServiceResponse = await authService.getUserById(
+          userId,
+          "GRANTEE",
+        );
 
         if (result.exists) {
           setSelectedGrantee(result.user);

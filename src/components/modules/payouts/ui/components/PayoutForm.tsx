@@ -40,8 +40,8 @@ export const PayoutForm = ({
   onSubmit,
 }: PayoutFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const formContext = usePayoutForm({ initialValues });
-  const { selectedGrantee } = usePayout();
+  const formContext = usePayoutForm({ initialValues, mode });
+  const { selectedGrantee: contextSelectedGrantee } = usePayout();
 
   const {
     control,
@@ -52,21 +52,22 @@ export const PayoutForm = ({
     handleSubmit,
     watch,
     setValue,
+    selectedGrantee: localSelectedGrantee,
   } = formContext;
 
   const isSubmitting = externalIsSubmitting ?? formIsSubmitting;
+
+  // Use local selectedGrantee for edit mode, context selectedGrantee for create mode
+  const selectedGrantee =
+    mode === "edit" ? localSelectedGrantee : contextSelectedGrantee;
 
   // Watch milestone amounts and calculate total
   const milestones = watch("milestones");
   useEffect(() => {
     const total = milestones.reduce((sum, milestone) => {
-      const amount =
-        typeof milestone.amount === "string"
-          ? Number.parseFloat(milestone.amount)
-          : milestone.amount;
-      return sum + (Number.isNaN(amount) ? 0 : amount);
+      return sum + (milestone.amount || 0);
     }, 0);
-    setValue("total_funding", total.toString());
+    setValue("total_funding", total);
   }, [milestones, setValue]);
 
   return (
@@ -392,7 +393,7 @@ export const PayoutForm = ({
                                     },
                                     0,
                                   );
-                                  setValue("total_funding", total.toString());
+                                  setValue("total_funding", total);
                                 }}
                               />
                             </FormControl>

@@ -1,8 +1,10 @@
 import type { GetUserServiceResponse } from "@/@types/responses.entity";
 import { authService } from "@/components/modules/auth/services/auth.service";
+import type { User } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { useAuth } from "../../auth/context/AuthContext";
 import { usePayout } from "../context/PayoutContext";
 import {
   type PayoutFormValues,
@@ -11,6 +13,7 @@ import {
 
 interface UsePayoutFormProps {
   initialValues?: Partial<PayoutFormValues>;
+  mode?: "create" | "edit";
 }
 
 const DEVELOPMENT_TEMPLATE: PayoutFormValues = {
@@ -20,7 +23,7 @@ const DEVELOPMENT_TEMPLATE: PayoutFormValues = {
   image_url: "",
   type: "GRANT",
   status: "DRAFT",
-  total_funding: "1000",
+  total_funding: 1000,
   currency: "USDC",
   milestones: [
     { description: "Milestone 1", amount: 500 },
@@ -28,10 +31,17 @@ const DEVELOPMENT_TEMPLATE: PayoutFormValues = {
   ],
 };
 
-export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
+export const usePayoutForm = ({
+  initialValues,
+  mode = "create",
+}: UsePayoutFormProps) => {
   const [isValidating, setIsValidating] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { setSelectedGrantee } = usePayout();
+  const [localSelectedGrantee, setLocalSelectedGrantee] = useState<User | null>(
+    null,
+  );
+  const { setSelectedGrantee, setSelectedPayoutProvider } = usePayout();
+  const { payoutProvider } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const form = useForm<PayoutFormValues>({
@@ -43,7 +53,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
       image_url: "",
       type: "GRANT",
       status: "DRAFT",
-      total_funding: "",
+      total_funding: 1000,
       currency: "USDC",
       milestones: [{ description: "", amount: 0 }],
       ...initialValues,
@@ -71,24 +81,39 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
       if (initialValues?.grantee_id) {
         setIsValidating(true);
         try {
-          const result = await authService.getUserByEmail(
-            initialValues.grantee_id,
-          );
-          if (result.exists) {
-            setSelectedGrantee(result.user);
+          const [result, payoutProviderResult] = await Promise.all([
+            authService.getUserByEmail(initialValues.grantee_id),
+            authService.getUserById(
+              payoutProvider?.user_id || "",
+              "PAYOUT_PROVIDER",
+            ),
+          ]);
+
+          if (result.exists && payoutProviderResult.exists) {
+            if (mode === "edit") {
+              setLocalSelectedGrantee(result.user);
+            } else {
+              setSelectedGrantee(result.user);
+            }
+            setSelectedPayoutProvider(payoutProviderResult.user);
             clearErrors("grantee_id");
             setIsSuccess(true);
           } else {
-            setSelectedGrantee(null);
-            setError("grantee_id", {
-              type: "manual",
-              message: result.message,
-            });
+            if (mode === "edit") {
+              setLocalSelectedGrantee(null);
+            } else {
+              setSelectedGrantee(null);
+            }
+            setSelectedPayoutProvider(null);
             setIsSuccess(false);
           }
         } catch (error) {
           console.error("Error loading initial user:", error);
-          setSelectedGrantee(null);
+          if (mode === "edit") {
+            setLocalSelectedGrantee(null);
+          } else {
+            setSelectedGrantee(null);
+          }
           setError("grantee_id", {
             type: "manual",
             message: "Failed to load user",
@@ -100,7 +125,14 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
       }
     };
     loadInitialUser();
-  }, [initialValues?.grantee_id, setSelectedGrantee, setError, clearErrors]);
+  }, [
+    initialValues?.grantee_id,
+    setSelectedGrantee,
+    setSelectedPayoutProvider,
+    setError,
+    clearErrors,
+    mode,
+  ]);
 
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -108,31 +140,50 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
     if (!granteeEmail) {
       setIsValidating(false);
       clearErrors("grantee_id");
-      setSelectedGrantee(null);
+      if (mode === "edit") {
+        setLocalSelectedGrantee(null);
+      } else {
+        setSelectedGrantee(null);
+      }
       return;
     }
 
     timeoutRef.current = setTimeout(async () => {
       setIsValidating(true);
       try {
-        const result: GetUserServiceResponse =
-          await authService.getUserByEmail(granteeEmail);
+        const [result, payoutProviderResult] = await Promise.all([
+          authService.getUserByEmail(granteeEmail),
+          authService.getUserById(
+            payoutProvider?.user_id || "",
+            "PAYOUT_PROVIDER",
+          ),
+        ]);
 
-        if (result.exists) {
-          setSelectedGrantee(result.user);
+        if (result.exists && payoutProviderResult.exists) {
+          if (mode === "edit") {
+            setLocalSelectedGrantee(result.user);
+          } else {
+            setSelectedGrantee(result.user);
+          }
+          setSelectedPayoutProvider(payoutProviderResult.user);
           clearErrors("grantee_id");
           setIsSuccess(true);
         } else {
-          setSelectedGrantee(null);
-          setError("grantee_id", {
-            type: "manual",
-            message: result.message,
-          });
+          if (mode === "edit") {
+            setLocalSelectedGrantee(null);
+          } else {
+            setSelectedGrantee(null);
+          }
+          setSelectedPayoutProvider(null);
           setIsSuccess(false);
         }
       } catch (error) {
         console.error("Error validating email:", error);
-        setSelectedGrantee(null);
+        if (mode === "edit") {
+          setLocalSelectedGrantee(null);
+        } else {
+          setSelectedGrantee(null);
+        }
         setError("grantee_id", {
           type: "manual",
           message: "Failed to validate email",
@@ -146,7 +197,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [granteeEmail, setError, clearErrors, setSelectedGrantee]);
+  }, [granteeEmail, setError, clearErrors, setSelectedGrantee, mode]);
 
   return {
     ...form,
@@ -155,6 +206,7 @@ export const usePayoutForm = ({ initialValues }: UsePayoutFormProps) => {
     formState,
     isValidating,
     isSuccess,
+    selectedGrantee: mode === "edit" ? localSelectedGrantee : null,
     loadTemplate:
       process.env.NEXT_PUBLIC_ENV === "DEV" ? loadTemplate : undefined,
   };

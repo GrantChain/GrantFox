@@ -52,7 +52,5 @@ export async function GET(request: Request) {
       { exists: false, message: "Failed to check user" },
       { status: 500 },
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
