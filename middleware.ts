@@ -1,31 +1,31 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-type Role = 'GRANTEE' | 'GRANT_PROVIDER' | 'ADMIN' | 'EMPTY';
+type Role = "GRANTEE" | "GRANT_PROVIDER" | "ADMIN" | "EMPTY";
 
 const PROTECTED_ROUTES = {
-  '/dashboard': {
+  "/dashboard": {
     requiresAuth: true,
-    allowedRoles: ['ADMIN', 'GRANTEE', 'GRANT_PROVIDER'],
+    allowedRoles: ["ADMIN", "GRANTEE", "GRANT_PROVIDER"],
   },
   // GRANTEE can only access Opportunities
-  '/dashboard/opportunities': {
+  "/dashboard/opportunities": {
     requiresAuth: true,
-    allowedRoles: ['ADMIN', 'GRANTEE'],
+    allowedRoles: ["ADMIN", "GRANTEE"],
   },
-  '/dashboard/opportunities/*': {
+  "/dashboard/opportunities/*": {
     requiresAuth: true,
-    allowedRoles: ['ADMIN', 'GRANTEE'],
+    allowedRoles: ["ADMIN", "GRANTEE"],
   },
   // GRANT_PROVIDER can only access Payout
-  '/dashboard/payout': {
+  "/dashboard/payout": {
     requiresAuth: true,
-    allowedRoles: ['ADMIN', 'GRANT_PROVIDER'],
+    allowedRoles: ["ADMIN", "GRANT_PROVIDER"],
   },
-  '/dashboard/payout/*': {
+  "/dashboard/payout/*": {
     requiresAuth: true,
-    allowedRoles: ['ADMIN', 'GRANT_PROVIDER'],
+    allowedRoles: ["ADMIN", "GRANT_PROVIDER"],
   },
 };
 
@@ -54,58 +54,64 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
+  const supabase = createMiddlewareClient({
+    req: request,
+    res: NextResponse.next(),
+  });
 
   try {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
     if (sessionError) {
-      console.error('Session error:', sessionError);
-      return NextResponse.redirect(new URL('/login', request.url));
+      console.error("Session error:", sessionError);
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
     if (!session?.user) {
-      console.log('No session found, redirecting to login');
-      return NextResponse.redirect(new URL('/login', request.url));
+      console.log("No session found, redirecting to login");
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
     // Get user role from the User table
     const { data: userData, error: userError } = await supabase
-      .from('user')
-      .select('role')
-      .eq('user_id', session.user.id)
+      .from("user")
+      .select("role")
+      .eq("user_id", session.user.id)
       .single();
 
     if (userError) {
-      console.error('Error fetching user role:', userError);
-      return NextResponse.redirect(new URL('/unauthorized', request.url));
+      console.error("Error fetching user role:", userError);
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
-    const userRole = (userData?.role || 'EMPTY') as Role;
+    const userRole = (userData?.role || "EMPTY") as Role;
 
-    if (!userRole || !['ADMIN', 'GRANTEE', 'GRANT_PROVIDER'].includes(userRole)) {
-      console.log('Invalid user role:', userRole);
-      return NextResponse.redirect(new URL('/unauthorized', request.url));
+    if (
+      !userRole ||
+      !["ADMIN", "GRANTEE", "GRANT_PROVIDER"].includes(userRole)
+    ) {
+      console.log("Invalid user role:", userRole);
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
     // Check if user has access to this route
     if (!routeConfig.allowedRoles.includes(userRole)) {
       console.log(`User with role ${userRole} denied access to ${pathname}`);
-      return NextResponse.redirect(new URL('/unauthorized', request.url));
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
 
     // User is authenticated and has proper role, allow access
     console.log(`User with role ${userRole} granted access to ${pathname}`);
     return NextResponse.next();
-
   } catch (error) {
-    console.error('Middleware error:', error);
-    return NextResponse.redirect(new URL('/login', request.url));
+    console.error("Middleware error:", error);
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|public).*)"],
 };

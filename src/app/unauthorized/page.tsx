@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ShieldX } from "lucide-react";
 import Link from "next/link";
 
@@ -13,7 +19,8 @@ const UnauthorizedPage = () => {
           </div>
           <CardTitle className="text-2xl font-bold">Access Denied</CardTitle>
           <CardDescription className="text-muted-foreground">
-            You don't have permission to access this page. Please contact your administrator if you believe this is an error.
+            You don't have permission to access this page. Please contact your
+            administrator if you believe this is an error.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -29,14 +36,10 @@ const UnauthorizedPage = () => {
           </div>
           <div className="flex flex-col gap-2">
             <Button asChild>
-              <Link href="/dashboard">
-                Go to Dashboard
-              </Link>
+              <Link href="/dashboard">Go to Dashboard</Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/login">
-                Sign In Again
-              </Link>
+              <Link href="/login">Sign In Again</Link>
             </Button>
           </div>
         </CardContent>
@@ -45,4 +48,4 @@ const UnauthorizedPage = () => {
   );
 };
 
-export default UnauthorizedPage; 
+export default UnauthorizedPage;

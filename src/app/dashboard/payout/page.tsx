@@ -1,8 +1,22 @@
-import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Filter, DollarSign, Users, Clock, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  CheckCircle,
+  Clock,
+  DollarSign,
+  Filter,
+  Plus,
+  Search,
+  Users,
+} from "lucide-react";
+import React from "react";
 
 const PayoutPage = () => {
   // Mock data for payouts - in real app this would come from API
@@ -17,7 +31,7 @@ const PayoutPage = () => {
       milestones: 4,
       completedMilestones: 2,
       startDate: "2024-01-15",
-      endDate: "2024-04-15"
+      endDate: "2024-04-15",
     },
     {
       id: 2,
@@ -29,7 +43,7 @@ const PayoutPage = () => {
       milestones: 3,
       completedMilestones: 3,
       startDate: "2023-11-01",
-      endDate: "2024-02-01"
+      endDate: "2024-02-01",
     },
     {
       id: 3,
@@ -41,8 +55,8 @@ const PayoutPage = () => {
       milestones: 5,
       completedMilestones: 0,
       startDate: "2024-03-01",
-      endDate: "2024-08-01"
-    }
+      endDate: "2024-08-01",
+    },
   ];
 
   const getStatusColor = (status: string) => {
@@ -76,7 +90,9 @@ const PayoutPage = () => {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Payout Management</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Payout Management
+            </h1>
             <p className="text-muted-foreground">
               Manage and track your grant payouts and milestones
             </p>
@@ -179,24 +195,34 @@ const PayoutPage = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
                   <span>Progress: {payout.progress}%</span>
-                  <span>Milestones: {payout.completedMilestones}/{payout.milestones}</span>
+                  <span>
+                    Milestones: {payout.completedMilestones}/{payout.milestones}
+                  </span>
                 </div>
-                
+
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${payout.progress}%` }}
-                  ></div>
+                  />
                 </div>
 
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Start: {new Date(payout.startDate).toLocaleDateString()}</span>
-                  <span>End: {new Date(payout.endDate).toLocaleDateString()}</span>
+                  <span>
+                    Start: {new Date(payout.startDate).toLocaleDateString()}
+                  </span>
+                  <span>
+                    End: {new Date(payout.endDate).toLocaleDateString()}
+                  </span>
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1">View Details</Button>
-                  <Button variant="outline" className="flex-1">Manage Milestones</Button>
+                  <Button variant="outline" className="flex-1">
+                    View Details
+                  </Button>
+                  <Button variant="outline" className="flex-1">
+                    Manage Milestones
+                  </Button>
                   <Button className="flex-1">Release Payment</Button>
                 </div>
               </CardContent>
@@ -215,7 +241,8 @@ const PayoutPage = () => {
                 <div>
                   <h3 className="text-lg font-semibold">No payouts found</h3>
                   <p className="text-muted-foreground">
-                    Create your first payout to get started with grant management.
+                    Create your first payout to get started with grant
+                    management.
                   </p>
                 </div>
                 <Button className="mt-4">
