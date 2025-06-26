@@ -34,9 +34,14 @@ const getProtectedRouteConfig = (pathname: string) => {
     return PROTECTED_ROUTES[pathname as keyof typeof PROTECTED_ROUTES];
   }
 
-  // Check if pathname starts with any protected route
+  // Check wildcard routes more precisely
   for (const [route, config] of Object.entries(PROTECTED_ROUTES)) {
-    if (pathname.startsWith(route)) {
+    if (route.endsWith('/*')) {
+      const baseRoute = route.slice(0, -2);
+      if (pathname.startsWith(baseRoute + '/') || pathname === baseRoute) {
+        return config;
+      }
+    } else if (pathname.startsWith(route + '/')) {
       return config;
     }
   }
