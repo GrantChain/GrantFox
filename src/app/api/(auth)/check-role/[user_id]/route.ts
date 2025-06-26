@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
@@ -7,6 +7,7 @@ export async function GET(
 ) {
   try {
     const { user_id } = await params;
+    console.log("user", user_id);
 
     const user = await prisma.user.findUnique({
       where: { user_id },
@@ -26,7 +27,5 @@ export async function GET(
       { error: "Failed to get user role" },
       { status: 500 },
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
