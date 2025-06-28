@@ -1,4 +1,5 @@
 import { Landing } from "@/components/modules/landing/ui/pages/Landing";
+import { InstallPWAButton } from "@/components/shared/install-pwa-button";
 
 // Main page for the app
 export default function Home() {
@@ -8,3 +9,6 @@ export default function Home() {
     </div>
   );
 }
+
+// Add to your page component
+<InstallPWAButton />;
