@@ -25,7 +25,7 @@ export const sendEmail = async ({ to, subject, template, templateProps = {} }: S
   
     const html = await render(React.createElement(template, templateProps));
     const response = await resend.emails.send({
-      from: "noreply@kode-karo.xyz", // Update this to your verified sender
+      from: "noreply@grantfox.com", // Update this 
       to,
       subject,
       html,
