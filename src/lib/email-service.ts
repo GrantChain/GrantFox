@@ -1,7 +1,6 @@
 import type { EmailData, EmailResponse } from "../@types/email";
-import { renderBasicTemplate, type TemplateVariables } from './email-templates';
+import { type TemplateVariables, renderBasicTemplate } from "./email-templates";
 import { resend } from "./resend";
-
 
 const DEFAULT_FROM = "Grant Fox <noreply@resend.dev>";
 
@@ -42,12 +41,12 @@ export async function sendEmail(emailData: EmailData): Promise<EmailResponse> {
 }
 
 export async function sendTemplatedEmail(
-  to: string | string[], 
-  subject: string, 
-  templateVariables: TemplateVariables = {}
+  to: string | string[],
+  subject: string,
+  templateVariables: TemplateVariables = {},
 ): Promise<EmailResponse> {
   const html = renderBasicTemplate(templateVariables);
-  
+
   return sendEmail({
     to,
     subject,

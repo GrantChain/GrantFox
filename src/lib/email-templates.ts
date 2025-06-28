@@ -4,11 +4,11 @@ export interface TemplateVariables {
 
 export function renderBasicTemplate(variables: TemplateVariables = {}): string {
   const {
-    title = 'Grant Fox Notification',
-    userName = 'User',
-    message = 'This is a notification from Grant Fox.',
-    ctaText = 'View Details',
-    ctaUrl = '#',
+    title = "Grant Fox Notification",
+    userName = "User",
+    message = "This is a notification from Grant Fox.",
+    ctaText = "View Details",
+    ctaUrl = "#",
     ...otherVars
   } = variables;
 
@@ -36,7 +36,7 @@ export function renderBasicTemplate(variables: TemplateVariables = {}): string {
         <p>Hello ${userName},</p>
         <p>${message}</p>
         
-        ${ctaUrl !== '#' ? `<a href="${ctaUrl}" class="cta-button">${ctaText}</a>` : ''}
+        ${ctaUrl !== "#" ? `<a href="${ctaUrl}" class="cta-button">${ctaText}</a>` : ""}
     </div>
     
     <div class="footer">
