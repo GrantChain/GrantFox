@@ -1,16 +1,16 @@
-import { resend } from './resend';
-import type { EmailData, EmailResponse } from '../@types/email';
+import type { EmailData, EmailResponse } from "../@types/email";
+import { resend } from "./resend";
 
-const DEFAULT_FROM = 'Grant Fox <noreply@resend.dev>';
+const DEFAULT_FROM = "Grant Fox <noreply@resend.dev>";
 
 export async function sendEmail(emailData: EmailData): Promise<EmailResponse> {
   try {
     if (!emailData.html && !emailData.text) {
-      throw new Error('Either html or text content must be provided');
+      throw new Error("Either html or text content must be provided");
     }
 
-    console.log('[EMAIL] Sending email to:', emailData.to);
-    
+    console.log("[EMAIL] Sending email to:", emailData.to);
+
     const emailPayload: any = {
       from: emailData.from || DEFAULT_FROM,
       to: emailData.to,
@@ -23,18 +23,18 @@ export async function sendEmail(emailData: EmailData): Promise<EmailResponse> {
 
     const result = await resend.emails.send(emailPayload);
 
-    console.log('[EMAIL] Email sent successfully:', result.data?.id);
-    
+    console.log("[EMAIL] Email sent successfully:", result.data?.id);
+
     return {
       success: true,
       data: result.data,
     };
   } catch (error) {
-    console.error('[EMAIL] Failed to send email:', error);
-    
+    console.error("[EMAIL] Failed to send email:", error);
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 }
