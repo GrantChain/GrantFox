@@ -1,95 +1,54 @@
-import { NextConfig } from "next";
 import withPWA from "next-pwa";
 import path from "path";
+import { NextConfig } from "next";
 
-const runtimeCaching: RuntimeCaching[] = [
+// Define runtime caching configuration using the local type definition
+const runtimeCaching = [
   {
-    urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-    handler: "CacheFirst",
+    urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+    handler: "CacheFirst" as const,
     options: {
-      cacheName: "google-fonts-cache",
+      cacheName: "google-fonts",
       expiration: {
-        maxEntries: 10,
-        maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
+        maxEntries: 4,
+        maxAgeSeconds: 365 * 24 * 60 * 60, // 365 days
       },
     },
   },
   {
-    urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-    handler: "CacheFirst",
+    urlPattern: /^https:\/\/use\.typekit\.net\/.*/i,
+    handler: "CacheFirst" as const,
     options: {
-      cacheName: "gstatic-fonts-cache",
+      cacheName: "adobe-fonts",
       expiration: {
-        maxEntries: 10,
-        maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
+        maxEntries: 4,
+        maxAgeSeconds: 365 * 24 * 60 * 60, // 365 days
       },
     },
   },
   {
     urlPattern: /\/_next\/static\/.*/i,
-    handler: "CacheFirst",
+    handler: "CacheFirst" as const,
     options: {
-      cacheName: "next-static-cache",
+      cacheName: "next-static",
       expiration: {
         maxEntries: 64,
-        maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
+        maxAgeSeconds: 365 * 24 * 60 * 60, // 365 days
       },
     },
   },
   {
     urlPattern: /\/_next\/image\/.*/i,
-    handler: "CacheFirst",
+    handler: "CacheFirst" as const,
     options: {
-      cacheName: "next-image-cache",
+      cacheName: "next-image",
       expiration: {
         maxEntries: 64,
-        maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+        maxAgeSeconds: 365 * 24 * 60 * 60, // 365 days
       },
-    },
-  },
-  {
-    urlPattern: /\/api\/.*/i,
-    handler: "NetworkFirst",
-    options: {
-      cacheName: "apis-cache",
-      expiration: {
-        maxEntries: 16,
-        maxAgeSeconds: 24 * 60 * 60, // 24 hours
-      },
-      networkTimeoutSeconds: 5, // Reduced from 10
-    },
-  },
-  {
-    urlPattern: /.*/i,
-    handler: "NetworkFirst",
-    options: {
-      cacheName: "others-cache",
-      expiration: {
-        maxEntries: 32,
-        maxAgeSeconds: 24 * 60 * 60, // 24 hours
-      },
-      networkTimeoutSeconds: 3, // Reduced from 10
     },
   },
 ];
-
-type RuntimeCaching = {
-  urlPattern: RegExp;
-  handler:
-    | "CacheFirst"
-    | "NetworkFirst"
-    | "CacheOnly"
-    | "NetworkOnly"
-    | "StaleWhileRevalidate";
-  options?: {
-    cacheName: string;
-    expiration?: {
-      maxEntries?: number;
-      maxAgeSeconds?: number;
-    };
-    networkTimeoutSeconds?: number;
-  };
-};
 
 const nextConfig: NextConfig = {
   // Performance optimizations
@@ -104,13 +63,13 @@ const nextConfig: NextConfig = {
   // Optimize images
   images: {
     domains: ["itehtllpvbtcyyrbnltb.supabase.co"],
-    formats: ["image/webp", "image/avif"],
+    formats: ["image/webp", "image/avif"] as const,
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
-  // Bundle analyzer for production builds
+  // Bundle analyzer for production builds (only if package is installed)
   ...(process.env.ANALYZE === "true" && {
     webpack: (config: { resolve: { alias: Record<string, string> } }) => {
       config.resolve.alias = {
