@@ -25,7 +25,7 @@ export function DatePickerWithRange({
     const raw = searchParams.get("dateRange");
     if (!raw) return;
     const [start, end] = raw.split("_").map((d) => new Date(d));
-    if (!start || isNaN(start.getTime())) return;
+    if (!start || Number.isNaN(start.getTime())) return;
     return { from: start, to: end };
   };
 
