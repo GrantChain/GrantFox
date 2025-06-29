@@ -1,15 +1,15 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  LifeBuoy,
-  Clock,
   CheckCircle,
+  Clock,
+  LifeBuoy,
+  MessageSquare,
   TrendingUp,
   Users,
-  MessageSquare,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 // Support metrics configuration
 const supportStats = [

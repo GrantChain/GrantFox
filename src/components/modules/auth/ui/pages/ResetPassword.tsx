@@ -1,8 +1,8 @@
 "use client";
 
-import { ResetPasswordForm } from "../forms/ResetPasswordForm";
-import { CardHeader, CardTitle, Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useResetPassword } from "../../hooks/useResetPassword";
+import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 
 export const ResetPasswordClient = () => {
   const { isValidToken } = useResetPassword();

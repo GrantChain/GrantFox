@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Github, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Linkedin, Github, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const FooterLanding = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
