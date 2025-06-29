@@ -8,8 +8,9 @@ import { usePrefetchData } from "@/components/modules/auth/hooks/usePrefetchData
 import { PayoutContextProvider } from "@/components/modules/payouts/context/PayoutContext";
 import { RoleSelectionProvider } from "@/components/providers/role-selection.provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { ReactNode } from "react";
 
-const DashboardContent = ({ children }: { children: React.ReactNode }) => {
+const DashboardContent = ({ children }: { children: ReactNode }) => {
   usePrefetchData();
 
   return (
@@ -28,7 +29,7 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <AuthProvider>
       <PayoutContextProvider>
