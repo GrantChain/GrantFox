@@ -11,7 +11,6 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 
-    // Only initialize PostHog if the key is provided and we're on the client
     if (
       typeof window !== "undefined" &&
       posthogKey &&
@@ -27,11 +26,9 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
         loaded: (posthog) => {
           if (process.env.NODE_ENV === "development") posthog.debug();
         },
-        // Reduce network requests - removed batch_size as it's not a valid PostHog config option
-        // Disable unnecessary features for performance
+
         disable_session_recording: process.env.NODE_ENV === "development",
         disable_surveys: true,
-        // Optimize for performance
         request_batching: true,
         sanitize_properties: (properties) => {
           const { $ip, ...sanitized } = properties;
@@ -68,7 +65,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <PHProvider client={posthog}>
-      <Suspense fallback={<>{children}</>}>
+      <Suspense fallback={children}>
         <PostHogPageView />
         {children}
       </Suspense>
@@ -84,10 +81,8 @@ function PostHogPageView(): null {
 
   useEffect(() => {
     if (pathname && posthog) {
-      let url = window.origin + pathname;
-      if (searchParams && searchParams.toString()) {
-        url = url + "?" + searchParams.toString();
-      }
+      const searchString = searchParams?.toString();
+      const url = `${window.origin}${pathname}${searchString ? `?${searchString}` : ''}`;
 
       // Debounce page view tracking
       const timeoutId = setTimeout(() => {
@@ -102,3 +97,31 @@ function PostHogPageView(): null {
 
   return null;
 }
+
+// Remove unused variable warning by using underscore prefix
+export const posthogConfig = {
+  api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+  ui_host: process.env.NEXT_PUBLIC_POSTHOG_UI_HOST,
+  capture_pageview: false,
+  capture_pageleave: false, // Disable to reduce network requests
+  debug: false,
+  disable_session_recording: true,
+  disable_surveys: true,
+  request_batching: true,
+  batch_size: 10, // Increase batch size
+  flush_at: 10, // Reduce flush frequency
+  sanitize_properties: (properties: Record<string, unknown>) => {
+    // Remove sensitive data - destructure but don't assign to variable
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { $ip, ...sanitized } = properties;
+    return sanitized;
+  },
+  loaded: (posthog: { identify: () => void }) => {
+    // Defer non-critical tracking
+    if (typeof window !== "undefined") {
+      setTimeout(() => {
+        posthog.identify();
+      }, 2000);
+    }
+  },
+};

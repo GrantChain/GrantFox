@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://grantfox.io",
+  ),
   title: {
     default: "GrantFox - Open Source Grants",
     template: "%s | GrantFox",
@@ -48,13 +51,9 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
+    "max-video-preview": -1,
+    "max-image-preview": "large",
+    "max-snippet": -1,
   },
   icons: {
     icon: [
@@ -122,75 +121,39 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning={true}>
       <head>
-        {/* Preconnect to external domains */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        {/* Preload critical fonts */}
         <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
+          rel="preload"
+          href="/fonts/geist-sans.woff2"
+          as="font"
+          type="font/woff2"
           crossOrigin="anonymous"
         />
         <link
-          rel="preconnect"
-          href="https://itehtllpvbtcyyrbnltb.supabase.co"
+          rel="preload"
+          href="/fonts/geist-mono.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
-
-        {/* DNS prefetch for analytics */}
-        <link rel="dns-prefetch" href="https://us.i.posthog.com" />
-
-        {/* PWA meta tags */}
-        <meta name="application-name" content="GrantFox" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="GrantFox" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="msapplication-config" content="/browserconfig.xml" />
-        <meta name="msapplication-TileColor" content="#000000" />
-        <meta name="msapplication-tap-highlight" content="no" />
-
-        {/* Performance hints */}
-        <meta httpEquiv="x-dns-prefetch-control" content="on" />
-
-        {/* Apple touch icons with preload hints */}
-        <link rel="apple-touch-icon" href="/icons/ios/152.png" />
-        <link
-          rel="apple-touch-icon"
-          sizes="152x152"
-          href="/icons/ios/152.png"
-        />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/icons/ios/180.png"
-        />
-
-        {/* Favicon with proper sizing */}
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/icons/ios/32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/icons/ios/16.png"
-        />
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="shortcut icon" href="/favicon.ico" />
+        {/* Preconnect to external domains */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
-        <GlobalProvider>{children}</GlobalProvider>
-        <Toaster />
+        <GlobalProvider>
+          {children}
+          <Toaster />
+        </GlobalProvider>
       </body>
     </html>
   );

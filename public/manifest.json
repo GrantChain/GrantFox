@@ -46,7 +46,7 @@
     },
     {
       "src": "/icons/ios/256.png",
-      "sizes": "384x384",
+      "sizes": "256x256",
       "type": "image/png",
       "purpose": "maskable any"
     },
