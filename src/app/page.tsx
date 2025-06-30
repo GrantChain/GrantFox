@@ -27,6 +27,3 @@ export default function Home() {
     </div>
   );
 }
-
-// Add to your page component
-<InstallPWAButton />;

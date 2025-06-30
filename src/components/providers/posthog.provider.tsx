@@ -65,7 +65,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <PHProvider client={posthog}>
-      <Suspense fallback={<>{children}</>}>
+      <Suspense fallback={children}>
         <PostHogPageView />
         {children}
       </Suspense>
@@ -81,10 +81,8 @@ function PostHogPageView(): null {
 
   useEffect(() => {
     if (pathname && posthog) {
-      let url = window.origin + pathname;
-      if (searchParams && searchParams.toString()) {
-        url = url + "?" + searchParams.toString();
-      }
+      const searchString = searchParams?.toString();
+      const url = `${window.origin}${pathname}${searchString ? `?${searchString}` : ''}`;
 
       // Debounce page view tracking
       const timeoutId = setTimeout(() => {
