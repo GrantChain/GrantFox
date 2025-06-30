@@ -1,9 +1,11 @@
-import { Button } from "@/components/ui/button";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "../sidebar/theme-toggler";
+import { InstallPWAButton } from "@/components/shared/install-pwa-button";
 
-export const HeaderLanding = () => {
+export const HeaderLanding = (): React.JSX.Element => {
   return (
     <header className="px-10 sticky top-0 z-40 w-full border-x border-b rounded-br-3xl rounded-bl-3xl bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
@@ -18,6 +20,7 @@ export const HeaderLanding = () => {
           <span className="text-xl font-bold">GrantFox</span>
         </div>
         <div className="flex items-center gap-4">
+          <InstallPWAButton />
           <ThemeToggle />
           <Link href="/login" className="flex items-center">
             <Button size="lg" className="bg-primary text-primary-foreground">
