@@ -31,7 +31,7 @@ export default function UserProfilePage({
   showUserIdInHeader = false,
 }: UserProfilePageProps) {
   const { profileData, isLoading, error, handleBack } = useUserProfile(params);
-  console.log("profileData", profileData);
+
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
