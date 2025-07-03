@@ -1,7 +1,7 @@
-import { persist } from "zustand/middleware";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { WalletGlobalStore } from "./@types/wallet.entity";
 import { useGlobalWalletSlice } from "./slices/wallet.slice";
-import { WalletGlobalStore } from "./@types/wallet.entity";
 
 type AuthState = WalletGlobalStore;
 

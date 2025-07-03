@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import Link from "next/link";
 import { useHeroAnimations } from "../../hooks/hero-animations.hook";
 
 export const HeroSection = () => {

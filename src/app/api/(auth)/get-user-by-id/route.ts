@@ -44,7 +44,6 @@ export async function GET(request: Request) {
         { status: 404 },
       );
     }
-
     return NextResponse.json({ exists: true, user });
   } catch (error) {
     console.error("Error checking user:", error);
