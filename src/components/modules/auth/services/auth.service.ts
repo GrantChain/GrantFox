@@ -126,6 +126,7 @@ class AuthService {
       }>(
         `/get-user-role-by-id?user_id=${encodeURIComponent(user_id)}&role=${role}`,
       );
+      console.log("response", response.data.user);
       return {
         success: true,
         user: response.data.user,

@@ -1,10 +1,10 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useScrollToHash } from "../../hooks/scroll-to-hash.hook";
-import { HeaderLanding } from "@/components/layout/header/HeaderLanding";
-import { HeroSection } from "../sections/HeroSection";
 import { FooterLanding } from "@/components/layout/footer/FooterLanding";
+import { HeaderLanding } from "@/components/layout/header/HeaderLanding";
+import { AnimatePresence, motion } from "framer-motion";
+import { useScrollToHash } from "../../hooks/scroll-to-hash.hook";
+import { HeroSection } from "../sections/HeroSection";
 
 export const Landing = () => {
   useScrollToHash();

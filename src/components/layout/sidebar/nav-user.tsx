@@ -2,6 +2,7 @@
 
 import { ChevronsUpDown, LogOut } from "lucide-react";
 
+import { useAuth } from "@/components/modules/auth/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -17,7 +18,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/components/modules/auth/hooks/useAuth";
 
 export function NavUser({
   user,

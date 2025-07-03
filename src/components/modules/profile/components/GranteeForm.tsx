@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import type { Grantee } from '@/@types/grantee.entity';
-import { Button } from '@/components/ui/button';
+import type { Grantee } from "@/@types/grantee.entity";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -16,12 +16,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { UserCheck } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { type GranteeFormData, granteeSchema } from '../schemas/profile.schema';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { UserCheck } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { type GranteeFormData, granteeSchema } from "../schemas/profile.schema";
 
 interface GranteeFormProps {
   grantee?: Grantee;
@@ -32,11 +32,11 @@ export function GranteeForm({ grantee, onSubmit }: GranteeFormProps) {
   const form = useForm<GranteeFormData>({
     resolver: zodResolver(granteeSchema),
     defaultValues: {
-      name: grantee?.name || '',
-      position_title: grantee?.position_title || '',
-      twitter: grantee?.social_media?.twitter || '',
-      linkedin: grantee?.social_media?.linkedin || '',
-      github: grantee?.social_media?.github || '',
+      name: grantee?.name || "",
+      position_title: grantee?.position_title || "",
+      twitter: grantee?.social_media?.twitter || "",
+      linkedin: grantee?.social_media?.linkedin || "",
+      github: grantee?.social_media?.github || "",
     },
   });
 

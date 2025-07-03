@@ -1,5 +1,5 @@
-import { StateCreator } from "zustand";
-import { AuthenticationStore } from "../@types/authentication.entity";
+import type { StateCreator } from "zustand";
+import type { AuthenticationStore } from "../@types/authentication.entity";
 
 const AUTHENTICATION_ACTIONS = {
   SET_EMAIL: "authentication/set-email",
