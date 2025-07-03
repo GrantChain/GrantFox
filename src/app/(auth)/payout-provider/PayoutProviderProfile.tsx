@@ -54,7 +54,6 @@ export function PayoutProviderProfile() {
   const [originalData, setOriginalData] = useState<PayoutProviderData | null>(
     null,
   );
-  const [debugInfo, setDebugInfo] = useState<string>("");
 
   useEffect(() => {
     fetchProfile();
@@ -77,7 +76,6 @@ export function PayoutProviderProfile() {
       console.log("👤 User ID:", userId);
 
       if (!userId) {
-        setDebugInfo("No authenticated user found");
         toast.error("Please log in to view your profile");
         setIsLoading(false);
         return;
@@ -95,7 +93,6 @@ export function PayoutProviderProfile() {
 
       if (profileError && profileError.code !== "PGRST116") {
         console.error("❌ Profile fetch error:", profileError);
-        setDebugInfo(`Profile error: ${profileError.message}`);
         throw profileError;
       }
 
@@ -103,17 +100,12 @@ export function PayoutProviderProfile() {
         console.log("✅ Profile found, setting data");
         setFormData(profileData);
         setOriginalData(profileData);
-        setDebugInfo("Profile loaded successfully");
       } else {
         console.log("📝 No profile found, creating new");
         setFormData((prev) => ({ ...prev, user_id: userId }));
-        setDebugInfo("No existing profile - ready to create new");
       }
     } catch (error) {
       console.error("💥 Error in fetchProfile:", error);
-      setDebugInfo(
-        `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
       toast.error(
         `Failed to load profile: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
@@ -231,17 +223,6 @@ export function PayoutProviderProfile() {
 
   return (
     <div className="container mx-auto py-6 px-4 max-w-4xl">
-      {/* Debug Info - Remove this in production */}
-      {debugInfo && (
-        <Card className="mb-4 border-yellow-200 bg-yellow-50">
-          <CardContent className="py-4">
-            <p className="text-sm text-yellow-800">
-              <strong>Debug:</strong> {debugInfo}
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
