@@ -23,9 +23,13 @@ import { useUserProfile } from "../hooks/useUserProfile";
 
 interface UserProfilePageProps {
   params: Promise<{ userID: string }>;
+  showUserIdInHeader?: boolean;
 }
 
-export default function UserProfilePage({ params }: UserProfilePageProps) {
+export default function UserProfilePage({
+  params,
+  showUserIdInHeader = false,
+}: UserProfilePageProps) {
   const { profileData, isLoading, error, handleBack } = useUserProfile(params);
   console.log("profileData", profileData);
   if (isLoading) {
@@ -111,6 +115,11 @@ export default function UserProfilePage({ params }: UserProfilePageProps) {
               <h1 className="text-2xl font-bold">
                 {grantee?.name || user?.username || "No name"}
               </h1>
+              {showUserIdInHeader && user?.user_id && (
+                <p className="text-xs text-muted-foreground break-all">
+                  User ID: {user.user_id}
+                </p>
+              )}
               {grantee?.position_title && (
                 <p className="text-muted-foreground">
                   {grantee.position_title}
