@@ -21,13 +21,12 @@ const fetchUserProfile = async (userID: string): Promise<UserProfileData> => {
         user: userResponse.user,
         grantee: granteeData,
       };
-    } else {
-      // fallback: only grantee data
-      return {
-        user: granteeData as unknown as User, // fallback, but not ideal
-        grantee: granteeData,
-      };
     }
+    // fallback: only grantee data
+    return {
+      user: granteeData as unknown as User, // fallback, but not ideal
+      grantee: granteeData,
+    };
   }
 
   // If not found as GRANTEE, try PAYOUT_PROVIDER

@@ -214,23 +214,32 @@ export default function UserProfilePage({ params }: UserProfilePageProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Username
-              </label>
+              </span>
               <p className="text-sm">{user?.username || "Not available"}</p>
             </div>
             <Separator />
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Email
-              </label>
+              </span>
               <p className="text-sm">{user?.email || "Not available"}</p>
             </div>
             <Separator />
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
+                Bio
+              </span>
+              <p className="text-sm">
+                {user?.bio !== undefined ? user.bio : "Not available"}
+              </p>
+            </div>
+            <Separator />
+            <div>
+              <span className="text-sm font-medium text-muted-foreground">
                 Role
-              </label>
+              </span>
               <p className="text-sm capitalize">
                 {user?.role
                   ? user.role.toLowerCase().replace("_", " ")
@@ -239,9 +248,9 @@ export default function UserProfilePage({ params }: UserProfilePageProps) {
             </div>
             <Separator />
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 Member since
-              </label>
+              </span>
               <p className="text-sm">
                 {user?.created_at
                   ? new Date(user.created_at).toLocaleDateString("en-US", {
@@ -264,25 +273,25 @@ export default function UserProfilePage({ params }: UserProfilePageProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   Full name
-                </label>
+                </span>
                 <p className="text-sm">{grantee.name || "Not available"}</p>
               </div>
               <Separator />
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   Position
-                </label>
+                </span>
                 <p className="text-sm">
                   {grantee.position_title || "Not available"}
                 </p>
               </div>
               <Separator />
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   Profile updated
-                </label>
+                </span>
                 <p className="text-sm">
                   {grantee.updated_at
                     ? new Date(grantee.updated_at).toLocaleDateString("en-US", {
