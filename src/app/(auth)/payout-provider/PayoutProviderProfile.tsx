@@ -55,6 +55,14 @@ export function PayoutProviderProfile() {
     null,
   );
 
+  const NETWORK_TYPES = [
+    { value: "bank", label: "Bank Transfer" },
+    { value: "paypal", label: "PayPal" },
+    { value: "stripe", label: "Stripe" },
+    { value: "crypto", label: "Crypto" },
+    { value: "other", label: "Other" },
+  ] as const;
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -161,7 +169,7 @@ export function PayoutProviderProfile() {
         updated_at: new Date().toISOString(),
       };
 
-      let result: { error: any } | { data: any; error: null };
+      let result: {error: any} | {data: any; error: null};
       if (originalData) {
         console.log("🔄 Updating existing profile");
         result = await supabaseClient
@@ -287,11 +295,11 @@ export function PayoutProviderProfile() {
                   <SelectValue placeholder="Select network type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="bank">Bank Transfer</SelectItem>
-                  <SelectItem value="paypal">PayPal</SelectItem>
-                  <SelectItem value="stripe">Stripe</SelectItem>
-                  <SelectItem value="crypto">Cryptocurrency</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  {NETWORK_TYPES.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
