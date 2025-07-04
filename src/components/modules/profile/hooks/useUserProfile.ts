@@ -37,7 +37,9 @@ const fetchUserProfile = async (userID: string): Promise<UserProfileData> => {
     return {
       user: userData,
     };
-  } else if (userRole === "PAYOUT_PROVIDER") {
+  }
+
+  if (userRole === "PAYOUT_PROVIDER") {
     const providerResponse = await authService.getUserRoleById(
       userID,
       "PAYOUT_PROVIDER",
