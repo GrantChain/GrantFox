@@ -24,8 +24,11 @@ export const usePayoutsFilters = () => {
       maxFunding: searchParams.get("maxFunding") || DEFAULT_FILTERS.maxFunding,
       startDate: searchParams.get("startDate") || DEFAULT_FILTERS.startDate,
       endDate: searchParams.get("endDate") || DEFAULT_FILTERS.endDate,
-      payoutProviderName: searchParams.get("payoutProviderName") || DEFAULT_FILTERS.payoutProviderName,
-      granteeName: searchParams.get("granteeName") || DEFAULT_FILTERS.granteeName,
+      payoutProviderName:
+        searchParams.get("payoutProviderName") ||
+        DEFAULT_FILTERS.payoutProviderName,
+      granteeName:
+        searchParams.get("granteeName") || DEFAULT_FILTERS.granteeName,
     };
   }, [searchParams]);
 

@@ -45,7 +45,7 @@ export async function POST(request: Request) {
           ...(filters.endDate ? { lte: new Date(filters.endDate) } : {}),
         };
       }
-      
+
       // New role-based filters
       if (filters.payoutProviderName && role === UserRole.GRANTEE) {
         where.user = {
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
           },
         };
       }
-      
+
       if (filters.granteeName && role === UserRole.PAYOUT_PROVIDER) {
         where.grantee = {
           name: {

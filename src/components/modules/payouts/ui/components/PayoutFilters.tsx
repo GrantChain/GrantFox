@@ -30,8 +30,12 @@ export const PayoutsFilters = ({
     createInitialDateRange(filters),
   );
   const [searchValue, setSearchValue] = useState(filters.search || "");
-  const [payoutProviderNameValue, setPayoutProviderNameValue] = useState(filters.payoutProviderName || "");
-  const [granteeNameValue, setGranteeNameValue] = useState(filters.granteeName || "");
+  const [payoutProviderNameValue, setPayoutProviderNameValue] = useState(
+    filters.payoutProviderName || "",
+  );
+  const [granteeNameValue, setGranteeNameValue] = useState(
+    filters.granteeName || "",
+  );
   const { showCreateModal, setShowCreateModal } = usePayout();
   const { user } = useAuth();
 

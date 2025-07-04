@@ -4,6 +4,6 @@ export interface PayoutFilters {
   maxFunding?: string;
   startDate?: string;
   endDate?: string;
-  payoutProviderName?: string,
+  payoutProviderName?: string;
   granteeName?: string;
 }
