@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -7,7 +8,7 @@ const sidebarItems = [
 ];
 
 const SettingsSidebar = () => {
-  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+  const pathname = usePathname();
   return (
     <aside className="w-64 border-r bg-card p-4 dark:bg-card/80">
       <nav className="flex flex-col gap-2">
