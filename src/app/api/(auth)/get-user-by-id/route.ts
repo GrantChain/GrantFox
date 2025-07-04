@@ -8,12 +8,6 @@ export async function GET(request: Request) {
     const user_id = searchParams.get("user_id");
     const role = searchParams.get("role");
 
-    if (!role) {
-      return NextResponse.json(
-        { exists: false, message: "Role parameter is required" },
-        { status: 400 },
-      );
-    }
     if (!user_id) {
       return NextResponse.json(
         { exists: false, message: "User ID parameter is required" },
@@ -21,11 +15,9 @@ export async function GET(request: Request) {
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: {
-        user_id,
-        role: role as UserRole,
-      },
+    // Simple, direct query without complex logic
+    const user = await prisma.user.findFirst({
+      where: role ? { user_id, role: role as UserRole } : { user_id },
       select: {
         user_id: true,
         email: true,
@@ -35,6 +27,10 @@ export async function GET(request: Request) {
         profile_url: true,
         cover_url: true,
         location: true,
+        role: true,
+        is_active: true,
+        created_at: true,
+        updated_at: true,
       },
     });
 
@@ -44,11 +40,11 @@ export async function GET(request: Request) {
         { status: 404 },
       );
     }
+
     return NextResponse.json({ exists: true, user });
-  } catch (error) {
-    console.error("Error checking user:", error);
+  } catch {
     return NextResponse.json(
-      { exists: false, message: "Failed to check user" },
+      { exists: false, message: "Internal server error" },
       { status: 500 },
     );
   }
