@@ -30,6 +30,8 @@ export const PayoutsFilters = ({
     createInitialDateRange(filters),
   );
   const [searchValue, setSearchValue] = useState(filters.search || "");
+  const [payoutProviderNameValue, setPayoutProviderNameValue] = useState(filters.payoutProviderName || "");
+  const [granteeNameValue, setGranteeNameValue] = useState(filters.granteeName || "");
   const { showCreateModal, setShowCreateModal } = usePayout();
   const { user } = useAuth();
 
@@ -50,6 +52,26 @@ export const PayoutsFilters = ({
     return () => clearTimeout(timer);
   }, [searchValue, filters.search, handleFilterChange]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (payoutProviderNameValue !== filters.payoutProviderName) {
+        handleFilterChange("payoutProviderName", payoutProviderNameValue);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [payoutProviderNameValue, filters.payoutProviderName, handleFilterChange]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (granteeNameValue !== filters.granteeName) {
+        handleFilterChange("granteeName", granteeNameValue);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [granteeNameValue, filters.granteeName, handleFilterChange]);
+
   const handleDateRangeChange = (range: DateRange | undefined) => {
     setDateRange(range);
     onFilterChange(formatDateRangeToFilters(range, filters));
@@ -58,6 +80,8 @@ export const PayoutsFilters = ({
   const handleReset = () => {
     setDateRange(undefined);
     setSearchValue("");
+    setPayoutProviderNameValue("");
+    setGranteeNameValue("");
     onFilterChange(createEmptyFilters());
   };
 
@@ -65,22 +89,42 @@ export const PayoutsFilters = ({
     <>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row gap-4 items-start">
-          <div className="w-full flex items-center gap-4 md:w-1/3 space-y-2">
-            <Input
-              type="text"
-              placeholder="Search grants..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
+          <div className="w-full flex flex-col gap-2 md:w-1/3">
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Search grants..."
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+              />
 
-            <Button
-              variant="outline"
-              className="!mt-0 text-muted-foreground"
-              onClick={handleReset}
-              disabled={!isThereAnyFilter(filters)}
-            >
-              <Trash2 className="w-4 h-4 text-destructive/70" /> Reset Filters
-            </Button>
+              <Button
+                variant="outline"
+                className="text-muted-foreground"
+                onClick={handleReset}
+                disabled={!isThereAnyFilter(filters)}
+              >
+                <Trash2 className="w-4 h-4 text-destructive/70" /> Reset Filters
+              </Button>
+            </div>
+
+            {user?.role === "GRANTEE" && (
+              <Input
+                type="text"
+                placeholder="Search by Payout Provider..."
+                value={payoutProviderNameValue}
+                onChange={(e) => setPayoutProviderNameValue(e.target.value)}
+              />
+            )}
+
+            {user?.role === "PAYOUT_PROVIDER" && (
+              <Input
+                type="text"
+                placeholder="Search by Grantee Name..."
+                value={granteeNameValue}
+                onChange={(e) => setGranteeNameValue(e.target.value)}
+              />
+            )}
           </div>
 
           <div className="w-full md:w-2/3 flex flex-col md:flex-row gap-4 justify-end">

@@ -7,13 +7,17 @@ export const createEmptyFilters = (): PayoutFilters => ({
   maxFunding: "",
   startDate: "",
   endDate: "",
+  payoutProviderName: "",
+  granteeName: "",
 });
 
 export const isThereAnyFilter = (filters: PayoutFilters): boolean => {
   return (
     filters.search !== "" ||
     filters.minFunding !== "" ||
-    filters.maxFunding !== ""
+    filters.maxFunding !== "" ||
+    filters.payoutProviderName !== "" ||
+    filters.granteeName !== ""
   );
 };
 
