@@ -159,12 +159,8 @@ export const useAuthMutations = () => {
       queryClient.removeQueries({ queryKey: ["user-data"] });
       queryClient.removeQueries({ queryKey: ["role-data"] });
     },
-    onSuccess: () => {
-      console.log("Auth cache cleared successfully");
-    },
-    onError: (error: Error) => {
-      console.error("Error clearing auth cache:", error);
-    },
+    onSuccess: () => {},
+    onError: () => {},
   });
 
   // Función helper para obtener datos completos del usuario

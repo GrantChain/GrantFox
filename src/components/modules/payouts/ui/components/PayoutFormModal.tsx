@@ -1,3 +1,4 @@
+import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { useInitializeMultiEscrowForm } from "@/components/modules/escrows/hooks/initialize-multi-escrow-form.hook";
 import {
   Dialog,
@@ -7,7 +8,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useGlobalWalletStore } from "@/components/wallet/store/store";
-import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import type { Payout } from "@/generated/prisma";
 import { buildEscrowPayload } from "@/utils/build-escrow.utils";
 import { useEffect } from "react";

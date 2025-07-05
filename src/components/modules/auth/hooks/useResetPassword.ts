@@ -1,13 +1,13 @@
 "use client";
 
+import { resetPasswordSchema } from "@/components/modules/auth/schema/reset-password.schema";
+import { supabase } from "@/lib/supabase";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { resetPasswordSchema } from "@/components/modules/auth/schema/reset-password.schema";
+import type { z } from "zod";
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 

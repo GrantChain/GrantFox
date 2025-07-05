@@ -1,12 +1,12 @@
 "use client";
 
+import { forgotPasswordSchema } from "@/components/modules/auth/schema/forgot-password.schema";
+import { supabase } from "@/lib/supabase";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { forgotPasswordSchema } from "@/components/modules/auth/schema/forgot-password.schema";
+import type { z } from "zod";
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 

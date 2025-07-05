@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { AuthenticationStore } from "./@types/authentication.entity";
+import type { AuthenticationStore } from "./@types/authentication.entity";
 
 export const useAuthenticationBoundedStore = create<AuthenticationStore>()(
   devtools(

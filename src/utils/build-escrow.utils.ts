@@ -1,8 +1,8 @@
 import { trustlineSelected } from "@/components/constants/trustline.constant";
-import type { PayoutFormValues } from "@/components/modules/payouts/schemas/payout.schema";
-import type { InitializeMultiReleaseEscrowPayload } from "@trustless-work/escrow/types";
-import type { User } from "@/generated/prisma";
 import { authService } from "@/components/modules/auth/services/auth.service";
+import type { PayoutFormValues } from "@/components/modules/payouts/schemas/payout.schema";
+import type { User } from "@/generated/prisma";
+import type { InitializeMultiReleaseEscrowPayload } from "@trustless-work/escrow/types";
 
 interface BuildEscrowPayloadParams {
   data: PayoutFormValues;
@@ -72,7 +72,10 @@ export const buildEscrowPayloadWithUserIds = async ({
   let grantee: User | undefined;
 
   if (payoutProviderId) {
-    const payoutProviderResult = await authService.getUserById(payoutProviderId, "PAYOUT_PROVIDER");
+    const payoutProviderResult = await authService.getUserById(
+      payoutProviderId,
+      "PAYOUT_PROVIDER",
+    );
     if (payoutProviderResult.exists) {
       payoutProvider = payoutProviderResult.user;
     }
