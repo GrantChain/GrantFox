@@ -157,6 +157,23 @@ class AuthService {
       return { success: false, message: extractErrorMessage(error) };
     }
   }
+
+  async getUsersByRole(
+    user_ids: string[],
+    role: UserRole,
+  ): Promise<{ success: boolean; users?: User[]; message?: string }> {
+    try {
+      const response = await http.get<{ users: User[] }>(
+        `/get-users-by-role?role=${encodeURIComponent(role)}&user_ids=${encodeURIComponent(user_ids.join(","))}`,
+      );
+      return {
+        success: true,
+        users: response.data.users,
+      };
+    } catch (error: unknown) {
+      return { success: false, message: extractErrorMessage(error) };
+    }
+  }
 }
 
 export const authService = new AuthService();
