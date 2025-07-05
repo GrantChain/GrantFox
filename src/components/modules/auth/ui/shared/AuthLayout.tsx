@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
-import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 interface AuthLayoutProps {
   children: ReactNode;

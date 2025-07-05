@@ -1,8 +1,9 @@
 "use client";
 
-import * as React from "react";
 import { Moon, Sun } from "lucide-react";
+import * as React from "react";
 
+import { useTheme } from "@/components/providers/theme.provider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTheme } from "@/components/providers/theme.provider";
 
 export function ThemeToggle() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -1,11 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "../sidebar/theme-toggler";
 import { useWallet } from "@/components/wallet/hooks/useWallet";
-import { Wallet as WalletIcon } from "lucide-react";
 import useLayoutDashboard from "@/hooks/useLayoutDashboard";
+import { Wallet as WalletIcon } from "lucide-react";
 import { MobileTrigger } from "../sidebar/mobile-trigger";
+import { ThemeToggle } from "../sidebar/theme-toggler";
 
 export const Header = () => {
   const { handleConnect, handleDisconnect, account } = useWallet();
