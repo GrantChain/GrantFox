@@ -45,6 +45,25 @@ export async function POST(request: Request) {
           ...(filters.endDate ? { lte: new Date(filters.endDate) } : {}),
         };
       }
+
+      // New role-based filters
+      if (filters.payoutProviderName && role === UserRole.GRANTEE) {
+        where.user = {
+          username: {
+            contains: filters.payoutProviderName,
+            mode: "insensitive",
+          },
+        };
+      }
+
+      if (filters.granteeName && role === UserRole.PAYOUT_PROVIDER) {
+        where.grantee = {
+          name: {
+            contains: filters.granteeName,
+            mode: "insensitive",
+          },
+        };
+      }
     }
 
     const page = pagination?.page || 1;
