@@ -7,7 +7,6 @@ export async function GET(
 ) {
   try {
     const { user_id } = await params;
-    console.log("user", user_id);
 
     const user = await prisma.user.findUnique({
       where: { user_id },
@@ -21,8 +20,7 @@ export async function GET(
     }
 
     return NextResponse.json({ role: user.role });
-  } catch (error) {
-    console.error("Error getting user role:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to get user role" },
       { status: 500 },
