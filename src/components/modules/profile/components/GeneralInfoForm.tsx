@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import type { User } from '@/@types/user.entity';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import type { User } from "@/@types/user.entity";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -17,16 +17,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Camera } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Camera } from "lucide-react";
+import { useForm } from "react-hook-form";
 import {
   type GeneralInfoFormData,
   generalInfoSchema,
-} from '../schemas/profile.schema';
+} from "../schemas/profile.schema";
 
 interface GeneralInfoFormProps {
   user: User;
@@ -37,13 +37,13 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
   const form = useForm<GeneralInfoFormData>({
     resolver: zodResolver(generalInfoSchema),
     defaultValues: {
-      username: user.username || '',
-      email: user.email || '',
-      wallet_address: user.wallet_address || '',
-      location: user.location || '',
-      bio: user.bio || '',
-      profile_url: user.profile_url || '',
-      cover_url: user.cover_url || '',
+      username: user.username || "",
+      email: user.email || "",
+      wallet_address: user.wallet_address || "",
+      location: user.location || "",
+      bio: user.bio || "",
+      profile_url: user.profile_url || "",
+      cover_url: user.cover_url || "",
     },
   });
 
@@ -51,8 +51,8 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
     onSubmit(data);
   };
 
-  const profileUrl = form.watch('profile_url');
-  const userName = form.watch('username');
+  const profileUrl = form.watch("profile_url");
+  const userName = form.watch("username");
 
   return (
     <Card>
@@ -76,15 +76,15 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
               <div className="relative">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
-                    src={profileUrl || '/placeholder.svg'}
+                    src={profileUrl || "/placeholder.svg"}
                     alt={userName}
                   />
                   <AvatarFallback className="text-lg">
                     {userName
-                      .split(' ')
+                      .split(" ")
                       .map((n) => n[0])
-                      .join('')
-                      .toUpperCase() || 'U'}
+                      .join("")
+                      .toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
               </div>
