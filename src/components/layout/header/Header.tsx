@@ -1,5 +1,6 @@
 "use client";
 
+import { NotificationButton } from "@/components/notifications/NotificationButton";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/components/wallet/hooks/useWallet";
 import useLayoutDashboard from "@/hooks/useLayoutDashboard";
@@ -24,6 +25,7 @@ export const Header = () => {
         )}
 
         <div className="flex items-center gap-4">
+          <NotificationButton />
           <ThemeToggle />
           <Button
             variant="outline"
