@@ -174,6 +174,28 @@ class AuthService {
       return { success: false, message: extractErrorMessage(error) };
     }
   }
+
+  async verifyAndCreateOAuthUser(
+    user_id: string,
+    email: string,
+  ): Promise<{ success: boolean; user?: User; message?: string }> {
+    try {
+      const response = await http.post<{ user: User }>("/verify-oauth-user", {
+        user_id,
+        email,
+      });
+      
+      if (response.status === 200 && response.data.user) {
+        return { success: true, user: response.data.user };
+      }
+      return {
+        success: false,
+        message: "Error verifying/creating OAuth user. Please try again.",
+      };
+    } catch (error: unknown) {
+      return { success: false, message: extractErrorMessage(error) };
+    }
+  }
 }
 
 export const authService = new AuthService();

@@ -20,6 +20,22 @@ export async function GET(request: Request) {
       );
     }
 
+    // Si el role es EMPTY, no buscar en tablas específicas
+    if (role === "EMPTY") {
+      const user = await prisma.user.findUnique({
+        where: { user_id },
+      });
+
+      if (!user) {
+        return NextResponse.json(
+          { success: false, message: "User not found" },
+          { status: 404 },
+        );
+      }
+
+      return NextResponse.json({ success: true, user });
+    }
+
     let userData = null;
 
     if (role === "GRANTEE") {
