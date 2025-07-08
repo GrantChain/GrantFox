@@ -4,7 +4,6 @@ import type {
   Grantee,
   PayoutProvider,
   User,
-  UserRole,
 } from "@/generated/prisma";
 import { supabase } from "@/lib/supabase";
 import {
@@ -15,6 +14,7 @@ import {
   useState,
 } from "react";
 import { useAuthMutations } from "../hooks/useAuthMutations";
+import { useOAuthUserSetup } from "../hooks/useOAuthUserSetup";
 
 interface AuthContextType {
   user: User | null;
@@ -37,6 +37,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const { useCompleteUserData, handleRefreshUser, handleClearCache } =
     useAuthMutations();
+
+  // Hook para manejar la configuración automática de usuarios OAuth
+  useOAuthUserSetup();
 
   // Usar TanStack Query para obtener datos del usuario
   const {

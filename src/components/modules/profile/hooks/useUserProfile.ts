@@ -1,74 +1,77 @@
 import { authService } from "@/components/modules/auth/services/auth.service";
-import type { Grantee, User } from "@/generated/prisma";
+import type { Grantee, PayoutProvider, User } from "@/generated/prisma";
 import { useQuery } from "@tanstack/react-query";
 import { use } from "react";
 
 interface UserProfileData {
   user: User;
   grantee?: Grantee;
+  payoutProvider?: PayoutProvider;
 }
 
 const fetchUserProfile = async (userID: string): Promise<UserProfileData> => {
-  // First, try to fetch as GRANTEE
-  const granteeResponse = await authService.getUserRoleById(userID, "GRANTEE");
+  // Get user data without role filtering
+  const userResponse = await authService.getUserById(userID);
 
-  if (granteeResponse.success) {
-    const granteeData = granteeResponse.user as Grantee;
-    // Fetch user base data
-    const userResponse = await authService.getUserById(userID, "GRANTEE");
-    if (userResponse.exists) {
+  if (!userResponse.exists) {
+    throw new Error("User not found");
+  }
+
+  const userData = userResponse.user;
+  const userRole = userData.role;
+
+  // Now that we have the user and know their role, fetch role-specific data
+  if (userRole === "GRANTEE") {
+    const granteeResponse = await authService.getUserRoleById(
+      userID,
+      "GRANTEE",
+    );
+
+    if (granteeResponse.success) {
       return {
-        user: userResponse.user,
-        grantee: granteeData,
+        user: userData,
+        grantee: granteeResponse.user as Grantee,
       };
     }
-    // fallback: only grantee data
+    // If we can't get grantee data, just return user data
     return {
-      user: granteeData as unknown as User, // fallback, but not ideal
-      grantee: granteeData,
+      user: userData,
     };
   }
 
-  // If not found as GRANTEE, try PAYOUT_PROVIDER
-  const providerResponse = await authService.getUserRoleById(
-    userID,
-    "PAYOUT_PROVIDER",
-  );
+  if (userRole === "PAYOUT_PROVIDER") {
+    const providerResponse = await authService.getUserRoleById(
+      userID,
+      "PAYOUT_PROVIDER",
+    );
 
-  if (providerResponse.success) {
-    const providerData = providerResponse.user as User;
+    if (providerResponse.success) {
+      return {
+        user: userData,
+        payoutProvider: providerResponse.user as PayoutProvider,
+      };
+    }
+    // If we can't get provider data, just return user data
     return {
-      user: providerData,
+      user: userData,
     };
   }
 
-  // If not found in either role, try basic user fetch
-  const basicUserResponse = await authService.getUserById(userID, "GRANTEE");
-
-  if (basicUserResponse.exists) {
-    return {
-      user: basicUserResponse.user,
-    };
-  }
-
-  throw new Error("User not found");
+  // Fallback: return just user data
+  return {
+    user: userData,
+  };
 };
 
 export const useUserProfile = (params: Promise<{ userID: string }>) => {
   const { userID } = use(params);
-  console.log("userID", userID);
 
   const query = useQuery({
     queryKey: ["user-profile", userID],
     queryFn: () => fetchUserProfile(userID),
     enabled: !!userID,
-    retry: (failureCount, error) => {
-      // Retry up to 2 times for network errors, but not for "User not found"
-      if (error.message === "User not found") {
-        return false;
-      }
-      return failureCount < 2;
-    },
+    retry: 3, // Simple retry 3 times
+    retryDelay: 1000, // Fixed 1 second delay
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });

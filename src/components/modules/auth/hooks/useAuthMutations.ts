@@ -43,8 +43,13 @@ export const useAuthMutations = () => {
     return useQuery({
       queryKey: ["user-data", userId, role],
       queryFn: async () => {
+        // Si el role es EMPTY, no incluir el parámetro role en la query
+        const params = role === "EMPTY" 
+          ? { user_id: userId }
+          : { user_id: userId, role };
+          
         const response = await http.get<UserResponse>("/get-user-by-id", {
-          params: { user_id: userId, role },
+          params,
         });
         if (!response.data.exists || !response.data.user) {
           throw new Error("No user data found");
@@ -93,7 +98,28 @@ export const useAuthMutations = () => {
 
       const { role } = roleResponse;
 
-      // Obtener datos en paralelo
+      // Si el role es EMPTY, solo obtener datos del usuario, no datos específicos del role
+      if (role === "EMPTY") {
+        const userResponse = await http.get<UserResponse>("/get-user-by-id", {
+          params: { user_id: userId },
+        });
+
+        if (
+          !userResponse.data.exists ||
+          !userResponse.data.user
+        ) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const userData = {
+          ...userResponse.data.user,
+          role: role as UserRole,
+        };
+
+        return { userData, roleData: null, role };
+      }
+
+      // Para otros roles, obtener datos en paralelo
       const [userResponse, roleDataResponse] = await Promise.allSettled([
         http.get<UserResponse>("/get-user-by-id", {
           params: { user_id: userId, role },
@@ -159,18 +185,16 @@ export const useAuthMutations = () => {
       queryClient.removeQueries({ queryKey: ["user-data"] });
       queryClient.removeQueries({ queryKey: ["role-data"] });
     },
-    onSuccess: () => {
-      console.log("Auth cache cleared successfully");
-    },
-    onError: (error: Error) => {
-      console.error("Error clearing auth cache:", error);
-    },
+    onSuccess: () => {},
+    onError: () => {},
   });
 
   // Función helper para obtener datos completos del usuario
   const useCompleteUserData = (userId: string) => {
     const roleQuery = useUserRole(userId);
     const userDataQuery = useUserData(userId, roleQuery.data || "");
+    
+    // Solo obtener datos específicos del role si no es EMPTY
     const roleDataQuery = useRoleData(userId, roleQuery.data || "");
 
     return {
@@ -184,10 +208,12 @@ export const useAuthMutations = () => {
       isLoading:
         roleQuery.isLoading ||
         userDataQuery.isLoading ||
-        roleDataQuery.isLoading,
+        (roleQuery.data !== "EMPTY" && roleDataQuery.isLoading),
       isError:
-        roleQuery.isError || userDataQuery.isError || roleDataQuery.isError,
-      error: roleQuery.error || userDataQuery.error || roleDataQuery.error,
+        roleQuery.isError || 
+        userDataQuery.isError || 
+        (roleQuery.data !== "EMPTY" && roleDataQuery.isError),
+      error: roleQuery.error || userDataQuery.error || (roleQuery.data !== "EMPTY" ? roleDataQuery.error : null),
     };
   };
 

@@ -1,4 +1,3 @@
-import type { UserRole } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -23,7 +22,7 @@ export async function GET(request: Request) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email, role: role as UserRole },
+      where: { email },
       select: {
         user_id: true,
         email: true,
@@ -33,10 +32,11 @@ export async function GET(request: Request) {
         profile_url: true,
         cover_url: true,
         location: true,
+        role: true,
       },
     });
 
-    if (!user) {
+    if (!user || user.role !== role) {
       return NextResponse.json(
         { exists: false, message: "User not found" },
         { status: 404 },

@@ -19,6 +19,7 @@ import {
   User as UserIcon,
   Wallet,
 } from "lucide-react";
+import { GrantProviderPublicCard } from "../components/GrantProviderPublicCard";
 import { useUserProfile } from "../hooks/useUserProfile";
 
 interface UserProfilePageProps {
@@ -85,13 +86,14 @@ export default function UserProfilePage({
     );
   }
 
-  const { user, grantee } = profileData ?? {};
+  const { user, grantee, payoutProvider } = profileData ?? {};
   const socialMedia = grantee?.social_media as {
     twitter?: string;
     linkedin?: string;
     github?: string;
   } | null;
-
+  // Determine if user is a Grant Provider (PAYOUT_PROVIDER)
+  const isGrantProvider = user?.role === "PAYOUT_PROVIDER";
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
@@ -113,14 +115,18 @@ export default function UserProfilePage({
             </Avatar>
             <div className="flex-1 space-y-4">
               <h1 className="text-2xl font-bold">
-                {grantee?.name || user?.username || "No name"}
+                {isGrantProvider
+                  ? payoutProvider?.organization_name ||
+                    user?.username ||
+                    "No name"
+                  : grantee?.name || user?.username || "No name"}
               </h1>
               {showUserIdInHeader && user?.user_id && (
                 <p className="text-xs text-muted-foreground break-all">
                   User ID: {user.user_id}
                 </p>
               )}
-              {grantee?.position_title && (
+              {!isGrantProvider && grantee?.position_title && (
                 <p className="text-muted-foreground">
                   {grantee.position_title}
                 </p>
@@ -163,7 +169,8 @@ export default function UserProfilePage({
                   </span>
                 </div>
               </div>
-              {socialMedia &&
+              {!isGrantProvider &&
+                socialMedia &&
                 (socialMedia.twitter ||
                   socialMedia.linkedin ||
                   socialMedia.github) && (
@@ -272,7 +279,9 @@ export default function UserProfilePage({
             </div>
           </CardContent>
         </Card>
-        {grantee && (
+        {isGrantProvider && payoutProvider ? (
+          <GrantProviderPublicCard payoutProvider={payoutProvider} />
+        ) : grantee ? (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -313,7 +322,7 @@ export default function UserProfilePage({
               </div>
             </CardContent>
           </Card>
-        )}
+        ) : null}
       </div>
     </div>
   );
