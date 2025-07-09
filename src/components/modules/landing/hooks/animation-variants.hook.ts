@@ -1,51 +1,43 @@
 "use client";
 
-import { useAnimationPreference } from "@/hooks/useAnimationPreference";
-
 export const useAnimationVariants = () => {
-  const { animationsEnabled } = useAnimationPreference();
+  const animationsEnabled = true; // Always enabled
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: animationsEnabled
-        ? {
-            staggerChildren: 0.2,
-            delayChildren: 0.3,
-          }
-        : { duration: 0 },
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
     },
   };
 
   const itemVariants = {
-    hidden: { y: animationsEnabled ? 20 : 0, opacity: 0 },
+    hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
-      transition: animationsEnabled
-        ? {
-            type: "spring",
-            stiffness: 100,
-            damping: 10,
-          }
-        : { duration: 0 },
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 10,
+      },
     },
   };
 
   const buttonVariants = {
     initial: { scale: 1 },
     hover: {
-      scale: animationsEnabled ? 1.05 : 1,
-      transition: animationsEnabled
-        ? {
-            type: "spring",
-            stiffness: 400,
-            damping: 10,
-          }
-        : { duration: 0 },
+      scale: 1.05,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+      },
     },
-    tap: { scale: animationsEnabled ? 0.95 : 1 },
+    tap: { scale: 0.95 },
   };
 
   const cardVariants = (index: number) => ({
