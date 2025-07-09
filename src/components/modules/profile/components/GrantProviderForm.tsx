@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import type { GrantProvider } from '@/@types/grant-provider.entity';
-import { Button } from '@/components/ui/button';
+import type { GrantProvider } from "@/@types/grant-provider.entity";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -16,22 +16,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Building2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+} from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Building2 } from "lucide-react";
+import { useForm } from "react-hook-form";
 import {
   type GrantProviderFormData,
   grantProviderSchema,
-} from '../schemas/profile.schema';
+} from "../schemas/profile.schema";
 
 interface GrantProviderFormProps {
   grantProvider?: GrantProvider;
@@ -45,9 +45,9 @@ export function GrantProviderForm({
   const form = useForm<GrantProviderFormData>({
     resolver: zodResolver(grantProviderSchema),
     defaultValues: {
-      organization_name: grantProvider?.organization_name || '',
-      network_type: grantProvider?.network_type || '',
-      email: grantProvider?.email || '',
+      organization_name: grantProvider?.organization_name || "",
+      network_type: grantProvider?.network_type || "",
+      email: grantProvider?.email || "",
     },
   });
 
@@ -56,13 +56,13 @@ export function GrantProviderForm({
   };
 
   const networkTypes = [
-    'Ethereum',
-    'Stellar',
-    'Starknet',
-    'Optimism',
-    'Worldcoin',
-    'Solana',
-    'Other',
+    "Ethereum",
+    "Stellar",
+    "Starknet",
+    "Optimism",
+    "Worldcoin",
+    "Solana",
+    "Other",
   ];
 
   return (

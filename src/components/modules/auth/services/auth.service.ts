@@ -95,11 +95,34 @@ class AuthService {
 
   async getUserById(
     user_id: string,
-    role: UserRole,
+    role?: UserRole,
+  ): Promise<GetUserServiceResponse> {
+    try {
+      const roleParam = role ? `&role=${role}` : "";
+      const response = await http.get<{ user: User }>(
+        `/get-user-by-id?user_id=${encodeURIComponent(user_id)}${roleParam}`,
+      );
+      return {
+        exists: true,
+        user: response.data.user,
+      };
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as {
+          response: { data: GetUserServiceResponse };
+        };
+        return axiosError.response.data;
+      }
+      return { exists: false, message: "Failed to check user" };
+    }
+  }
+
+  async getUserByIdWithoutRole(
+    user_id: string,
   ): Promise<GetUserServiceResponse> {
     try {
       const response = await http.get<{ user: User }>(
-        `/get-user-by-id?user_id=${encodeURIComponent(user_id)}&role=${role}`,
+        `/get-user-by-id?user_id=${encodeURIComponent(user_id)}`,
       );
       return {
         exists: true,
@@ -129,6 +152,23 @@ class AuthService {
       return {
         success: true,
         user: response.data.user,
+      };
+    } catch (error: unknown) {
+      return { success: false, message: extractErrorMessage(error) };
+    }
+  }
+
+  async getUsersByRole(
+    user_ids: string[],
+    role: UserRole,
+  ): Promise<{ success: boolean; users?: User[]; message?: string }> {
+    try {
+      const response = await http.get<{ users: User[] }>(
+        `/get-users-by-role?role=${encodeURIComponent(role)}&user_ids=${encodeURIComponent(user_ids.join(","))}`,
+      );
+      return {
+        success: true,
+        users: response.data.users,
       };
     } catch (error: unknown) {
       return { success: false, message: extractErrorMessage(error) };

@@ -46,7 +46,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "decimal.js": "^10.5.0",
-    "framer-motion": "^12.19.2",
+    "framer-motion": "^12.9.2",
     "grant-fox": "file:",
     "i": "^0.3.7",
     "i18next": "^25.2.1",

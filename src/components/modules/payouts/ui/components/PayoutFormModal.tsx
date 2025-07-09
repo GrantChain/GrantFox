@@ -1,3 +1,4 @@
+import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { useInitializeMultiEscrowForm } from "@/components/modules/escrows/hooks/initialize-multi-escrow-form.hook";
 import {
   Dialog,
@@ -36,6 +37,7 @@ export const PayoutFormModal = ({
   const { setShowCreateModal, setSelectedGrantee, selectedGrantee } =
     usePayout();
   const { address } = useGlobalWalletStore();
+  const { user } = useAuth();
   const { onSubmit: initializeEscrow } = useInitializeMultiEscrowForm();
 
   useEffect(() => {
@@ -52,8 +54,13 @@ export const PayoutFormModal = ({
   };
 
   const handleInitializeEscrow = async (data: PayoutFormValues) => {
-    if (data.grantee_id) {
-      const payload = buildEscrowPayload(data, address);
+    if (data.grantee_id && selectedGrantee && user) {
+      const payload = await buildEscrowPayload({
+        data,
+        address,
+        payoutProvider: user,
+        grantee: selectedGrantee,
+      });
       await initializeEscrow(payload);
     }
   };
