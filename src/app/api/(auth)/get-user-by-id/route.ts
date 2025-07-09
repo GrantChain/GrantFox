@@ -1,3 +1,4 @@
+import type { UserRole } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -7,6 +8,12 @@ export async function GET(request: Request) {
     const user_id = searchParams.get("user_id");
     const role = searchParams.get("role");
 
+    if (!role) {
+      return NextResponse.json(
+        { exists: false, message: "Role parameter is required" },
+        { status: 400 },
+      );
+    }
     if (!user_id) {
       return NextResponse.json(
         { exists: false, message: "User ID parameter is required" },
@@ -14,10 +21,12 @@ export async function GET(request: Request) {
       );
     }
 
-    // Si el role es EMPTY, buscar solo por user_id sin filtrar por role
     if (role === "EMPTY") {
       const user = await prisma.user.findUnique({
-        where: { user_id },
+        where: {
+          user_id,
+          role: role as UserRole,
+        },
         select: {
           user_id: true,
           email: true,
@@ -44,9 +53,11 @@ export async function GET(request: Request) {
       return NextResponse.json({ exists: true, user });
     }
 
-    // Para otros roles, buscar con filtro de role
     const user = await prisma.user.findUnique({
-      where: { user_id },
+      where: {
+        user_id,
+        role: role as UserRole,
+      },
       select: {
         user_id: true,
         email: true,
@@ -56,15 +67,10 @@ export async function GET(request: Request) {
         profile_url: true,
         cover_url: true,
         location: true,
-        role: true,
-        is_active: true,
-        created_at: true,
-        updated_at: true,
       },
     });
 
-    // Verificar que el usuario existe y tiene el role correcto
-    if (!user || (role && user.role !== role)) {
+    if (!user) {
       return NextResponse.json(
         { exists: false, message: "User not found" },
         { status: 404 },
@@ -73,9 +79,9 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ exists: true, user });
   } catch (error) {
-    console.error("Error in get-user-by-id:", error);
+    console.error("Error checking user:", error);
     return NextResponse.json(
-      { exists: false, message: "Internal server error" },
+      { exists: false, message: "Failed to check user" },
       { status: 500 },
     );
   }

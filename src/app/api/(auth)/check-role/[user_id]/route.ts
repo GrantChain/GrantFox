@@ -20,7 +20,8 @@ export async function GET(
     }
 
     return NextResponse.json({ role: user.role });
-  } catch {
+  } catch (error) {
+    console.error("Error getting user role:", error);
     return NextResponse.json(
       { error: "Failed to get user role" },
       { status: 500 },
