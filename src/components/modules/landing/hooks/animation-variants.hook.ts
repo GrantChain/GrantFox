@@ -1,6 +1,8 @@
 "use client";
 
 export const useAnimationVariants = () => {
+  const animationsEnabled = true; // Always enabled
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -100,5 +102,6 @@ export const useAnimationVariants = () => {
     iconVariants,
     listVariants,
     listItemVariants,
+    animationsEnabled,
   };
 };
