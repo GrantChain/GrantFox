@@ -92,10 +92,8 @@ export default function UserProfilePage({
     linkedin?: string;
     github?: string;
   } | null;
-
   // Determine if user is a Grant Provider (PAYOUT_PROVIDER)
   const isGrantProvider = user?.role === "PAYOUT_PROVIDER";
-
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
