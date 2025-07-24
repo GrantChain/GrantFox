@@ -1,13 +1,13 @@
-import React from "react";
+import { InstallPWAButton } from "@/components/shared/install-pwa-button";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import type React from "react";
 import { ThemeToggle } from "../sidebar/theme-toggler";
-import { InstallPWAButton } from "@/components/shared/install-pwa-button";
 
 export const HeaderLanding = (): React.JSX.Element => {
   return (
-    <header className="px-10 sticky top-0 z-40 w-full border-x border-b rounded-br-3xl rounded-bl-3xl bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="px-10 sticky top-0 z-40 w-full border-x border-b rounded-br-3xl rounded-bl-3xl bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Image

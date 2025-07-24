@@ -1,8 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { GlobalProvider } from "@/components/providers/global.provider";
-import { Toaster } from "sonner";
 import type { Metadata, Viewport } from "next";
+import { Toaster } from "sonner";
 
 // Optimize font loading
 const geistSans = Geist({
@@ -127,6 +127,21 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+    (function () {
+      try {
+        const theme = localStorage.getItem("theme");
+        const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const resolved = theme === "dark" || (theme === "system" && systemDark) ? "dark" : "light";
+        document.documentElement.classList.add(resolved);
+      } catch (_) {}
+    })();
+  `,
+          }}
+        />
+
         {/* Preload critical fonts */}
         <link
           rel="preload"
@@ -144,7 +159,11 @@ export default function RootLayout({
         />
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

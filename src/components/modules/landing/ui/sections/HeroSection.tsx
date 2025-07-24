@@ -10,7 +10,7 @@ export const HeroSection = () => {
     useHeroAnimations();
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 overflow-hidden">
+    <section className="w-full bg-background py-12 md:py-24 lg:py-32 xl:py-48 overflow-hidden">
       <div className="container px-4 md:px-6">
         <motion.div
           ref={ref}
@@ -22,13 +22,13 @@ export const HeroSection = () => {
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-2">
               <motion.h1
-                className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none dark:text-white"
+                className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none text-foreground"
                 variants={itemVariants}
               >
                 Secure Milestone-Based Funding
               </motion.h1>
               <motion.p
-                className="max-w-[600px] text-muted-foreground md:text-xl dark:text-muted-foreground"
+                className="max-w-[600px] text-muted-foreground md:text-xl"
                 variants={itemVariants}
               >
                 Open-source grants platform using{" "}
@@ -59,13 +59,13 @@ export const HeroSection = () => {
                 >
                   <Button
                     size="lg"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 relative overflow-hidden group"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden group"
                   >
                     <span className="relative z-10">
                       Trustless Work Documentation
                     </span>
                     <motion.span
-                      className="absolute inset-0 bg-white dark:bg-white opacity-20"
+                      className="absolute inset-0 bg-foreground/10"
                       initial={{ x: "-100%", opacity: 0 }}
                       whileHover={{ x: "100%", opacity: 0.2 }}
                       transition={{ duration: 0.5 }}

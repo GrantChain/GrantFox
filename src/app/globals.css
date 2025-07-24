@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Optimize font loading */
+/* ---------------------------------------------
+  Base layer: CSS variables and font smoothing
+--------------------------------------------- */
 @layer base {
   html {
     font-display: swap;
@@ -11,76 +13,88 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-    --brand-green: 151, 77%, 52%;
-    --brand-blue: 217, 96%, 60%;
-    --brand-purple: 292, 70%, 38%;
-    --brand-orange: 29, 89%, 62%;
-    --brand-pink: 327, 81%, 60%;
+
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
+
     --primary: 15 90% 55%;
     --primary-foreground: 0 0% 100%;
+
     --secondary: 24 50% 94%;
     --secondary-foreground: 24 30% 20%;
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
+
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
+
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
+
     --radius: 0.5rem;
+
+    /* Custom brand/chart colors */
+    --brand-green: 151 77% 52%;
+    --brand-blue: 217 96% 60%;
+    --brand-purple: 292 70% 38%;
+    --brand-orange: 29 89% 62%;
+    --brand-pink: 327 81% 60%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --background: 0 0% 0%; /* black */
+    --foreground: 0 0% 100%; /* white */
+
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
+
     --primary: 15 90% 55%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
+
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 15%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+
+    --accent: 0 0% 10%;
+    --accent-foreground: 0 0% 100%;
+
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
     --ring: 224.3 76.3% 94.1%;
   }
-}
 
-/* Performance optimizations */
-@layer base {
   * {
     @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground;
-    /* Optimize rendering */
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Improve scrolling performance */
     scroll-behavior: smooth;
   }
 
-  /* Optimize images */
   img {
     content-visibility: auto;
   }
 
-  /* Optimize animations */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -93,7 +107,9 @@
   }
 }
 
-/* Critical CSS for above-the-fold content */
+/* ---------------------------------------------
+  Component layer: reusable utility classes
+--------------------------------------------- */
 @layer components {
   .loading-skeleton {
     @apply animate-pulse bg-muted rounded;
@@ -105,7 +121,9 @@
   }
 }
 
-/* Custom Scrollbar Styles */
+/* ---------------------------------------------
+  Scrollbar styling
+--------------------------------------------- */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -125,7 +143,7 @@
   background: hsl(var(--primary) / 0.5);
 }
 
-/* Firefox */
+/* Firefox Scrollbar */
 * {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--primary) / 0.3) transparent;

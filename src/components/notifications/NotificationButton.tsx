@@ -17,7 +17,7 @@ import { useState } from "react";
 const typeIconMap = {
   info: (
     <Info
-      className="h-5 w-5 text-blue-500 dark:text-blue-400"
+      className="h-5 w-5 text-blue-500 dark:text-blue-400 bg-background text-foreground"
       aria-label="Info"
     />
   ),
@@ -172,7 +172,8 @@ export const NotificationButton = () => {
                       aria-label={notification.title}
                       onClick={() => handleSelectNotification(notification)}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") handleSelectNotification(notification);
+                        if (e.key === "Enter" || e.key === " ")
+                          handleSelectNotification(notification);
                       }}
                     >
                       {typeIconMap[notification.type]}

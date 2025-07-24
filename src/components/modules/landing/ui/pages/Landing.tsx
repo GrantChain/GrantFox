@@ -1,10 +1,10 @@
 "use client";
 
+import { FooterLanding } from "@/components/layout/footer/FooterLanding";
+import { HeaderLanding } from "@/components/layout/header/HeaderLanding";
 import { motion } from "framer-motion";
 import { useScrollToHash } from "../../hooks/scroll-to-hash.hook";
-import { HeaderLanding } from "@/components/layout/header/HeaderLanding";
 import { HeroSection } from "../sections/HeroSection";
-import { FooterLanding } from "@/components/layout/footer/FooterLanding";
 
 export const Landing = () => {
   useScrollToHash();
@@ -14,10 +14,10 @@ export const Landing = () => {
       className="flex min-h-screen flex-col dark:bg-background"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.2, ease: "easeOut" }} 
+      transition={{ duration: 0.2, ease: "easeOut" }}
     >
       <HeaderLanding />
-      <main className="flex-1 min-h-screen">
+      <main className="flex-1 min-h-screen ">
         <HeroSection />
       </main>
       <FooterLanding />
