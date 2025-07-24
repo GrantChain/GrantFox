@@ -3,6 +3,7 @@ import "./globals.css";
 import { GlobalProvider } from "@/components/providers/global.provider";
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
+import { ThemeInitializer } from "@/components/providers/ThemeInitializer";
 
 // Optimize font loading
 const geistSans = Geist({
@@ -127,20 +128,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-    (function () {
-      try {
-        const theme = localStorage.getItem("theme");
-        const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const resolved = theme === "dark" || (theme === "system" && systemDark) ? "dark" : "light";
-        document.documentElement.classList.add(resolved);
-      } catch (_) {}
-    })();
-  `,
-          }}
-        />
+        <ThemeInitializer />
 
         {/* Preload critical fonts */}
         <link
@@ -166,7 +154,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
         suppressHydrationWarning={true}
       >
         <GlobalProvider>

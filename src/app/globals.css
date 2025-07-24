@@ -7,8 +7,10 @@
 --------------------------------------------- */
 @layer base {
   html {
-    font-display: swap;
-  }
+  font-display: swap;
+  @apply bg-background text-foreground;
+}
+
 
   :root {
     --background: 0 0% 100%;
