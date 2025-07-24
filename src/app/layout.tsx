@@ -1,9 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeInitializer } from "@/components/providers/ThemeInitializer";
 import { GlobalProvider } from "@/components/providers/global.provider";
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
-import { ThemeInitializer } from "@/components/providers/ThemeInitializer";
 
 // Optimize font loading
 const geistSans = Geist({
