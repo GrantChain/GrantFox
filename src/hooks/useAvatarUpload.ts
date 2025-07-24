@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { useCallback, useState } from "react";
 
 interface UseAvatarUploadOptions {
   userId: string;
