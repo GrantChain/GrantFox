@@ -191,7 +191,7 @@ export function AvatarUploadButton({
             // Image Preview
             <div className="w-full h-full relative">
               <img
-                src={displayUrl || "/placeholder.svg"}
+                src={displayUrl || "/avatar.webp"}
                 alt={userName || "Avatar preview"}
                 className="w-full h-full object-cover rounded-full"
               />
