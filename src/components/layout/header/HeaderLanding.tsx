@@ -1,9 +1,9 @@
-import React from "react";
+import { InstallPWAButton } from "@/components/shared/install-pwa-button";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import type React from "react";
 import { ThemeToggle } from "../sidebar/theme-toggler";
-import { InstallPWAButton } from "@/components/shared/install-pwa-button";
 
 export const HeaderLanding = (): React.JSX.Element => {
   return (
