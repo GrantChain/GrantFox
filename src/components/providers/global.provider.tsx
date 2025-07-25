@@ -9,9 +9,9 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <TrustlessWorkProvider>
       <ThemeProvider defaultTheme="system">
-        <PostHogProvider>
-          <TanstackProvider>{children}</TanstackProvider>
-        </PostHogProvider>
+        {/* <PostHogProvider> */}
+        <TanstackProvider>{children}</TanstackProvider>
+        {/* </PostHogProvider> */}
       </ThemeProvider>
     </TrustlessWorkProvider>
   );

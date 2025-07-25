@@ -42,6 +42,7 @@ export const usePayoutForm = ({
   );
   const { setSelectedGrantee, setSelectedPayoutProvider } = usePayout();
   const { payoutProvider } = useAuth();
+
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const form = useForm<PayoutFormValues>({
@@ -83,7 +84,10 @@ export const usePayoutForm = ({
         try {
           const [result, payoutProviderResult] = await Promise.all([
             authService.getUserByEmail(initialValues.grantee_id),
-            authService.getUserById(payoutProvider?.user_id || "", "GRANTEE"),
+            authService.getUserById(
+              payoutProvider?.user_id || "",
+              "PAYOUT_PROVIDER",
+            ),
           ]);
 
           if (result.exists && payoutProviderResult.exists) {
