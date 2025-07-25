@@ -21,16 +21,10 @@ export const HeroSection = () => {
         >
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-2">
-              <motion.h1
-                className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none dark:text-white"
-                variants={itemVariants}
-              >
+              <h1 className="text-6xl font-bold">
                 Secure Milestone-Based Funding
-              </motion.h1>
-              <motion.p
-                className="max-w-[600px] text-muted-foreground md:text-xl dark:text-muted-foreground"
-                variants={itemVariants}
-              >
+              </h1>
+              <div className="max-w-[600px] text-muted-foreground md:text-xl dark:text-muted-foreground">
                 Open-source grants platform using{" "}
                 <Link
                   href="https://www.trustlesswork.com"
@@ -41,39 +35,24 @@ export const HeroSection = () => {
                 </Link>{" "}
                 smart escrows, ideal for blockchains, DAOs, hackathons, and
                 events.
-              </motion.p>
+              </div>
             </div>
-            <motion.div
-              className="flex flex-col gap-2 min-[400px]:flex-row"
-              variants={itemVariants}
-            >
+            <div className="flex flex-col gap-2 min-[400px]:flex-row">
               <Link
                 href="https://docs.trustlesswork.com/trustless-work"
                 target="_blank"
               >
-                <motion.div
-                  variants={buttonVariants}
-                  initial="initial"
-                  whileHover="hover"
-                  whileTap="tap"
-                >
-                  <Button
-                    size="lg"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 relative overflow-hidden group"
-                  >
-                    <span className="relative z-10">
-                      Trustless Work Documentation
-                    </span>
-                    <motion.span
-                      className="absolute inset-0 bg-white dark:bg-white opacity-20"
-                      initial={{ x: "-100%", opacity: 0 }}
-                      whileHover={{ x: "100%", opacity: 0.2 }}
-                      transition={{ duration: 0.5 }}
-                    />
-                  </Button>
-                </motion.div>
+                <Button size="lg">
+                  Trustless Work Documentation
+                  <motion.span
+                    className="absolute inset-0 bg-white dark:bg-white opacity-20"
+                    initial={{ x: "-100%", opacity: 0 }}
+                    whileHover={{ x: "100%", opacity: 0.2 }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </Button>
               </Link>
-            </motion.div>
+            </div>
           </div>
 
           {/* Abstract animated shape */}
