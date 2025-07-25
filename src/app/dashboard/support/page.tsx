@@ -4,15 +4,15 @@ import { TicketForm } from "@/components/modules/support/ticket-form";
 export default function SupportPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
-      <div className="container mx-auto space-y-12 p-6 lg:p-8">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-12">
         <SupportHeader />
 
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto w-full max-w-3xl">
           <TicketForm />
         </div>
 
         {/* Additional resources section */}
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto w-full max-w-4xl">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <h3 className="mb-3 font-semibold">📖 Popular Help Topics</h3>
