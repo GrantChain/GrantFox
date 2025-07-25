@@ -26,8 +26,17 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          50: "#fef2f0",
+          100: "#fde6e1",
+          200: "#fbd0c7",
+          300: "#f7b0a0",
+          400: "#f1856a",
+          500: "#e45726", // primary
+          600: "#d13f1a",
+          700: "#ad3218",
+          800: "#8c2b1b",
+          900: "#73261a",
+          950: "#3e1109",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

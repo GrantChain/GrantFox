@@ -124,7 +124,6 @@ class AuthService {
       const response = await http.get<{ user: User }>(
         `/get-user-by-id?user_id=${encodeURIComponent(user_id)}`,
       );
-      console.log("response", response.data.user);
       return {
         exists: true,
         user: response.data.user,
@@ -150,7 +149,6 @@ class AuthService {
       }>(
         `/get-user-role-by-id?user_id=${encodeURIComponent(user_id)}&role=${role}`,
       );
-      console.log("response", response.data.user);
       return {
         success: true,
         user: response.data.user,
@@ -186,7 +184,7 @@ class AuthService {
         user_id,
         email,
       });
-      
+
       if (response.status === 200 && response.data.user) {
         return { success: true, user: response.data.user };
       }

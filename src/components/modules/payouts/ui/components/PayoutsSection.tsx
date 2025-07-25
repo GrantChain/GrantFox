@@ -20,8 +20,6 @@ export const PayoutsSection = () => {
   } = usePayoutsFilters();
   const { user } = useAuth();
 
-  console.log(user);
-
   const { data, isLoading, error } = usePayouts(
     user?.user_id
       ? {

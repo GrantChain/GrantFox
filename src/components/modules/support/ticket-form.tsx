@@ -117,9 +117,7 @@ export function TicketForm({ className }: TicketFormProps) {
     setIsSubmitting(true);
 
     try {
-      // TODO: Replace with actual API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log(data);
       setShowSuccess(true);
 
       toast.success("Ticket submitted successfully!", {

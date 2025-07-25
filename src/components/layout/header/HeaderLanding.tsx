@@ -23,9 +23,7 @@ export const HeaderLanding = (): React.JSX.Element => {
           <InstallPWAButton />
           <ThemeToggle />
           <Link href="/login" className="flex items-center">
-            <Button size="lg" className="bg-primary text-primary-foreground">
-              Sign In
-            </Button>
+            <Button size="lg">Sign In</Button>
           </Link>
         </div>
       </div>

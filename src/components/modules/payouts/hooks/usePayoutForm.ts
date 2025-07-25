@@ -83,10 +83,7 @@ export const usePayoutForm = ({
         try {
           const [result, payoutProviderResult] = await Promise.all([
             authService.getUserByEmail(initialValues.grantee_id),
-            authService.getUserById(
-              payoutProvider?.user_id || "",
-              "PAYOUT_PROVIDER",
-            ),
+            authService.getUserById(payoutProvider?.user_id || "", "GRANTEE"),
           ]);
 
           if (result.exists && payoutProviderResult.exists) {

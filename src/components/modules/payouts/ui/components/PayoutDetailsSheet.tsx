@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -106,6 +107,9 @@ export function PayoutDetailsSheet({
 
         <div className="flex-1 p-4 space-y-4 overflow-y-auto">
           <div className="grid grid-cols-2 gap-4">
+            <Button variant="success" className="col-span-2">
+              Fund
+            </Button>
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">

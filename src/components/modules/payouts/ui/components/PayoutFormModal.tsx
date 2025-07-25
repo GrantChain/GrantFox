@@ -1,5 +1,4 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
-import { useInitializeMultiEscrowForm } from "@/components/modules/escrows/hooks/initialize-multi-escrow-form.hook";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,7 @@ import { usePayout } from "../../context/PayoutContext";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
 import { PayoutForm } from "./PayoutForm";
+import { useInitializeMultiEscrowForm } from "@/components/modules/escrows/useInitializeMultiEscrowForm";
 
 interface PayoutFormModalProps {
   payout?: Payout;
@@ -61,6 +61,7 @@ export const PayoutFormModal = ({
         payoutProvider: user,
         grantee: selectedGrantee,
       });
+
       await initializeEscrow(payload);
     }
   };

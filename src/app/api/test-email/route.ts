@@ -10,7 +10,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    console.log("📧 Testing email to:", email);
     const result = await sendTestEmail(email);
 
     if (result.success) {
