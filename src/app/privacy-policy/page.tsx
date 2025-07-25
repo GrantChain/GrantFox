@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 
 const PrivacyPolicyPage = () => {
   return (
-    <main className="min-h-svh bg-background text-foreground flex py-12 px-4">
+    <main className="min-h-screen  bg-background text-foreground flex flex-col">
       <article
-        className="w-full max-w-6xl mx-auto bg-card text-card-foreground rounded-xl shadow-lg p-6 md:p-10 overflow-y-auto max-h-[80vh] focus:outline-none"
+        className="w-full  mx-auto  bg-card text-card-foreground  shadow-lg p-6 md:p-10   focus:outline-none"
         aria-label="Privacy Policy Article"
       >
         <SectionHeader
@@ -31,9 +31,9 @@ const PrivacyPolicyPage = () => {
               vitae dictum mi urna non urna.
             </p>
           </section>
-          <div className="w-full flex justify-center">
+          {/* <div className="w-full flex justify-center">
             <div className="h-px w-2/3 bg-muted" />
-          </div>
+          </div> */}
           <section className="flex flex-col items-center gap-2">
             <h2 className="text-2xl font-bold mb-2 text-center">
               2. Data Collection
@@ -44,9 +44,9 @@ const PrivacyPolicyPage = () => {
               faucibus orci luctus et ultrices posuere cubilia curae.
             </p>
           </section>
-          <div className="w-full flex justify-center">
+          {/* <div className="w-full flex justify-center">
             <div className="h-px w-2/3 bg-muted" />
-          </div>
+          </div> */}
           <section className="flex flex-col items-center gap-2">
             <h2 className="text-2xl font-bold mb-2 text-center">
               3. Use of Information
@@ -57,9 +57,9 @@ const PrivacyPolicyPage = () => {
               varius at, adipiscing vitae est.
             </p>
           </section>
-          <div className="w-full flex justify-center">
+          {/* <div className="w-full flex justify-center">
             <div className="h-px w-2/3 bg-muted" />
-          </div>
+          </div> */}
           <section className="flex flex-col items-center gap-2">
             <h2 className="text-2xl font-bold mb-2 text-center">
               4. Data Security
@@ -70,9 +70,9 @@ const PrivacyPolicyPage = () => {
               consequat.
             </p>
           </section>
-          <div className="w-full flex justify-center">
+          {/* <div className="w-full flex justify-center">
             <div className="h-px w-2/3 bg-muted" />
-          </div>
+          </div> */}
           <section className="flex flex-col items-center gap-2">
             <h2 className="text-2xl font-bold mb-2 text-center">
               5. Contact Us
