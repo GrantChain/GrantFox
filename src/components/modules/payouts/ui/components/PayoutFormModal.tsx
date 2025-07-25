@@ -1,5 +1,5 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
-import { useInitializeMultiEscrowForm } from "@/components/modules/escrows/hooks/initialize-multi-escrow-form.hook";
+import { useInitializeMultiEscrowForm } from "@/components/modules/escrows/useInitializeMultiEscrowForm";
 import {
   Dialog,
   DialogContent,
@@ -61,6 +61,7 @@ export const PayoutFormModal = ({
         payoutProvider: user,
         grantee: selectedGrantee,
       });
+
       await initializeEscrow(payload);
     }
   };

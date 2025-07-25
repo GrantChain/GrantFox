@@ -1,6 +1,6 @@
-import React from "react";
-import { Metadata } from "next";
 import { SectionHeader } from "@/components/modules/landing/ui/sections/HeaderSection";
+import type { Metadata } from "next";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -12,8 +12,7 @@ const PrivacyPolicyPage = () => {
   return (
     <main className="min-h-svh bg-background text-foreground flex py-12 px-4">
       <article
-        className="w-full max-w-6xl mx-auto bg-card max-w text-card-foreground rounded-xl shadow-lg p-6 md:p-10 overflow-y-auto max-h-[80vh] focus:outline-none"
-        tabIndex={0}
+        className="w-full max-w-6xl mx-auto bg-card text-card-foreground rounded-xl shadow-lg p-6 md:p-10 overflow-y-auto max-h-[80vh] focus:outline-none"
         aria-label="Privacy Policy Article"
       >
         <SectionHeader

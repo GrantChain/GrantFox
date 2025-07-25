@@ -124,7 +124,7 @@ export const GranteeDetailsCard = ({
 
   if (showLink) {
     return (
-      <Link href={`/profile/${selectedGrantee.user_id}`} target="_blank">
+      <Link href={`/dashboard/user/${selectedGrantee.user_id}`} target="_blank">
         {content}
       </Link>
     );

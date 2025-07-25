@@ -69,9 +69,6 @@ export function PayoutProviderProfile() {
 
   const fetchProfile = async () => {
     try {
-      console.log("🔍 Starting profile fetch...");
-
-      console.log("🔑 Getting user...");
       const { data: userData, error: userError } =
         await supabaseClient.auth.getUser();
 
@@ -81,7 +78,6 @@ export function PayoutProviderProfile() {
       }
 
       const userId = userData.user?.id;
-      console.log("👤 User ID:", userId);
 
       if (!userId) {
         toast.error("Please log in to view your profile");
@@ -89,15 +85,11 @@ export function PayoutProviderProfile() {
         return;
       }
 
-      console.log("📊 Fetching profile data...");
       const { data: profileData, error: profileError } = await supabaseClient
         .from("payout_provider")
         .select("*")
         .eq("user_id", userId)
         .single();
-
-      console.log("📋 Profile data:", profileData);
-      console.log("❓ Profile error:", profileError);
 
       if (profileError && profileError.code !== "PGRST116") {
         console.error("❌ Profile fetch error:", profileError);
@@ -105,11 +97,9 @@ export function PayoutProviderProfile() {
       }
 
       if (profileData) {
-        console.log("✅ Profile found, setting data");
         setFormData(profileData);
         setOriginalData(profileData);
       } else {
-        console.log("📝 No profile found, creating new");
         setFormData((prev) => ({ ...prev, user_id: userId }));
       }
     } catch (error) {
@@ -159,8 +149,6 @@ export function PayoutProviderProfile() {
 
     setIsLoading(true);
     try {
-      console.log("💾 Saving profile data:", formData);
-
       const updateData = {
         user_id: formData.user_id,
         organization_name: formData.organization_name,
@@ -169,21 +157,17 @@ export function PayoutProviderProfile() {
         updated_at: new Date().toISOString(),
       };
 
-      let result: {error: any} | {data: any; error: null};
+      let result: { error: any } | { data: any; error: null };
       if (originalData) {
-        console.log("🔄 Updating existing profile");
         result = await supabaseClient
           .from("payout_provider")
           .update(updateData)
           .eq("user_id", formData.user_id);
       } else {
-        console.log("➕ Creating new profile");
         result = await supabaseClient
           .from("payout_provider")
           .insert([{ ...updateData, created_at: new Date().toISOString() }]);
       }
-
-      console.log("💾 Save result:", result);
 
       if (result.error) {
         console.error("❌ Save error:", result.error);
