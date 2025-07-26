@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -190,7 +189,7 @@ export default function TermsPage() {
 
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-12 bg-red-600">
+        <div className="text-center mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6">
             Terms of Service
           </h1>
@@ -215,7 +214,7 @@ export default function TermsPage() {
                 <h3 className="font-semibold text-orange-300 mb-2">
                   Important Notice
                 </h3>
-                <p className="text-orange-700 text-sm">
+                <p className="text-orange-200 text-sm">
                   These terms contain important information about your rights
                   and obligations when using GrantFox&apos;s Trustless Work
                   smart escrow system. Please read them carefully. By using
@@ -308,7 +307,7 @@ export default function TermsPage() {
                 size="lg"
                 className="border-slate-600 text-gray-300 hover:text-white hover:bg-slate-700"
               >
-                <Link href="https://github.com/GrantChain/GrantFox.git">
+                <Link href="https://github.com/GrantChain/GrantFox">
                   View Documentation
                 </Link>
               </Button>
