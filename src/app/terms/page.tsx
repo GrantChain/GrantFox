@@ -271,7 +271,10 @@ export default function TermsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {section.content.map((item, itemIndex) => (
-                  <p key={itemIndex} className="text-gray-300 leading-relaxed">
+                  <p
+                    key={`${section.id}-${itemIndex}`}
+                    className="text-gray-300 leading-relaxed"
+                  >
                     {item.text}
                   </p>
                 ))}
