@@ -51,7 +51,7 @@ export const FooterLanding = () => {
                 Documentation
               </Link>
               <Link
-                href="#"
+                href="terms"
                 className="text-sm text-muted-foreground hover:text-primary"
               >
                 Terms of Service
