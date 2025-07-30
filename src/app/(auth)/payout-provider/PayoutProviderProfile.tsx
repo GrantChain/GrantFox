@@ -202,7 +202,7 @@ export function PayoutProviderProfile() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-6 px-4 max-w-4xl">
+      <div className="container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Card>
           <CardContent className="flex items-center justify-center py-8">
             <Loader2 className="w-8 h-8 animate-spin" />
@@ -214,7 +214,7 @@ export function PayoutProviderProfile() {
   }
 
   return (
-    <div className="container mx-auto py-6 px-4 max-w-4xl">
+    <div className="container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
