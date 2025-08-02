@@ -67,7 +67,7 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-[90rem] mx-auto">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="space-y-6">
           {Array.from({ length: 2 }).map((_, i) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: safe to use index for static skeletons
@@ -91,7 +91,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="max-w-[90rem] mx-auto">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -103,7 +103,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-[90rem] mx-auto">
+    <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
       <div className="space-y-6">
         {/* General Information Form */}
         <GeneralInfoForm user={user} onSubmit={handleGeneralInfoSubmit} />

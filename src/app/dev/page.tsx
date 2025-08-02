@@ -8,19 +8,19 @@ export default function App() {
   const { COLUMNS, tasks, handleDragEnd } = useKanbanParams();
 
   return (
-    <div className="p-4">
-      <div className="flex gap-8">
-        <DndContext onDragEnd={handleDragEnd}>
-          {COLUMNS.map((column) => {
-            return (
+    <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="w-full overflow-x-auto pb-4 -mx-2 px-2">
+        <div className="flex gap-4 min-w-max w-full">
+          <DndContext onDragEnd={handleDragEnd}>
+            {COLUMNS.map((column) => (
               <KanbanColumn
                 key={column.id}
                 column={column}
                 tasks={tasks.filter((task) => task.status === column.id)}
               />
-            );
-          })}
-        </DndContext>
+            ))}
+          </DndContext>
+        </div>
       </div>
     </div>
   );

@@ -117,6 +117,10 @@ export const viewport: Viewport = {
   maximumScale: 5, // Allow zoom for accessibility
   userScalable: true, // Enable zoom for accessibility
   viewportFit: "cover",
+  // Prevent iOS viewport scaling issues
+  minimumScale: 1,
+  // Prevent layout shift on mobile when address bar hides/shows
+  interactiveWidget: "resizes-visual",
 };
 
 export default function RootLayout({
@@ -125,15 +129,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html lang="en" suppressHydrationWarning={true} className="scroll-smooth">
       <head>
-        {/* Preload critical fonts */}
+        {/* Preload critical assets */}
         <link
           rel="preload"
           href="/fonts/geist-sans.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
+          // @ts-ignore - priority is not in the type definition but works in browsers
+          priority="high"
         />
         <link
           rel="preload"
@@ -141,13 +147,33 @@ export default function RootLayout({
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
+          // @ts-ignore - priority is not in the type definition but works in browsers
+          priority="low"
         />
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* iOS PWA meta tags */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        
+        {/* Prevent text size adjustment on mobile */}
+        <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
+        
+        {/* iOS specific meta tags */}
+        <meta name="apple-mobile-web-app-title" content="GrantFox" />
+        
+        {/* Windows 11+ specific meta tags */}
+        <meta name="msapplication-TileColor" content="#000000" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+        
+        {/* Theme color for browsers that support it */}
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}
         suppressHydrationWarning={true}
       >
         <GlobalProvider>

@@ -95,6 +95,17 @@ const SidebarProvider = React.forwardRef<
       [setOpenProp, open],
     );
 
+    // Lock body scroll when mobile sidebar is open
+    React.useEffect(() => {
+      if (isMobile) {
+        if (openMobile) {
+          document.body.classList.add("overflow-hidden");
+        } else {
+          document.body.classList.remove("overflow-hidden");
+        }
+      }
+    }, [isMobile, openMobile]);
+
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
       return isMobile
