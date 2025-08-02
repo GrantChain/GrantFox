@@ -68,27 +68,75 @@ export interface ChatResponse {
 // Predefined conversation flows
 const CONVERSATION_FLOWS = {
   PROFILE_HELP: {
-    keywords: ["profile", "account", "settings", "update", "edit"],
+    keywords: [
+      "profile",
+      "account",
+      "settings",
+      "update",
+      "edit",
+      "change",
+      "modify",
+      "information",
+      "details",
+      "bio",
+      "name",
+      "email",
+      "wallet",
+    ],
     responses: [
       "I can help you with your profile! You can update your information in the Profile section. What would you like to change?",
       "To update your profile, go to the Profile page in your dashboard. What specific information would you like to modify?",
       "Your profile settings are accessible from the main menu. What would you like to know about your account?",
+      "You can edit your profile by clicking on your avatar in the top right corner, then selecting 'Profile Settings'.",
+      "Profile updates can be made in the Settings section. You can change your name, bio, wallet address, and other details there.",
     ],
   },
   TRANSACTION_STATUS: {
-    keywords: ["transaction", "payment", "payout", "status", "money", "fund"],
+    keywords: [
+      "transaction",
+      "payment",
+      "payout",
+      "status",
+      "money",
+      "fund",
+      "balance",
+      "history",
+      "transfer",
+      "received",
+      "sent",
+      "pending",
+      "completed",
+    ],
     responses: [
       "I can help you check your transaction status. Let me look up your recent activity.",
       "To check your transaction status, you can view your payout history in the dashboard. What specific transaction are you looking for?",
       "Your transaction information is available in the Payouts section. Would you like me to help you navigate there?",
+      "You can view all your transactions in the 'Payouts' tab in your dashboard. Recent transactions are shown at the top.",
+      "Transaction status can be checked in the Payouts section. You'll see pending, completed, and failed transactions there.",
     ],
   },
   GENERAL_HELP: {
-    keywords: ["help", "support", "assist", "guide", "how"],
+    keywords: [
+      "help",
+      "support",
+      "assist",
+      "guide",
+      "how",
+      "what",
+      "where",
+      "when",
+      "why",
+      "question",
+      "problem",
+      "issue",
+      "trouble",
+    ],
     responses: [
       "I'm here to help! What specific question do you have about GrantFox?",
       "I can assist you with profile management, transaction status, and general platform questions. What do you need help with?",
       "Welcome to GrantFox support! How can I assist you today?",
+      "I can help you with: profile management, transaction status, project updates, and platform navigation. What would you like to know?",
+      "GrantFox is a platform for managing grants and payouts. I can help you with profile settings, transactions, and platform features.",
     ],
   },
   ROLE_SPECIFIC: {
@@ -117,6 +165,9 @@ const FALLBACK_RESPONSES = [
   "I'm here to help with GrantFox-related questions. Try asking about your profile, transactions, or how to use the platform.",
   "I didn't catch that. You can ask me about your account, payments, or how to navigate the platform.",
   "Let me help you better. You can ask about profile settings, transaction status, or general platform questions.",
+  "I can help you with profile management, transaction status, project updates, and platform navigation. What would you like to know?",
+  "GrantFox is a platform for managing grants and payouts. I can assist with profile settings, transactions, and platform features.",
+  "Try asking me about: updating your profile, checking transaction status, managing projects, or platform navigation.",
 ];
 
 export class ElizaChatbot {
@@ -181,19 +232,20 @@ export class ElizaChatbot {
       }
     }
 
-    // Use Eliza for general conversation
+    // Use Eliza for general conversation, but filter out repetitive responses
     const elizaResponse = this.eliza.transform(input);
 
-    // If Eliza doesn't provide a good response, use fallback
-    if (!elizaResponse || elizaResponse === input) {
+    // Check if Eliza response is helpful or just repetitive
+    if (this.isHelpfulResponse(elizaResponse, input)) {
       return {
-        message: this.getRandomFallbackResponse(),
+        message: elizaResponse,
         suggestions: this.getSuggestions(),
       };
     }
 
+    // If Eliza response is not helpful, use fallback
     return {
-      message: elizaResponse,
+      message: this.getRandomFallbackResponse(),
       suggestions: this.getSuggestions(),
     };
   }
@@ -276,6 +328,84 @@ export class ElizaChatbot {
     }
 
     return baseSuggestions;
+  }
+
+  private isHelpfulResponse(response: string, input: string): boolean {
+    // List of repetitive/unhelpful responses that Eliza commonly gives
+    const unhelpfulResponses = [
+      "yes",
+      "no",
+      "are you sure?",
+      "tell me more about that",
+      "why do you think that?",
+      "how does that make you feel?",
+      "what makes you think that?",
+      "can you elaborate on that?",
+      "i see",
+      "i understand",
+      "that's interesting",
+      "go on",
+      "please continue",
+      "tell me more",
+      "why do you say that?",
+      "what do you mean by that?",
+      "how do you feel about that?",
+      "what does that suggest to you?",
+      "does talking about this bother you?",
+      "is that the real reason?",
+      "what other reasons might there be?",
+      "does that explain anything else?",
+      "what does that tell you?",
+      "what do you think?",
+      "what do you think about that?",
+      "what do you think that means?",
+      "what do you think that suggests?",
+      "what do you think that indicates?",
+      "what do you think that implies?",
+      "what do you think that shows?",
+      "what do you think that reveals?",
+      "what do you think that demonstrates?",
+      "what do you think that proves?",
+      "what do you think that confirms?",
+      "what do you think that establishes?",
+      "what do you think that indicates?",
+      "what do you think that suggests?",
+      "what do you think that implies?",
+      "what do you think that shows?",
+      "what do you think that reveals?",
+      "what do you think that demonstrates?",
+      "what do you think that proves?",
+      "what do you think that confirms?",
+      "what do you think that establishes?",
+    ];
+
+    const lowerResponse = response.toLowerCase().trim();
+    const lowerInput = input.toLowerCase().trim();
+
+    // Check if response is in the unhelpful list
+    if (unhelpfulResponses.includes(lowerResponse)) {
+      return false;
+    }
+
+    // Check if response is just repeating the input
+    if (
+      lowerResponse.includes(lowerInput) &&
+      lowerResponse.length < lowerInput.length + 10
+    ) {
+      return false;
+    }
+
+    // Check if response is too short and generic
+    if (lowerResponse.length < 10) {
+      return false;
+    }
+
+    // Check if response is just a question without providing value
+    if (lowerResponse.endsWith("?") && lowerResponse.length < 30) {
+      return false;
+    }
+
+    return true;
   }
 
   private generateMessageId(): string {

@@ -139,8 +139,7 @@ export function ChatInterface({
       setIsLoading(false);
     }
   };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -173,6 +172,7 @@ export function ChatInterface({
           onClick={() => onToggle?.(true)}
           size="lg"
           className="rounded-full h-14 w-14 shadow-lg bg-primary hover:bg-primary/90"
+          aria-label="Open chat" 
         >
           <MessageCircle className="h-6 w-6" />
         </Button>
@@ -195,6 +195,7 @@ export function ChatInterface({
                 size="sm"
                 onClick={() => setIsMinimized(!isMinimized)}
                 className="h-8 w-8 p-0"
+                aria-label={isMinimized ? "Maximize chat" : "Minimize chat"}  
               >
                 {isMinimized ? (
                   <Maximize2 className="h-4 w-4" />
@@ -206,7 +207,8 @@ export function ChatInterface({
                 variant="ghost"
                 size="sm"
                 onClick={() => onToggle?.(false)}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0"  
+                aria-label="Close chat"  
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -286,7 +288,8 @@ export function ChatInterface({
                   ref={inputRef}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                  onKeyDown={handleKeyDown}  
+
                   placeholder="Type your message..."
                   disabled={isLoading}
                   className="flex-1"
