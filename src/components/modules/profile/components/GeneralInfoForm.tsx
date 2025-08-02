@@ -1,7 +1,6 @@
 "use client";
 
 import type { User } from "@/@types/user.entity";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,12 +20,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Camera } from "lucide-react";
+import { UserIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import {
   type GeneralInfoFormData,
   generalInfoSchema,
 } from "../schemas/profile.schema";
+import { AvatarUploadButton } from "./AvatarUploadButton";
 
 interface GeneralInfoFormProps {
   user: User;
@@ -58,7 +58,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Camera className="h-5 w-5" />
+          <UserIcon className="h-5 w-5" />
           General Information
         </CardTitle>
         <CardDescription>
@@ -72,40 +72,15 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
             className="space-y-6"
           >
             {/* Profile Picture Section */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="relative">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage
-                    src={profileUrl || "/placeholder.svg"}
-                    alt={userName}
-                  />
-                  <AvatarFallback className="text-lg">
-                    {userName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              <div className="flex-1 w-full">
-                <FormField
-                  control={form.control}
-                  name="profile_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Profile Image URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="https://example.com/profile.jpg"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            <div className="flex flex-col items-center">
+              <AvatarUploadButton
+                userId={user.user_id}
+                currentAvatarUrl={profileUrl}
+                userName={userName}
+                onAvatarChange={(url) => form.setValue("profile_url", url)}
+                size="lg"
+                className="mb-2"
+              />
             </div>
 
             {/* Cover Image */}

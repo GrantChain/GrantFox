@@ -3,6 +3,7 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { deleteOldAvatars } from "@/utils/profile.utils";
 import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../../auth/context/AuthContext";
@@ -17,7 +18,7 @@ import type {
 } from "../schemas/profile.schema";
 
 export default function ProfilePage() {
-  const { user, grantee, grantProvider, isLoading } = useAuth();
+  const { user, grantee, payoutProvider, isLoading } = useAuth();
 
   const updateProfile = async (payload: ProfileUpdateData) => {
     const res = await fetch("/api/profile", {
@@ -37,6 +38,11 @@ export default function ProfilePage() {
 
   const handleGeneralInfoSubmit = async (data: GeneralInfoFormData) => {
     try {
+      const currentAvatarUrl = data?.profile_url;
+      const keepFileName = currentAvatarUrl?.split("/").pop();
+      // biome-ignore lint/style/noNonNullAssertion: we validated `user` is not null above
+      await deleteOldAvatars(user!.user_id, keepFileName);
+
       await updateProfile({ user: data });
       toast.success("General information updated successfully");
     } catch (err) {
@@ -109,9 +115,9 @@ export default function ProfilePage() {
         <GeneralInfoForm user={user} onSubmit={handleGeneralInfoSubmit} />
 
         {/* Role-Specific Forms */}
-        {user.role === "GRANT_PROVIDER" && (
+        {user.role === "PAYOUT_PROVIDER" && (
           <GrantProviderForm
-            grantProvider={grantProvider ?? undefined}
+            grantProvider={payoutProvider ?? undefined}
             onSubmit={handleGrantProviderSubmit}
           />
         )}

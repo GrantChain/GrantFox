@@ -2,12 +2,12 @@ import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-type Role = "GRANTEE" | "GRANT_PROVIDER" | "ADMIN" | "EMPTY";
+type Role = "GRANTEE" | "PAYOUT_PROVIDER" | "ADMIN" | "EMPTY";
 
 const PROTECTED_ROUTES = {
   "/dashboard": {
     requiresAuth: true,
-    allowedRoles: ["ADMIN", "GRANTEE", "GRANT_PROVIDER"],
+    allowedRoles: ["ADMIN", "GRANTEE", "PAYOUT_PROVIDER"],
   },
   // GRANTEE can only access Opportunities
   "/dashboard/opportunities": {
@@ -18,14 +18,14 @@ const PROTECTED_ROUTES = {
     requiresAuth: true,
     allowedRoles: ["ADMIN", "GRANTEE"],
   },
-  // GRANT_PROVIDER can only access Payout
+  // PAYOUT_PROVIDER can only access Payout
   "/dashboard/payout": {
     requiresAuth: true,
-    allowedRoles: ["ADMIN", "GRANT_PROVIDER"],
+    allowedRoles: ["ADMIN", "PAYOUT_PROVIDER"],
   },
   "/dashboard/payout/*": {
     requiresAuth: true,
-    allowedRoles: ["ADMIN", "GRANT_PROVIDER"],
+    allowedRoles: ["ADMIN", "PAYOUT_PROVIDER"],
   },
 };
 
@@ -36,12 +36,12 @@ const getProtectedRouteConfig = (pathname: string) => {
 
   // Check wildcard routes more precisely
   for (const [route, config] of Object.entries(PROTECTED_ROUTES)) {
-    if (route.endsWith('/*')) {
+    if (route.endsWith("/*")) {
       const baseRoute = route.slice(0, -2);
-      if (pathname.startsWith(baseRoute + '/') || pathname === baseRoute) {
+      if (pathname.startsWith(`${baseRoute}/`) || pathname === baseRoute) {
         return config;
       }
-    } else if (pathname.startsWith(route + '/')) {
+    } else if (pathname.startsWith(`${route}/`)) {
       return config;
     }
   }
@@ -96,7 +96,7 @@ export async function middleware(request: NextRequest) {
 
     if (
       !userRole ||
-      !["ADMIN", "GRANTEE", "GRANT_PROVIDER"].includes(userRole)
+      !["ADMIN", "GRANTEE", "PAYOUT_PROVIDER"].includes(userRole)
     ) {
       console.log("Invalid user role:", userRole);
       return NextResponse.redirect(new URL("/unauthorized", request.url));
