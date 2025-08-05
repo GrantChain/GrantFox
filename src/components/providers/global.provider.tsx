@@ -1,6 +1,6 @@
 "use client";
 
-import { ChatProvider } from "@/components/modules/chat/ChatProvider";
+import { FloatingChatbot } from "@/components/ui/FloatingChatbot";
 import { ThemeProvider } from "@/components/providers/theme.provider";
 // import { PostHogProvider } from "./posthog.provider";
 import { TanstackProvider } from "./tanstack.provider";
@@ -12,7 +12,8 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
       <ThemeProvider defaultTheme="system">
         {/* <PostHogProvider> */}
         <TanstackProvider>
-          <ChatProvider>{children}</ChatProvider>
+          {children}
+          <FloatingChatbot />
         </TanstackProvider>
         {/* </PostHogProvider> */}
       </ThemeProvider>
