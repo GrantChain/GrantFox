@@ -1,7 +1,7 @@
 "use client";
 
-import { FloatingChatbot } from "@/components/ui/FloatingChatbot";
 import { ThemeProvider } from "@/components/providers/theme.provider";
+import { FloatingChatbot } from "@/components/ui/FloatingChatbot";
 // import { PostHogProvider } from "./posthog.provider";
 import { TanstackProvider } from "./tanstack.provider";
 import { TrustlessWorkProvider } from "./trustless-work.provider";

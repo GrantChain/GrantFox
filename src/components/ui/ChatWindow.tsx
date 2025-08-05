@@ -7,12 +7,12 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import type { ChatWindowProps } from "@/types/chatbot.types";
+import { AnimatePresence, motion } from "framer-motion";
 import { Bot, Maximize2, Minimize2, Send, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { MessageBubble } from "./MessageBubble";
 import { TypingIndicator } from "./TypingIndicator";
-import type { ChatWindowProps } from "@/types/chatbot.types";
 
 export const ChatWindow = ({
   isOpen,

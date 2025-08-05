@@ -3,9 +3,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { ChatbotFloatProps } from "@/types/chatbot.types";
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
-import type { ChatbotFloatProps } from "@/types/chatbot.types";
 
 export const ChatbotFloat = ({
   isOpen,
@@ -46,7 +46,7 @@ export const ChatbotFloat = ({
           }}
           transition={{
             duration: 2,
-            repeat: hasNewMessage ? Infinity : 0,
+            repeat: hasNewMessage ? Number.POSITIVE_INFINITY : 0,
             ease: "easeInOut",
           }}
         >
@@ -83,7 +83,7 @@ export const ChatbotFloat = ({
             }}
             transition={{
               duration: 2,
-              repeat: Infinity,
+              repeat: Number.POSITIVE_INFINITY,
               ease: "easeInOut",
             }}
           />

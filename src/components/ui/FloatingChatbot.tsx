@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { ChatbotFloat } from "./ChatbotFloat";
-import { ChatWindow } from "./ChatWindow";
 import { useChatbot } from "@/hooks/useChatbot";
 import type { ChatbotConfig } from "@/types/chatbot.types";
+import { useEffect } from "react";
+import { ChatWindow } from "./ChatWindow";
+import { ChatbotFloat } from "./ChatbotFloat";
 
 interface FloatingChatbotProps {
   config?: Partial<ChatbotConfig>;

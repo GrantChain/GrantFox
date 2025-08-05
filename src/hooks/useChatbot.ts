@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import type {
+  ChatActions,
   ChatMessage,
   ChatState,
-  ChatActions,
   ChatbotConfig,
 } from "@/types/chatbot.types";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const DEFAULT_CONFIG: ChatbotConfig = {
   position: "bottom-right",
@@ -44,9 +44,11 @@ export const useChatbot = (config: Partial<ChatbotConfig> = {}) => {
   const playNotificationSound = useCallback(() => {
     if (finalConfig.enableSound && audioRef.current) {
       // Create a simple notification sound using Web Audio API
-      const audioContext = new (window.AudioContext ||
+      const audioContext = new (
+        window.AudioContext ||
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).webkitAudioContext)();
+        (window as any).webkitAudioContext
+      )();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 

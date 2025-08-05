@@ -1,8 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import type { TypingIndicatorProps } from "@/types/chatbot.types";
+import { motion } from "framer-motion";
 
 export const TypingIndicator = ({
   isVisible,
@@ -31,7 +31,7 @@ export const TypingIndicator = ({
             }}
             transition={{
               duration: 1.2,
-              repeat: Infinity,
+              repeat: Number.POSITIVE_INFINITY,
               delay: index * 0.2,
               ease: "easeInOut",
             }}

@@ -2,10 +2,10 @@
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import type { MessageBubbleProps } from "@/types/chatbot.types";
 import { motion } from "framer-motion";
 import { Bot, User } from "lucide-react";
 import { useEffect } from "react";
-import type { MessageBubbleProps } from "@/types/chatbot.types";
 
 export const MessageBubble = ({
   message,
