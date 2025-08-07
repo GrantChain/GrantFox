@@ -73,7 +73,7 @@ const FormItemContext = React.createContext<FormItemContextValue>(
 );
 
 // Generate stable IDs to prevent hydration mismatches
-const generateStableId = (fieldName: string, index: number = 0) => {
+const generateStableId = (fieldName: string, index = 0) => {
   return `form-${fieldName.replace(/[^a-zA-Z0-9]/g, "-")}-${index}`;
 };
 
