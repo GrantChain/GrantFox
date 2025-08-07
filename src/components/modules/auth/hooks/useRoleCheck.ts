@@ -1,5 +1,5 @@
-import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { authService } from "../services/auth.service";
 
 export function useRoleCheck() {

@@ -1,6 +1,6 @@
-import { useAuth } from "../context/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { authService } from "../services/auth.service";
 
 const USER_CACHE_KEY = "user_data_cache";
