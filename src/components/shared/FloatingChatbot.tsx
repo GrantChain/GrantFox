@@ -3,8 +3,8 @@
 import { useChatbot } from "@/hooks/useChatbot";
 import type { ChatbotConfig } from "@/types/chatbot.types";
 import { useEffect } from "react";
-import { ChatWindow } from "./ChatWindow";
-import { ChatbotFloat } from "./ChatbotFloat";
+import { ChatWindow } from "../shared/ChatWindow";
+import { ChatbotFloat } from "../shared/ChatbotFloat";
 
 interface FloatingChatbotProps {
   config?: Partial<ChatbotConfig>;

@@ -51,9 +51,6 @@ const UnauthorizedPage = () => {
             <Button asChild className="w-full sm:w-auto">
               <Link href="/dashboard">Go to Dashboard</Link>
             </Button>
-            <Button variant="outline" asChild className="w-full sm:w-auto">
-              <Link href="/login">Sign In Again</Link>
-            </Button>
           </div>
         </CardContent>
       </Card>
