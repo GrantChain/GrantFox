@@ -1,3 +1,7 @@
+import {
+  type Notification,
+  mockNotifications,
+} from "@/@types/notification.entity";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,10 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import {
-  type Notification,
-  mockNotifications,
-} from "@/@types/notification.entity";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, Bell, CheckCircle, Info, XCircle } from "lucide-react";
 import { useState } from "react";
