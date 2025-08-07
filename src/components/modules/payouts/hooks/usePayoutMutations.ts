@@ -1,16 +1,14 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
+import type { Payout } from "@/generated/prisma";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Decimal } from "decimal.js";
 import { toast } from "sonner";
-import { usePayout } from "../context/PayoutContext";
 import type { PayoutFormValues } from "../schemas/payout.schema";
 import { payoutsService } from "../services/payouts.service";
-import type { Payout } from "@/generated/prisma";
 
 export const usePayoutMutations = () => {
   const queryClient = useQueryClient();
   const { user, payoutProvider } = useAuth();
-  const { selectedGrantee } = usePayout();
 
   const createPayout = useMutation({
     mutationFn: (data: PayoutFormValues) => {
@@ -33,7 +31,6 @@ export const usePayoutMutations = () => {
       });
     },
     onSuccess: () => {
-      // Invalidate once; active observers refetch a single time
       queryClient.invalidateQueries({
         queryKey: ["payouts"],
         refetchType: "active",
@@ -58,7 +55,6 @@ export const usePayoutMutations = () => {
       });
     },
     onSuccess: () => {
-      // Invalidate once; active observers refetch a single time
       queryClient.invalidateQueries({
         queryKey: ["payouts"],
         refetchType: "active",
@@ -72,7 +68,6 @@ export const usePayoutMutations = () => {
 
   const deletePayout = useMutation({
     mutationFn: (id: string) => payoutsService.delete(id),
-    // Optimistic update: remove the payout from all cached payout lists
     onMutate: async (id: string) => {
       await queryClient.cancelQueries({ queryKey: ["payouts"] });
 
@@ -99,7 +94,6 @@ export const usePayoutMutations = () => {
       return { previousData };
     },
     onError: (error: Error, _id, context) => {
-      // Rollback cache
       if (context?.previousData) {
         for (const [key, data] of context.previousData) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -113,7 +107,6 @@ export const usePayoutMutations = () => {
       toast.success("Payout deleted successfully");
     },
     onSettled: () => {
-      // Ensure a single refetch for active lists to stay consistent with server
       queryClient.invalidateQueries({
         queryKey: ["payouts"],
         refetchType: "active",
