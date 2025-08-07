@@ -61,12 +61,10 @@ export const useOptimizedUserData = () => {
           return;
         }
 
-        // Intentar usar caché primero
         const cachedData = getCachedUserData();
-        if (cachedData && cachedData.user_id === user.id) {
-          // Prefetch datos en background
+        if (cachedData && cachedData.user_id === user.user_id) {
           queryClient.prefetchQuery({
-            queryKey: ["user-role", user.id],
+            queryKey: ["user-role", user.user_id],
             queryFn: () => Promise.resolve(cachedData.role),
             staleTime: 30 * 1000,
           });
@@ -74,23 +72,21 @@ export const useOptimizedUserData = () => {
           return;
         }
 
-        // Si no hay caché, cargar datos en paralelo
         const [roleResponse] = await Promise.allSettled([
-          authService.checkRole(user.id),
+          authService.checkRole(user.user_id),
         ]);
 
         if (roleResponse.status === "fulfilled" && roleResponse.value.success) {
           const role = roleResponse.value.role;
           if (role && role !== "EMPTY") {
             setCachedUserData({
-              user_id: user.id,
+              user_id: user.user_id,
               role,
               timestamp: Date.now(),
             });
 
-            // Prefetch datos adicionales en background
             queryClient.prefetchQuery({
-              queryKey: ["user-role", user.id],
+              queryKey: ["user-role", user.user_id],
               queryFn: () => Promise.resolve(role),
               staleTime: 30 * 1000,
             });
@@ -105,7 +101,7 @@ export const useOptimizedUserData = () => {
     };
 
     initializeUserData();
-  }, [queryClient, isAuthLoading, user?.id]);
+  }, [queryClient, isAuthLoading, user?.user_id]);
 
   return {
     isInitialized,

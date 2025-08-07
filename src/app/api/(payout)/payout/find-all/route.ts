@@ -70,35 +70,35 @@ export async function POST(request: Request) {
     const pageSize = pagination?.pageSize || 10;
     const skip = (page - 1) * pageSize;
 
-    // First, try to get the count
-    const total = await prisma.payout.count({ where });
-
-    // Then, get the data
-    const data = await prisma.payout.findMany({
-      where,
-      skip,
-      take: pageSize,
-      orderBy: {
-        created_at: "desc",
-      },
-      include: {
-        user: {
-          select: {
-            user_id: true,
-            email: true,
-            username: true,
-            profile_url: true,
+    // Use a single DB connection for both queries to reduce pool pressure
+    const [total, data] = await prisma.$transaction([
+      prisma.payout.count({ where }),
+      prisma.payout.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: {
+          created_at: "desc",
+        },
+        include: {
+          user: {
+            select: {
+              user_id: true,
+              email: true,
+              username: true,
+              profile_url: true,
+            },
+          },
+          grantee: {
+            select: {
+              user_id: true,
+              name: true,
+              position_title: true,
+            },
           },
         },
-        grantee: {
-          select: {
-            user_id: true,
-            name: true,
-            position_title: true,
-          },
-        },
-      },
-    });
+      }),
+    ]);
 
     return NextResponse.json({ data, total });
   } catch (error) {

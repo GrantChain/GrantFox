@@ -34,10 +34,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { useCompleteUserData, handleRefreshUser, handleClearCache } =
     useAuthMutations();
 
-  // Hook para manejar la configuración automática de usuarios OAuth
   useOAuthUserSetup();
 
-  // Usar TanStack Query para obtener datos del usuario
   const {
     user: userData,
     grantee: granteeData,
@@ -45,7 +43,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading: isDataLoading,
   } = useCompleteUserData(currentUserId || "");
 
-  // Actualizar estado cuando cambien los datos de TanStack Query
   useEffect(() => {
     if (userData) {
       setUser(userData);
@@ -58,7 +55,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [userData, granteeData, payoutProviderData]);
 
-  // Actualizar loading state
   useEffect(() => {
     setIsLoading(isDataLoading);
   }, [isDataLoading]);
@@ -92,7 +88,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    // Petición inicial: usar la sesión actual para evitar llamadas a /auth/v1/user
     const initializeAuth = async () => {
       const { data, error } = await supabase.auth.getSession();
       if (error) {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { authService } from "../services/auth.service";
+import { supabase } from "@/lib/supabase";
 
 export function useRoleCheck() {
   const [shouldShowModal, setShouldShowModal] = useState(false);
@@ -17,16 +18,20 @@ export function useRoleCheck() {
           return;
         }
 
-        // Verificar si es un usuario OAuth
-        const isOAuthUser =
-          user.app_metadata?.provider === "google" ||
-          user.app_metadata?.provider === "github";
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        const provider = session?.user?.app_metadata?.provider as
+          | "google"
+          | "github"
+          | string
+          | undefined;
+        const isOAuthUser = provider === "google" || provider === "github";
 
-        // Si es OAuth, verificar y crear si no existe
         if (isOAuthUser) {
           try {
             const response = await authService.verifyAndCreateOAuthUser(
-              user.id,
+              user.user_id,
               user.email || "",
             );
 
@@ -48,8 +53,7 @@ export function useRoleCheck() {
           }
         }
 
-        // Verificar el role del usuario
-        const response = await authService.checkRole(user.id);
+        const response = await authService.checkRole(user.user_id);
 
         if (response.success && response.role === "EMPTY") {
           setShouldShowModal(true);
@@ -63,7 +67,7 @@ export function useRoleCheck() {
     }
 
     checkUserRole();
-  }, [isAuthLoading, user?.id, user?.app_metadata?.provider]);
+  }, [isAuthLoading, user?.user_id]);
 
   return { shouldShowModal, isLoading, setShouldShowModal };
 }

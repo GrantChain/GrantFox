@@ -74,7 +74,7 @@ export const useOptimizedRole = () => {
           return;
         }
 
-        const response = await authService.checkRole(user.id);
+        const response = await authService.checkRole(user.user_id);
         if (response.success && response.role && response.role !== "EMPTY") {
           setRole(response.role);
           setCachedRole(response.role);
@@ -89,7 +89,7 @@ export const useOptimizedRole = () => {
     };
 
     fetchRole();
-  }, [isAuthLoading, user?.id, user?.role]);
+  }, [isAuthLoading, user?.user_id, user?.role]);
 
   return {
     role,
