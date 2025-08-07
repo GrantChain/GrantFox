@@ -1,4 +1,3 @@
-import type { GetUserServiceResponse } from "@/@types/responses.entity";
 import { authService } from "@/components/modules/auth/services/auth.service";
 import type { User } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,15 +18,15 @@ interface UsePayoutFormProps {
 const DEVELOPMENT_TEMPLATE: PayoutFormValues = {
   title: "Development Template",
   description: "This is a development template for testing purposes",
-  grantee_id: "test@example.com",
+  grantee_id: "vermudo.com@gmail.com",
   image_url: "",
   type: "GRANT",
   status: "DRAFT",
-  total_funding: 1000,
+  total_funding: 10,
   currency: "USDC",
   milestones: [
-    { description: "Milestone 1", amount: 500 },
-    { description: "Milestone 2", amount: 500 },
+    { description: "Milestone 1", amount: 5 },
+    { description: "Milestone 2", amount: 5 },
   ],
 };
 
@@ -75,7 +74,6 @@ export const usePayoutForm = ({
     }
   };
 
-  // Load user when initial values are provided
   useEffect(() => {
     const loadInitialUser = async () => {
       if (initialValues?.grantee_id) {

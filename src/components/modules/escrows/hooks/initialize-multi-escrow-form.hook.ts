@@ -19,7 +19,9 @@ export const useInitializeMultiEscrowForm = () => {
 
   const { address } = useGlobalWalletStore();
 
-  const onSubmit = async (payload: InitializeMultiReleaseEscrowPayload) => {
+  const onSubmit = async (
+    payload: InitializeMultiReleaseEscrowPayload,
+  ): Promise<boolean> => {
     setLoading(true);
 
     try {
@@ -51,6 +53,7 @@ export const useInitializeMultiEscrowForm = () => {
       }
 
       await sendTransaction(signedXdr);
+      return true;
     } catch (error: unknown) {
       const mappedError = handleError(error as AxiosError | WalletError);
       console.error("Error:", mappedError.message);
@@ -58,6 +61,7 @@ export const useInitializeMultiEscrowForm = () => {
       toast.error(
         mappedError ? mappedError.message : "An unknown error occurred",
       );
+      return false;
     } finally {
       setLoading(false);
     }

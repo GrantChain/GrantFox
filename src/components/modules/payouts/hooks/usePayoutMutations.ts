@@ -66,9 +66,11 @@ export const usePayoutMutations = () => {
     },
   });
 
+  type DeletePayoutVariables = { id: string; showSuccessToast?: boolean };
+
   const deletePayout = useMutation({
-    mutationFn: (id: string) => payoutsService.delete(id),
-    onMutate: async (id: string) => {
+    mutationFn: ({ id }: DeletePayoutVariables) => payoutsService.delete(id),
+    onMutate: async ({ id }: DeletePayoutVariables) => {
       await queryClient.cancelQueries({ queryKey: ["payouts"] });
 
       const previousData = queryClient.getQueriesData<{
@@ -93,7 +95,7 @@ export const usePayoutMutations = () => {
 
       return { previousData };
     },
-    onError: (error: Error, _id, context) => {
+    onError: (error: Error, _variables, context) => {
       if (context?.previousData) {
         for (const [key, data] of context.previousData) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,8 +105,11 @@ export const usePayoutMutations = () => {
       console.error("Error deleting payout:", error);
       toast.error(error.message || "Failed to delete payout");
     },
-    onSuccess: () => {
-      toast.success("Payout deleted successfully");
+    onSuccess: (_data, variables) => {
+      const shouldShowToast = variables?.showSuccessToast ?? true;
+      if (shouldShowToast) {
+        toast.success("Payout deleted successfully");
+      }
     },
     onSettled: () => {
       queryClient.invalidateQueries({
@@ -114,13 +119,15 @@ export const usePayoutMutations = () => {
     },
   });
 
-  const handleCreatePayout = async (data: PayoutFormValues) => {
+  const handleCreatePayout = async (
+    data: PayoutFormValues,
+  ): Promise<Payout | null> => {
     try {
-      await createPayout.mutateAsync(data);
-      return true;
+      const created = await createPayout.mutateAsync(data);
+      return created;
     } catch (error) {
       console.error("Error in handleCreatePayout:", error);
-      return false;
+      return null;
     }
   };
 
@@ -133,9 +140,9 @@ export const usePayoutMutations = () => {
     }
   };
 
-  const handleDeletePayout = async (id: string) => {
+  const handleDeletePayout = async (id: string, showSuccessToast = true) => {
     try {
-      await deletePayout.mutateAsync(id);
+      await deletePayout.mutateAsync({ id, showSuccessToast });
       return true;
     } catch {
       return false;

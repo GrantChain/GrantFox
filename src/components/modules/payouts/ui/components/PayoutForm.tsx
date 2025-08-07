@@ -57,11 +57,9 @@ export const PayoutForm = ({
 
   const isSubmitting = externalIsSubmitting ?? formIsSubmitting;
 
-  // Use local selectedGrantee for edit mode, context selectedGrantee for create mode
   const selectedGrantee =
     mode === "edit" ? localSelectedGrantee : contextSelectedGrantee;
 
-  // Watch milestone amounts and calculate total
   const milestones = watch("milestones");
   useEffect(() => {
     const total = milestones.reduce((sum, milestone) => {

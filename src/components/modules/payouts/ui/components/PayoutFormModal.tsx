@@ -32,8 +32,13 @@ export const PayoutFormModal = ({
   initialValues,
   mode = "create",
 }: PayoutFormModalProps) => {
-  const { handleCreatePayout, handleUpdatePayout, isUpdating, isCreating } =
-    usePayoutMutations();
+  const {
+    handleCreatePayout,
+    handleUpdatePayout,
+    handleDeletePayout,
+    isUpdating,
+    isCreating,
+  } = usePayoutMutations();
   const { setShowCreateModal, setSelectedGrantee, selectedGrantee } =
     usePayout();
   const { address } = useGlobalWalletStore();
@@ -53,7 +58,9 @@ export const PayoutFormModal = ({
     onOpenChange(newOpen);
   };
 
-  const handleInitializeEscrow = async (data: PayoutFormValues) => {
+  const handleInitializeEscrow = async (
+    data: PayoutFormValues,
+  ): Promise<boolean> => {
     if (data.grantee_id && selectedGrantee && user) {
       const payload = await buildEscrowPayload({
         data,
@@ -61,32 +68,42 @@ export const PayoutFormModal = ({
         payoutProvider: user,
         grantee: selectedGrantee,
       });
-      await initializeEscrow(payload);
+      const ok = await initializeEscrow(payload);
+      return ok;
     }
+    return false;
   };
 
   const handleCreatePayoutSubmit = async (data: PayoutFormValues) => {
     try {
+      if (!selectedGrantee || !user || !data.grantee_id) {
+        toast.error("Missing grantee or user to initialize escrow");
+        return;
+      }
       const payload = {
         ...data,
         grantee_id: selectedGrantee?.user_id || "",
       };
 
-      const [payoutResult, escrowResult] = await Promise.allSettled([
-        handleCreatePayout(payload),
-        handleInitializeEscrow(payload),
-      ]);
-
-      if (payoutResult.status === "fulfilled" && payoutResult.value) {
-        if (escrowResult.status === "fulfilled") {
-          toast.success("Payout created successfully");
-        } else if (escrowResult.status === "rejected") {
-          toast.error("Payout created but escrow initialization failed");
-        }
-        setShowCreateModal(false);
-      } else {
+      // Step 1: create payout in DB
+      const createdPayout = await handleCreatePayout(payload);
+      if (!createdPayout) {
         toast.error("Failed to create payout");
+        return;
       }
+
+      // Step 2: initialize escrow on-chain
+      const escrowOk = await handleInitializeEscrow(payload);
+      if (!escrowOk) {
+        toast.error("Escrow initialization failed. Rolling back...");
+        if (createdPayout.payout_id) {
+          await handleDeletePayout(createdPayout.payout_id, false);
+        }
+        return;
+      }
+
+      toast.success("Payout created successfully");
+      setShowCreateModal(false);
     } catch (error) {
       console.error("Error in handleCreatePayoutSubmit:", error);
       toast.error("An unexpected error occurred");
@@ -104,21 +121,21 @@ export const PayoutFormModal = ({
         grantee_id: data.grantee_id || payout.grantee_id || "",
       };
 
-      const [payoutResult, escrowResult] = await Promise.allSettled([
-        handleUpdatePayout(payout.payout_id, payload),
-        handleInitializeEscrow(payload),
-      ]);
-
-      if (payoutResult.status === "fulfilled" && payoutResult.value) {
-        if (escrowResult.status === "fulfilled") {
-          toast.success("Payout updated successfully");
-        } else if (escrowResult.status === "rejected") {
-          toast.error("Payout updated but escrow initialization failed");
-        }
-        onOpenChange(false);
-      } else {
-        toast.error("Failed to update payout");
+      // Prefer escrow first to avoid DB update if escrow fails
+      const escrowOk = await handleInitializeEscrow(payload);
+      if (!escrowOk) {
+        toast.error("Escrow initialization failed. No changes were saved.");
+        return;
       }
+
+      const updatedOk = await handleUpdatePayout(payout.payout_id, payload);
+      if (!updatedOk) {
+        toast.error("Failed to update payout after escrow.");
+        return;
+      }
+
+      toast.success("Payout updated successfully");
+      onOpenChange(false);
     } catch (error) {
       console.error("Error in handleEditPayout:", error);
       toast.error("An unexpected error occurred");
