@@ -1,7 +1,7 @@
+import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { authService } from "../services/auth.service";
-import { supabase } from "@/lib/supabase";
 
 export function useRoleCheck() {
   const [shouldShowModal, setShouldShowModal] = useState(false);
