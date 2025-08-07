@@ -26,6 +26,11 @@ interface ChatInterfaceProps {
   onToggle?: (isOpen: boolean) => void;
 }
 
+// Generate stable IDs
+const generateStableId = (prefix: string) => {
+  return `${prefix}_${Math.random().toString(36).substring(2, 15)}`;
+};
+
 export function ChatInterface({
   className,
   isOpen = false,
@@ -38,7 +43,7 @@ export function ChatInterface({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const sessionId = `chat_${Date.now()}`;
+  const sessionId = useRef(generateStableId("chat"));
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -68,7 +73,7 @@ export function ChatInterface({
 
       if (data.success) {
         const greetingMessage: ChatMessage = {
-          id: `greeting_${Date.now()}`,
+          id: generateStableId("greeting"),
           content: data.greeting,
           sender: "bot",
           timestamp: new Date(),
@@ -84,7 +89,7 @@ export function ChatInterface({
     if (!inputValue.trim() || isLoading) return;
 
     const userMessage: ChatMessage = {
-      id: `user_${Date.now()}`,
+      id: generateStableId("user"),
       content: inputValue.trim(),
       sender: "user",
       timestamp: new Date(),
@@ -99,11 +104,11 @@ export function ChatInterface({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("supabase.auth.token") || ""}`,
+          Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("supabase.auth.token") || "" : ""}`,
         },
         body: JSON.stringify({
           message: userMessage.content,
-          sessionId,
+          sessionId: sessionId.current,
         }),
       });
 
@@ -111,7 +116,7 @@ export function ChatInterface({
 
       if (data.success) {
         const botMessage: ChatMessage = {
-          id: `bot_${Date.now()}`,
+          id: generateStableId("bot"),
           content: data.response.message,
           sender: "bot",
           timestamp: new Date(),
@@ -128,7 +133,7 @@ export function ChatInterface({
 
       // Add error message
       const errorMessage: ChatMessage = {
-        id: `error_${Date.now()}`,
+        id: generateStableId("error"),
         content:
           "Sorry, I'm having trouble processing your request. Please try again.",
         sender: "bot",
@@ -172,7 +177,7 @@ export function ChatInterface({
           onClick={() => onToggle?.(true)}
           size="lg"
           className="rounded-full h-14 w-14 shadow-lg bg-primary hover:bg-primary/90"
-          aria-label="Open chat" 
+          aria-label="Open chat"
         >
           <MessageCircle className="h-6 w-6" />
         </Button>
@@ -195,7 +200,7 @@ export function ChatInterface({
                 size="sm"
                 onClick={() => setIsMinimized(!isMinimized)}
                 className="h-8 w-8 p-0"
-                aria-label={isMinimized ? "Maximize chat" : "Minimize chat"}  
+                aria-label={isMinimized ? "Maximize chat" : "Minimize chat"}
               >
                 {isMinimized ? (
                   <Maximize2 className="h-4 w-4" />
@@ -207,8 +212,8 @@ export function ChatInterface({
                 variant="ghost"
                 size="sm"
                 onClick={() => onToggle?.(false)}
-                className="h-8 w-8 p-0"  
-                aria-label="Close chat"  
+                className="h-8 w-8 p-0"
+                aria-label="Close chat"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -288,8 +293,7 @@ export function ChatInterface({
                   ref={inputRef}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyDown}  
-
+                  onKeyDown={handleKeyDown}
                   placeholder="Type your message..."
                   disabled={isLoading}
                   className="flex-1"

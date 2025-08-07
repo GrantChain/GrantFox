@@ -2,7 +2,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { GlobalProvider } from "@/components/providers/global.provider";
 import { Toaster } from "sonner";
-import type { Metadata, Viewport } from "next";
 
 // Optimize font loading
 const geistSans = Geist({
@@ -19,110 +18,6 @@ const geistMono = Geist_Mono({
   preload: false, // Only preload primary font
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://grantfox.io",
-  ),
-  title: {
-    default: "GrantFox - Open Source Grants",
-    template: "%s | GrantFox",
-  },
-  description:
-    "Open Source Grants Platform - Fund and support innovative blockchain projects",
-  generator: "Next.js",
-  manifest: "/manifest.json",
-  keywords: [
-    "grants",
-    "open source",
-    "funding",
-    "blockchain",
-    "stellar",
-    "web3",
-    "defi",
-  ],
-  authors: [
-    {
-      name: "GrantFox Team",
-      url: "https://grantfox.io",
-    },
-  ],
-  creator: "GrantFox Team",
-  publisher: "GrantFox",
-  robots: {
-    index: true,
-    follow: true,
-    "max-video-preview": -1,
-    "max-image-preview": "large",
-    "max-snippet": -1,
-  },
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icons/ios/16.png", sizes: "16x16", type: "image/png" },
-      { url: "/icons/ios/32.png", sizes: "32x32", type: "image/png" },
-    ],
-    shortcut: "/favicon.ico",
-    apple: [
-      { url: "/icons/ios/128.png", sizes: "128x128", type: "image/png" },
-      { url: "/icons/ios/152.png", sizes: "152x152", type: "image/png" },
-      { url: "/icons/ios/180.png", sizes: "180x180", type: "image/png" },
-    ],
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "GrantFox",
-    startupImage: [
-      {
-        url: "/icons/ios/512.png",
-        media: "(device-width: 768px) and (device-height: 1024px)",
-      },
-    ],
-  },
-  formatDetection: {
-    telephone: false,
-  },
-  openGraph: {
-    type: "website",
-    siteName: "GrantFox",
-    title: "GrantFox - Open Source Grants",
-    description:
-      "Open Source Grants Platform - Fund and support innovative blockchain projects",
-    url: "https://grantfox.io",
-    images: [
-      {
-        url: "/icons/android/android-launchericon-512-512.png",
-        width: 512,
-        height: 512,
-        alt: "GrantFox Logo",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "GrantFox - Open Source Grants",
-    description:
-      "Open Source Grants Platform - Fund and support innovative blockchain projects",
-    images: ["/icons/android/android-launchericon-512-512.png"],
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-  ],
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5, // Allow zoom for accessibility
-  userScalable: true, // Enable zoom for accessibility
-  viewportFit: "cover",
-  // Prevent iOS viewport scaling issues
-  minimumScale: 1,
-  // Prevent layout shift on mobile when address bar hides/shows
-  interactiveWidget: "resizes-visual",
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -131,46 +26,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true} className="scroll-smooth">
       <head>
-        {/* Preload critical assets */}
-        <link
-          rel="preload"
-          href="/fonts/geist-sans.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-          // @ts-ignore - priority is not in the type definition but works in browsers
-          priority="high"
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=5"
         />
-        <link
-          rel="preload"
-          href="/fonts/geist-mono.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-          // @ts-ignore - priority is not in the type definition but works in browsers
-          priority="low"
-        />
-        {/* Preconnect to external domains */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* iOS PWA meta tags */}
+        <meta name="theme-color" content="#E45726" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        
-        {/* Prevent text size adjustment on mobile */}
-        <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
-        
-        {/* iOS specific meta tags */}
-        <meta name="apple-mobile-web-app-title" content="GrantFox" />
-        
-        {/* Windows 11+ specific meta tags */}
-        <meta name="msapplication-TileColor" content="#000000" />
-        <meta name="msapplication-config" content="/browserconfig.xml" />
-        
-        {/* Theme color for browsers that support it */}
-        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Trustless Work" />
+        <meta name="format-detection" content="telephone=no" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}

@@ -18,6 +18,8 @@ export const useOptimizedUserData = () => {
 
   const getCachedUserData = (): CachedUserData | null => {
     try {
+      if (typeof window === "undefined") return null;
+
       const cached = localStorage.getItem(USER_CACHE_KEY);
       if (!cached) return null;
 
@@ -32,6 +34,8 @@ export const useOptimizedUserData = () => {
 
   const setCachedUserData = (userData: CachedUserData) => {
     try {
+      if (typeof window === "undefined") return;
+
       const cached = {
         ...userData,
         timestamp: Date.now(),
@@ -44,6 +48,8 @@ export const useOptimizedUserData = () => {
 
   const clearCachedUserData = () => {
     try {
+      if (typeof window === "undefined") return;
+
       localStorage.removeItem(USER_CACHE_KEY);
     } catch {
       // Ignore localStorage errors

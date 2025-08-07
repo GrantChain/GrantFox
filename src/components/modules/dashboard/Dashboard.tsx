@@ -5,42 +5,28 @@ import { DonutChart } from "@/components/charts/DonutChart";
 import { OverviewChart } from "@/components/charts/OverviewChart";
 import { RadarChart } from "@/components/charts/RadarChart";
 import { Banknote, CheckCircle, ShieldCheck } from "lucide-react";
+import { useDashboardData } from "./hooks/useDashboardData";
 
-const fundingData = [
-  { month: "Jan", funding: 12000 },
-  { month: "Feb", funding: 18000 },
-  { month: "Mar", funding: 9000 },
-];
+export const Dashboard = () => {
+  const { fundingData, payoutTypeData, performanceData, statsData } =
+    useDashboardData();
 
-const payoutTypeData = [
-  { name: "GRANT", value: 12 },
-  { name: "BOUNTY", value: 8 },
-  { name: "HACKATHON", value: 5 },
-];
-
-const performanceData = [
-  { metric: "Funding Speed", A: 80 },
-  { metric: "Completion", A: 90 },
-  { metric: "Trust", A: 70 },
-];
-
-export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatsCard
           title="Total Funding"
-          value="$193,200 USDC"
+          value={statsData.totalFunding}
           icon={<Banknote className="h-4 w-4" />}
         />
         <StatsCard
           title="Escrows Active"
-          value="25"
+          value={statsData.activeEscrows}
           icon={<ShieldCheck className="h-4 w-4" />}
         />
         <StatsCard
           title="Completion Rate"
-          value="83%"
+          value={statsData.completionRate}
           icon={<CheckCircle className="h-4 w-4" />}
         />
       </div>
@@ -66,4 +52,4 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-}
+};

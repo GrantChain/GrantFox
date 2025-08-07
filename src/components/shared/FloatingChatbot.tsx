@@ -2,7 +2,7 @@
 
 import { useChatbot } from "@/hooks/useChatbot";
 import type { ChatbotConfig } from "@/types/chatbot.types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ChatWindow } from "../shared/ChatWindow";
 import { ChatbotFloat } from "../shared/ChatbotFloat";
 
@@ -15,7 +15,13 @@ export const FloatingChatbot = ({
   config,
   className,
 }: FloatingChatbotProps) => {
+  const [isClient, setIsClient] = useState(false);
   const { state, actions } = useChatbot(config);
+
+  // Ensure component only renders on client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Mark messages as read when chat opens
   useEffect(() => {
@@ -23,6 +29,11 @@ export const FloatingChatbot = ({
       actions.markAsRead();
     }
   }, [state.isOpen, actions]);
+
+  // Don't render anything on server
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <>

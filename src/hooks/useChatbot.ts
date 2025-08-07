@@ -18,6 +18,16 @@ const DEFAULT_CONFIG: ChatbotConfig = {
   minWidth: "350px",
 };
 
+// Generate stable session ID
+const generateStableSessionId = () => {
+  return `chat_${Math.random().toString(36).substring(2, 15)}`;
+};
+
+// Generate stable message ID
+const generateStableMessageId = (prefix: string) => {
+  return `${prefix}_${Math.random().toString(36).substring(2, 15)}`;
+};
+
 export const useChatbot = (config: Partial<ChatbotConfig> = {}) => {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
   const [state, setState] = useState<ChatState>({
@@ -30,7 +40,7 @@ export const useChatbot = (config: Partial<ChatbotConfig> = {}) => {
   });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const sessionId = useRef(`chat_${Date.now()}`);
+  const sessionId = useRef(generateStableSessionId());
 
   // Initialize audio for sound effects
   useEffect(() => {
@@ -44,11 +54,9 @@ export const useChatbot = (config: Partial<ChatbotConfig> = {}) => {
   const playNotificationSound = useCallback(() => {
     if (finalConfig.enableSound && audioRef.current) {
       // Create a simple notification sound using Web Audio API
-      const audioContext = new (
-        window.AudioContext ||
+      const audioContext = new (window.AudioContext ||
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).webkitAudioContext
-      )();
+        (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
@@ -77,7 +85,7 @@ export const useChatbot = (config: Partial<ChatbotConfig> = {}) => {
 
       if (data.success) {
         const greetingMessage: ChatMessage = {
-          id: `greeting_${Date.now()}`,
+          id: generateStableMessageId("greeting"),
           content: data.greeting,
           sender: "bot",
           timestamp: new Date(),
@@ -91,7 +99,7 @@ export const useChatbot = (config: Partial<ChatbotConfig> = {}) => {
       console.error("Error loading greeting:", error);
       // Fallback greeting
       const fallbackMessage: ChatMessage = {
-        id: `greeting_${Date.now()}`,
+        id: generateStableMessageId("greeting"),
         content:
           "Hello! I'm here to help you with GrantFox. How can I assist you today?",
         sender: "bot",
@@ -110,7 +118,7 @@ export const useChatbot = (config: Partial<ChatbotConfig> = {}) => {
       if (!content.trim() || state.isLoading) return;
 
       const userMessage: ChatMessage = {
-        id: `user_${Date.now()}`,
+        id: generateStableMessageId("user"),
         content: content.trim(),
         sender: "user",
         timestamp: new Date(),
@@ -139,7 +147,7 @@ export const useChatbot = (config: Partial<ChatbotConfig> = {}) => {
 
         if (data.success) {
           const botMessage: ChatMessage = {
-            id: `bot_${Date.now()}`,
+            id: generateStableMessageId("bot"),
             content: data.response.message || data.response,
             sender: "bot",
             timestamp: new Date(),
@@ -164,7 +172,7 @@ export const useChatbot = (config: Partial<ChatbotConfig> = {}) => {
         console.error("Error sending message:", error);
 
         const errorMessage: ChatMessage = {
-          id: `error_${Date.now()}`,
+          id: generateStableMessageId("error"),
           content:
             "Sorry, I'm having trouble processing your request. Please try again.",
           sender: "bot",

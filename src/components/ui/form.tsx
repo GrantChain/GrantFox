@@ -72,14 +72,24 @@ const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue,
 );
 
+// Generate stable IDs to prevent hydration mismatches
+const generateStableId = (fieldName: string, index: number = 0) => {
+  return `form-${fieldName.replace(/[^a-zA-Z0-9]/g, "-")}-${index}`;
+};
+
 const FormItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  const id = React.useId();
+  const fieldContext = React.useContext(FormFieldContext);
+  const [stableId] = React.useState(() => {
+    // Use field name for stable ID generation
+    const fieldName = fieldContext?.name || "unknown";
+    return generateStableId(fieldName);
+  });
 
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider value={{ id: stableId }}>
       <div ref={ref} className={cn("space-y-2", className)} {...props} />
     </FormItemContext.Provider>
   );

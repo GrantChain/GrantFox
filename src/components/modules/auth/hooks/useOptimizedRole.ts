@@ -17,6 +17,8 @@ export const useOptimizedRole = () => {
 
   const getCachedRole = (): string | null => {
     try {
+      if (typeof window === "undefined") return null;
+
       const cached = localStorage.getItem(ROLE_CACHE_KEY);
       if (!cached) return null;
 
@@ -31,6 +33,8 @@ export const useOptimizedRole = () => {
 
   const setCachedRole = (role: string) => {
     try {
+      if (typeof window === "undefined") return;
+
       const cached: CachedRole = {
         role,
         timestamp: Date.now(),
@@ -43,6 +47,8 @@ export const useOptimizedRole = () => {
 
   const clearCachedRole = () => {
     try {
+      if (typeof window === "undefined") return;
+
       localStorage.removeItem(ROLE_CACHE_KEY);
     } catch {
       // Ignore localStorage errors
