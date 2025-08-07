@@ -20,9 +20,7 @@ export const HeaderLanding = () => {
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <Link href="/login" className="flex items-center">
-            <Button size="lg" className="bg-primary text-primary-foreground">
-              Sign In
-            </Button>
+            <Button size="lg">Sign In</Button>
           </Link>
         </div>
       </div>
