@@ -30,10 +30,10 @@ export const useInitializeMultiEscrowForm = () => {
         signer: address || "",
       };
 
-      const { unsignedTransaction } = await deployEscrow({
-        payload: finalPayload,
-        type: "multi-release",
-      });
+      const { unsignedTransaction } = await deployEscrow(
+        finalPayload,
+        "multi-release",
+      );
 
       if (!unsignedTransaction) {
         throw new Error(
