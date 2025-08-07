@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { handleDatabaseError, prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -7,12 +7,6 @@ export async function GET(request: Request) {
     const user_id = searchParams.get("user_id");
     const role = searchParams.get("role");
 
-    if (!role) {
-      return NextResponse.json(
-        { exists: false, message: "Role parameter is required" },
-        { status: 400 },
-      );
-    }
     if (!user_id) {
       return NextResponse.json(
         { exists: false, message: "User ID parameter is required" },
@@ -20,10 +14,28 @@ export async function GET(request: Request) {
       );
     }
 
-    if (role === "EMPTY") {
-      const user = await prisma.user.findUnique({
-        where: { user_id },
-      });
+    if (role === "EMPTY" || !role) {
+      let user = null as unknown as { user_id: string } | null;
+      try {
+        user = await prisma.user.findUnique({
+          where: { user_id },
+        });
+      } catch (innerError) {
+        const message = innerError instanceof Error ? innerError.message : "";
+        if (
+          message.includes("prepared statement") ||
+          message.includes("already exists")
+        ) {
+          try {
+            await prisma.$disconnect();
+          } catch {}
+          user = await prisma.user.findUnique({
+            where: { user_id },
+          });
+        } else {
+          throw innerError;
+        }
+      }
 
       if (!user) {
         return NextResponse.json(
@@ -35,20 +47,47 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, user });
     }
 
-    let userData = null;
+    let userData = null as unknown as object | null;
 
-    if (role === "GRANTEE") {
-      userData = await prisma.grantee.findUnique({
-        where: {
-          user_id,
-        },
-      });
-    } else if (role === "PAYOUT_PROVIDER") {
-      userData = await prisma.payoutProvider.findUnique({
-        where: {
-          user_id,
-        },
-      });
+    try {
+      if (role === "GRANTEE") {
+        userData = await prisma.grantee.findUnique({
+          where: {
+            user_id,
+          },
+        });
+      } else if (role === "PAYOUT_PROVIDER") {
+        userData = await prisma.payoutProvider.findUnique({
+          where: {
+            user_id,
+          },
+        });
+      }
+    } catch (innerError) {
+      const message = innerError instanceof Error ? innerError.message : "";
+      if (
+        message.includes("prepared statement") ||
+        message.includes("already exists")
+      ) {
+        try {
+          await prisma.$disconnect();
+        } catch {}
+        if (role === "GRANTEE") {
+          userData = await prisma.grantee.findUnique({
+            where: {
+              user_id,
+            },
+          });
+        } else if (role === "PAYOUT_PROVIDER") {
+          userData = await prisma.payoutProvider.findUnique({
+            where: {
+              user_id,
+            },
+          });
+        }
+      } else {
+        throw innerError;
+      }
     }
 
     if (!userData) {
@@ -60,10 +99,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ exists: true, user: userData });
   } catch (error) {
-    console.error("Error checking user:", error);
-    return NextResponse.json(
-      { exists: false, message: "Failed to check user" },
-      { status: 500 },
-    );
+    const { message, status } = handleDatabaseError(error);
+    return NextResponse.json({ exists: false, message }, { status });
   }
 }

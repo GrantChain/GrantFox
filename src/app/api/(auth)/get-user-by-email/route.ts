@@ -1,19 +1,11 @@
-import type { UserRole } from "@/generated/prisma";
-import { prisma } from "@/lib/prisma";
+import { handleDatabaseError, prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get("email");
-    const role = searchParams.get("role");
-
-    if (!role) {
-      return NextResponse.json(
-        { exists: false, message: "Role parameter is required" },
-        { status: 400 },
-      );
-    }
+    // role is optional here; email is unique already
 
     if (!email) {
       return NextResponse.json(
@@ -23,7 +15,7 @@ export async function GET(request: Request) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email, role: role as UserRole },
+      where: { email },
       select: {
         user_id: true,
         email: true,
@@ -45,10 +37,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ exists: true, user });
   } catch (error) {
-    console.error("Error checking user:", error);
-    return NextResponse.json(
-      { exists: false, message: "Failed to check user" },
-      { status: 500 },
-    );
+    const { message, status } = handleDatabaseError(error);
+    return NextResponse.json({ exists: false, message }, { status });
   }
 }
