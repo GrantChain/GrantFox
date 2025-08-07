@@ -10,6 +10,7 @@ import {
 import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
 import { buildEscrowPayload } from "@/utils/build-escrow.utils";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { usePayout } from "../../context/PayoutContext";
@@ -43,7 +44,9 @@ export const PayoutFormModal = ({
     usePayout();
   const { address } = useGlobalWalletStore();
   const { user } = useAuth();
-  const { onSubmit: initializeEscrow } = useInitializeMultiEscrowForm();
+  const { onSubmit: initializeEscrow, loading: isEscrowLoading } =
+    useInitializeMultiEscrowForm();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (mode === "create") {
@@ -97,12 +100,16 @@ export const PayoutFormModal = ({
       if (!escrowOk) {
         toast.error("Escrow initialization failed. Rolling back...");
         if (createdPayout.payout_id) {
-          await handleDeletePayout(createdPayout.payout_id, false);
+          await handleDeletePayout(createdPayout.payout_id, false, true);
         }
         return;
       }
 
       toast.success("Payout created successfully");
+      await queryClient.invalidateQueries({
+        queryKey: ["payouts"],
+        refetchType: "active",
+      });
       setShowCreateModal(false);
     } catch (error) {
       console.error("Error in handleCreatePayoutSubmit:", error);
@@ -159,7 +166,7 @@ export const PayoutFormModal = ({
 
         <PayoutForm
           initialValues={initialValues}
-          isSubmitting={isUpdating || isCreating}
+          isSubmitting={isUpdating || isCreating || isEscrowLoading}
           onSubmit={
             mode === "edit" ? handleEditPayout : handleCreatePayoutSubmit
           }

@@ -30,12 +30,7 @@ export const usePayoutMutations = () => {
         image_url: data.image_url || null,
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["payouts"],
-        refetchType: "active",
-      });
-    },
+    // Do not invalidate here. Caller will decide when to invalidate
     onError: (error: Error) => {
       console.error("Error in createPayout mutation:", error);
       toast.error(error.message || "Failed to create payout");
@@ -66,7 +61,11 @@ export const usePayoutMutations = () => {
     },
   });
 
-  type DeletePayoutVariables = { id: string; showSuccessToast?: boolean };
+  type DeletePayoutVariables = {
+    id: string;
+    showSuccessToast?: boolean;
+    suppressInvalidate?: boolean;
+  };
 
   const deletePayout = useMutation({
     mutationFn: ({ id }: DeletePayoutVariables) => payoutsService.delete(id),
@@ -111,7 +110,8 @@ export const usePayoutMutations = () => {
         toast.success("Payout deleted successfully");
       }
     },
-    onSettled: () => {
+    onSettled: (_data, _error, variables) => {
+      if (variables?.suppressInvalidate) return;
       queryClient.invalidateQueries({
         queryKey: ["payouts"],
         refetchType: "active",
@@ -140,9 +140,17 @@ export const usePayoutMutations = () => {
     }
   };
 
-  const handleDeletePayout = async (id: string, showSuccessToast = true) => {
+  const handleDeletePayout = async (
+    id: string,
+    showSuccessToast = true,
+    suppressInvalidate = false,
+  ) => {
     try {
-      await deletePayout.mutateAsync({ id, showSuccessToast });
+      await deletePayout.mutateAsync({
+        id,
+        showSuccessToast,
+        suppressInvalidate,
+      });
       return true;
     } catch {
       return false;
