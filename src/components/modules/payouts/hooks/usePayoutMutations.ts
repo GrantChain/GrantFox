@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { usePayout } from "../context/PayoutContext";
 import type { PayoutFormValues } from "../schemas/payout.schema";
 import { payoutsService } from "../services/payouts.service";
+import type { Payout } from "@/generated/prisma";
 
 export const usePayoutMutations = () => {
   const queryClient = useQueryClient();
@@ -32,8 +33,11 @@ export const usePayoutMutations = () => {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["payouts"] });
-      queryClient.refetchQueries({ queryKey: ["payouts"] });
+      // Invalidate once; active observers refetch a single time
+      queryClient.invalidateQueries({
+        queryKey: ["payouts"],
+        refetchType: "active",
+      });
     },
     onError: (error: Error) => {
       console.error("Error in createPayout mutation:", error);
@@ -54,8 +58,11 @@ export const usePayoutMutations = () => {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["payouts"] });
-      queryClient.refetchQueries({ queryKey: ["payouts"] });
+      // Invalidate once; active observers refetch a single time
+      queryClient.invalidateQueries({
+        queryKey: ["payouts"],
+        refetchType: "active",
+      });
     },
     onError: (error: Error) => {
       console.error("Error updating payout:", error);
@@ -64,17 +71,53 @@ export const usePayoutMutations = () => {
   });
 
   const deletePayout = useMutation({
-    mutationFn: (id: string) => {
-      return payoutsService.delete(id);
+    mutationFn: (id: string) => payoutsService.delete(id),
+    // Optimistic update: remove the payout from all cached payout lists
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ["payouts"] });
+
+      const previousData = queryClient.getQueriesData<{
+        data: Payout[];
+        total: number;
+      }>({
+        queryKey: ["payouts"],
+      });
+
+      queryClient.setQueriesData<{ data: Payout[]; total: number }>(
+        { queryKey: ["payouts"] },
+        (old) => {
+          if (!old) return old as { data: Payout[]; total: number } | undefined;
+          const nextData = old.data.filter((p) => p.payout_id !== id);
+          const nextTotal = Math.max(
+            0,
+            (old.total || 0) - (old.data.length !== nextData.length ? 1 : 0),
+          );
+          return { ...old, data: nextData, total: nextTotal };
+        },
+      );
+
+      return { previousData };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["payouts"] });
-      queryClient.refetchQueries({ queryKey: ["payouts"] });
-      toast.success("Payout deleted successfully");
-    },
-    onError: (error: Error) => {
+    onError: (error: Error, _id, context) => {
+      // Rollback cache
+      if (context?.previousData) {
+        for (const [key, data] of context.previousData) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          queryClient.setQueryData(key as any, data);
+        }
+      }
       console.error("Error deleting payout:", error);
       toast.error(error.message || "Failed to delete payout");
+    },
+    onSuccess: () => {
+      toast.success("Payout deleted successfully");
+    },
+    onSettled: () => {
+      // Ensure a single refetch for active lists to stay consistent with server
+      queryClient.invalidateQueries({
+        queryKey: ["payouts"],
+        refetchType: "active",
+      });
     },
   });
 
