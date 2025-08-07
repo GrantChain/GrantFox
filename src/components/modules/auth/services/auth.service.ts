@@ -117,28 +117,6 @@ class AuthService {
     }
   }
 
-  async getUserByIdWithoutRole(
-    user_id: string,
-  ): Promise<GetUserServiceResponse> {
-    try {
-      const response = await http.get<{ user: User }>(
-        `/get-user-by-id?user_id=${encodeURIComponent(user_id)}`,
-      );
-      return {
-        exists: true,
-        user: response.data.user,
-      };
-    } catch (error: unknown) {
-      if (error && typeof error === "object" && "response" in error) {
-        const axiosError = error as {
-          response: { data: GetUserServiceResponse };
-        };
-        return axiosError.response.data;
-      }
-      return { exists: false, message: "Failed to check user" };
-    }
-  }
-
   async getUserRoleById(
     user_id: string,
     role: UserRole,
@@ -184,7 +162,7 @@ class AuthService {
         user_id,
         email,
       });
-      
+
       if (response.status === 200 && response.data.user) {
         return { success: true, user: response.data.user };
       }
