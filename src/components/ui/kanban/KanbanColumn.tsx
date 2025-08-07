@@ -1,4 +1,4 @@
-import type { Column, Item } from "@/interfaces/kanban.interface";
+import type { Column, Item } from "@/@types/kanban.entity";
 import { useDroppable } from "@dnd-kit/core";
 import { DraggableCard } from "./DraggableCard";
 

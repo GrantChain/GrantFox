@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   type Notification,
   mockNotifications,
-} from "@/interfaces/Notification";
+} from "@/@types/notification.entity";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, Bell, CheckCircle, Info, XCircle } from "lucide-react";
 import { useState } from "react";
@@ -172,7 +172,8 @@ export const NotificationButton = () => {
                       aria-label={notification.title}
                       onClick={() => handleSelectNotification(notification)}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") handleSelectNotification(notification);
+                        if (e.key === "Enter" || e.key === " ")
+                          handleSelectNotification(notification);
                       }}
                     >
                       {typeIconMap[notification.type]}

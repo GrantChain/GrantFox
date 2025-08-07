@@ -1,4 +1,4 @@
-import type { EmailData, EmailResponse } from "../@types/email";
+import type { EmailData, EmailResponse } from "../@types/email.entity";
 import { type TemplateVariables, renderBasicTemplate } from "./email-templates";
 import { resend } from "./resend";
 

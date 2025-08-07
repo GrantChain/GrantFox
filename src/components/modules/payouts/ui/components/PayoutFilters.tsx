@@ -7,8 +7,6 @@ import { useCallback, useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import type { PayoutFilters } from "../../@types/filters.entity";
 import { usePayout } from "../../context/PayoutContext";
-import { usePayoutMutations } from "../../hooks/usePayoutMutations";
-import type { PayoutFormValues } from "../../schemas/payout.schema";
 import {
   createEmptyFilters,
   createInitialDateRange,
@@ -30,12 +28,12 @@ export const PayoutsFilters = ({
     createInitialDateRange(filters),
   );
   const [searchValue, setSearchValue] = useState(filters.search || "");
-  const [payoutProviderNameValue, setPayoutProviderNameValue] = useState(
-    filters.payoutProviderName || "",
-  );
-  const [granteeNameValue, setGranteeNameValue] = useState(
-    filters.granteeName || "",
-  );
+  // const [payoutProviderNameValue, setPayoutProviderNameValue] = useState(
+  //   filters.payoutProviderName || "",
+  // );
+  // const [granteeNameValue, setGranteeNameValue] = useState(
+  //   filters.granteeName || "",
+  // );
   const { showCreateModal, setShowCreateModal } = usePayout();
   const { user } = useAuth();
 
@@ -56,25 +54,25 @@ export const PayoutsFilters = ({
     return () => clearTimeout(timer);
   }, [searchValue, filters.search, handleFilterChange]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (payoutProviderNameValue !== filters.payoutProviderName) {
-        handleFilterChange("payoutProviderName", payoutProviderNameValue);
-      }
-    }, 500);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (payoutProviderNameValue !== filters.payoutProviderName) {
+  //       handleFilterChange("payoutProviderName", payoutProviderNameValue);
+  //     }
+  //   }, 500);
 
-    return () => clearTimeout(timer);
-  }, [payoutProviderNameValue, filters.payoutProviderName, handleFilterChange]);
+  //   return () => clearTimeout(timer);
+  // }, [payoutProviderNameValue, filters.payoutProviderName, handleFilterChange]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (granteeNameValue !== filters.granteeName) {
-        handleFilterChange("granteeName", granteeNameValue);
-      }
-    }, 500);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (granteeNameValue !== filters.granteeName) {
+  //       handleFilterChange("granteeName", granteeNameValue);
+  //     }
+  //   }, 500);
 
-    return () => clearTimeout(timer);
-  }, [granteeNameValue, filters.granteeName, handleFilterChange]);
+  //   return () => clearTimeout(timer);
+  // }, [granteeNameValue, filters.granteeName, handleFilterChange]);
 
   const handleDateRangeChange = (range: DateRange | undefined) => {
     setDateRange(range);
@@ -84,8 +82,8 @@ export const PayoutsFilters = ({
   const handleReset = () => {
     setDateRange(undefined);
     setSearchValue("");
-    setPayoutProviderNameValue("");
-    setGranteeNameValue("");
+    // setPayoutProviderNameValue("");
+    // setGranteeNameValue("");
     onFilterChange(createEmptyFilters());
   };
 
@@ -112,7 +110,7 @@ export const PayoutsFilters = ({
               </Button>
             </div>
 
-            {user?.role === "GRANTEE" && (
+            {/* {user?.role === "GRANTEE" && (
               <Input
                 type="text"
                 placeholder="Search by Payout Provider..."
@@ -128,7 +126,7 @@ export const PayoutsFilters = ({
                 value={granteeNameValue}
                 onChange={(e) => setGranteeNameValue(e.target.value)}
               />
-            )}
+            )} */}
           </div>
 
           <div className="w-full md:w-2/3 flex flex-col md:flex-row gap-4 justify-end">

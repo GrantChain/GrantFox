@@ -1,4 +1,4 @@
-import type { Column, Item } from "@/interfaces/kanban.interface";
+import type { Column, Item } from "@/@types/kanban.entity";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useState } from "react";
 

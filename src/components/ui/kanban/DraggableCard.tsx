@@ -1,4 +1,4 @@
-import type { Item } from "@/interfaces/kanban.interface";
+import type { Item } from "@/@types/kanban.entity";
 import { useDraggable } from "@dnd-kit/core";
 
 type TaskCardProps = {
