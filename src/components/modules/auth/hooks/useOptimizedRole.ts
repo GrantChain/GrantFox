@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { authService } from "../services/auth.service";
 
@@ -14,6 +14,7 @@ export const useOptimizedRole = () => {
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const { user, isLoading: isAuthLoading } = useAuth();
 
   const getCachedRole = (): string | null => {
     try {
@@ -52,7 +53,8 @@ export const useOptimizedRole = () => {
   useEffect(() => {
     const fetchRole = async () => {
       try {
-        // Primero intentar usar caché
+        if (isAuthLoading) return;
+
         const cachedRole = getCachedRole();
         if (cachedRole) {
           setRole(cachedRole);
@@ -60,11 +62,14 @@ export const useOptimizedRole = () => {
           return;
         }
 
-        // Si no hay caché, hacer fetch
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
         if (!user) {
+          setIsLoading(false);
+          return;
+        }
+
+        if (user.role && user.role !== "EMPTY") {
+          setRole(user.role);
+          setCachedRole(user.role);
           setIsLoading(false);
           return;
         }
@@ -84,7 +89,7 @@ export const useOptimizedRole = () => {
     };
 
     fetchRole();
-  }, []);
+  }, [isAuthLoading, user?.id, user?.role]);
 
   return {
     role,

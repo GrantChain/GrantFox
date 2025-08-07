@@ -1,4 +1,3 @@
-import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -15,7 +14,7 @@ export const useRoleSelection = ({ onClose }: RoleSelectionHookProps) => {
   >(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { refreshUser } = useAuth();
+  const { refreshUser, user } = useAuth();
 
   const handleSubmit = async () => {
     if (!selectedRole) {
@@ -25,10 +24,6 @@ export const useRoleSelection = ({ onClose }: RoleSelectionHookProps) => {
 
     setIsLoading(true);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
       if (!user) {
         throw new Error("User not authenticated");
       }

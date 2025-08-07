@@ -1,10 +1,6 @@
 "use client";
 
-import type {
-  Grantee,
-  PayoutProvider,
-  User,
-} from "@/generated/prisma";
+import type { Grantee, PayoutProvider, User } from "@/generated/prisma";
 import { supabase } from "@/lib/supabase";
 import {
   createContext,
@@ -96,11 +92,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    // Petición inicial
+    // Petición inicial: usar la sesión actual para evitar llamadas a /auth/v1/user
     const initializeAuth = async () => {
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser();
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        setIsLoading(false);
+        return;
+      }
+
+      const authUser = data.session?.user;
       if (authUser) {
         await fetchUserData(authUser.id);
       } else {

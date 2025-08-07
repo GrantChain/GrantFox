@@ -1,17 +1,16 @@
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { authService } from "../services/auth.service";
 
 export function useRoleCheck() {
   const [shouldShowModal, setShouldShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { user, isLoading: isAuthLoading } = useAuth();
 
   useEffect(() => {
     async function checkUserRole() {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        if (isAuthLoading) return;
 
         if (!user) {
           setIsLoading(false);
@@ -19,7 +18,9 @@ export function useRoleCheck() {
         }
 
         // Verificar si es un usuario OAuth
-        const isOAuthUser = user.app_metadata?.provider === "google" || user.app_metadata?.provider === "github";
+        const isOAuthUser =
+          user.app_metadata?.provider === "google" ||
+          user.app_metadata?.provider === "github";
 
         // Si es OAuth, verificar y crear si no existe
         if (isOAuthUser) {
@@ -30,12 +31,18 @@ export function useRoleCheck() {
             );
 
             if (!response.success) {
-              console.error("Failed to verify/create OAuth user in role check:", response.message);
+              console.error(
+                "Failed to verify/create OAuth user in role check:",
+                response.message,
+              );
               setIsLoading(false);
               return;
             }
           } catch (error) {
-            console.error("Error checking/creating OAuth user in role check:", error);
+            console.error(
+              "Error checking/creating OAuth user in role check:",
+              error,
+            );
             setIsLoading(false);
             return;
           }
@@ -56,7 +63,7 @@ export function useRoleCheck() {
     }
 
     checkUserRole();
-  }, []);
+  }, [isAuthLoading, user?.id, user?.app_metadata?.provider]);
 
   return { shouldShowModal, isLoading, setShouldShowModal };
 }

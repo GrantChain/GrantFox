@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "../context/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { authService } from "../services/auth.service";
@@ -15,6 +15,7 @@ interface CachedUserData {
 export const useOptimizedUserData = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const queryClient = useQueryClient();
+  const { user, isLoading: isAuthLoading } = useAuth();
 
   const getCachedUserData = (): CachedUserData | null => {
     try {
@@ -53,10 +54,8 @@ export const useOptimizedUserData = () => {
   useEffect(() => {
     const initializeUserData = async () => {
       try {
-        // Verificar si hay usuario autenticado
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        if (isAuthLoading) return;
+
         if (!user) {
           setIsInitialized(true);
           return;
@@ -106,7 +105,7 @@ export const useOptimizedUserData = () => {
     };
 
     initializeUserData();
-  }, [queryClient]);
+  }, [queryClient, isAuthLoading, user?.id]);
 
   return {
     isInitialized,
