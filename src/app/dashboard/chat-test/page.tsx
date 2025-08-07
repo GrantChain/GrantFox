@@ -1,4 +1,3 @@
-import { ChatButton } from "@/components/modules/chat/ChatButton";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -37,18 +36,23 @@ export default function ChatTestPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5" />
-                Chat Interface
+                Floating Chat Interface
               </CardTitle>
               <CardDescription>
-                Click the chat button to open the AI assistant
+                Look for the floating chat button in the bottom-right corner
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-center">
-                <ChatButton variant="default" size="lg" className="w-full" />
+                <div className="text-center p-4 border-2 border-dashed border-muted-foreground/30 rounded-lg">
+                  <MessageCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    Floating chat button is available globally
+                  </p>
+                </div>
               </div>
               <p className="text-sm text-muted-foreground text-center">
-                The chat interface will appear in the bottom-right corner
+                The floating chat interface appears in the bottom-right corner
               </p>
             </CardContent>
           </Card>
