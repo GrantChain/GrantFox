@@ -1,5 +1,5 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
-import { useInitializeMultiEscrowForm } from "@/components/modules/escrows/hooks/initialize-multi-escrow-form.hook";
+import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
 import {
   Dialog,
   DialogContent,
@@ -44,8 +44,7 @@ export const PayoutFormModal = ({
     usePayout();
   const { address } = useGlobalWalletStore();
   const { user } = useAuth();
-  const { onSubmit: initializeEscrow, loading: isEscrowLoading } =
-    useInitializeMultiEscrowForm();
+  const { handleDeployEscrow, loading: isEscrowLoading } = useEscrows();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -71,7 +70,7 @@ export const PayoutFormModal = ({
         payoutProvider: user,
         grantee: selectedGrantee,
       });
-      const ok = await initializeEscrow(payload);
+      const ok = await handleDeployEscrow(payload);
       return ok;
     }
     return false;

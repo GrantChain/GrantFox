@@ -4,31 +4,28 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  user_id        String   @id @default(cuid())
-  email          String   @unique
-  wallet_address String?  @unique
-  role           UserRole
-  username       String?  @unique
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-  profile_url    String?
-  cover_url      String?
-  location       String?
-  bio            String?
-  is_active      Boolean @default(true)
-
-  payout_provider  PayoutProvider?
-  grantee        Grantee?
-  payouts         Payout[]     @relation("PayoutsCreatedBy")
+  user_id         String          @id @default(cuid())
+  email           String          @unique
+  wallet_address  String?         @unique
+  role            UserRole
+  username        String?         @unique
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  profile_url     String?
+  cover_url       String?
+  location        String?
+  bio             String?
+  is_active       Boolean         @default(true)
+  grantee         Grantee?
+  payouts         Payout[]        @relation("PayoutsCreatedBy")
+  payout_provider PayoutProvider?
   system_logs     SystemLog[]
-
-  milestone_submissions MilestoneSubmission[]
 
   @@index([role])
   @@index([is_active])
@@ -38,15 +35,13 @@ model User {
 }
 
 model PayoutProvider {
-  user_id          String   @id @default(cuid())
+  user_id           String   @id @default(cuid())
   organization_name String?
-  network_type     String?
-  email            String?
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
-
-  user             User     @relation(fields: [user_id], references: [user_id])
-  escrow           Escrow[]
+  network_type      String?
+  email             String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  user              User     @relation(fields: [user_id], references: [user_id])
 
   @@index([network_type])
   @@index([created_at])
@@ -54,14 +49,13 @@ model PayoutProvider {
 }
 
 model Grantee {
-  user_id        String @id @default(cuid())
+  user_id        String   @id @default(cuid())
   name           String?
   position_title String?
   social_media   Json?
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
-
-  user           User   @relation(fields: [user_id], references: [user_id])
+  user           User     @relation(fields: [user_id], references: [user_id])
   payouts        Payout[]
 
   @@index([name])
@@ -70,22 +64,22 @@ model Grantee {
 }
 
 model Payout {
-  payout_id      String   @id @default(cuid())
+  payout_id     String       @id @default(cuid())
   title         String
   description   String
-  image_url     String?
-  type          PayoutType
-  milestones    Json?
   status        PayoutStatus
   total_funding Decimal
   currency      Currency
   created_by    String
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
   grantee_id    String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
-  user          User     @relation("PayoutsCreatedBy", fields: [created_by], references: [user_id])
-  grantee       Grantee? @relation(fields: [grantee_id], references: [user_id])
+  image_url     String?
+  type          PayoutType
+  milestones    Json?
+  escrow_id     String?
+  user          User         @relation("PayoutsCreatedBy", fields: [created_by], references: [user_id])
+  grantee       Grantee?     @relation(fields: [grantee_id], references: [user_id])
 
   @@index([created_by])
   @@index([grantee_id])
@@ -97,103 +91,21 @@ model Payout {
   @@map("payout")
 }
 
-model Escrow {
-  escrow_id        String      @id @default(cuid())
-  engagement_id    String   
-  platform_fee     Decimal     @default(5)
-  title            String
-  description      String
-  receiver_memo    Int?
-  created_at       DateTime    @default(now())
-  updated_at       DateTime    @updatedAt
-  contract_id      String
-  balance          Decimal     @default(0)
-  trustline        Json
-  roles            Json
-  deployed_by      String
-
-  payout_provider   PayoutProvider @relation(fields: [deployed_by], references: [user_id])
-  milestones       Milestone[]
-
-  @@index([deployed_by])
-  @@index([engagement_id])
-  @@index([contract_id])
-  @@index([created_at])
-  @@index([deployed_by, created_at])
-  @@map("escrow")
-}
-
-model Milestone {
-  milestone_id    String   @id @default(cuid())
-  description     String
-  status          MilestoneStatus
-  evidence        String?
-  escrow_id       String
-  payout_id        String
-  amount          Decimal
-  is_disputed     Boolean @default(false)
-  is_released     Boolean @default(false)
-  is_resolved     Boolean @default(false)
-  is_approved     Boolean @default(false)
-  approver_funds  Decimal? @default(0)
-  receiver_funds  Decimal? @default(0)
-  dispute_started_by String?
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  escrow          Escrow   @relation(fields: [escrow_id], references: [escrow_id])
-  submissions     MilestoneSubmission[]
-
-  @@index([escrow_id])
-  @@index([payout_id])
-  @@index([status])
-  @@index([is_disputed])
-  @@index([is_released])
-  @@index([is_approved])
-  @@index([dispute_started_by])
-  @@index([created_at])
-  @@index([escrow_id, status])
-  @@index([payout_id, status])
-  @@index([status, is_disputed])
-  @@map("milestone")
-}
-
-model MilestoneSubmission {
-  submission_id  String   @id @default(cuid())
-  milestone_id   String
-  submitted_by   String
-  content        String
-  review_notes   String
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-
-  milestone      Milestone @relation(fields: [milestone_id], references: [milestone_id])
-  user           User      @relation(fields: [submitted_by], references: [user_id])
-
-  @@index([milestone_id])
-  @@index([submitted_by])
-  @@index([created_at])
-  @@index([milestone_id, submitted_by])
-  @@index([submitted_by, created_at])
-  @@map("milestone_submission")
-}
-
 model SystemLog {
-  log_id          String       @id @default(cuid())
-  user_id         String?      
-  log_type        LogType      
-  action          String       
-  entity_type     String?      
-  entity_id       String?     
-  description     String      
-  ip_address      String?   
-  browser         String?     
-  os              String?     
-  status          LogStatus    @default(INFO) 
-  created_at      DateTime     @default(now())
-  
-  user            User?        @relation(fields: [user_id], references: [user_id])
-  
+  log_id      String    @id @default(cuid())
+  user_id     String?
+  log_type    LogType
+  action      String
+  entity_type String?
+  entity_id   String?
+  description String
+  ip_address  String?
+  browser     String?
+  os          String?
+  status      LogStatus @default(INFO)
+  created_at  DateTime  @default(now())
+  user        User?     @relation(fields: [user_id], references: [user_id])
+
   @@index([user_id])
   @@index([log_type])
   @@index([entity_type, entity_id])
@@ -202,8 +114,17 @@ model SystemLog {
   @@map("system_log")
 }
 
+model Waitlist {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  email      String?
+  phone      String?
+  full_name  String?
 
-// ENUMS
+  @@map("waitlist")
+  @@ignore
+}
+
 enum UserRole {
   GRANTEE
   PAYOUT_PROVIDER
@@ -219,13 +140,13 @@ enum PayoutStatus {
 }
 
 enum Currency {
-	USDC
-	XLM
-	EURC
+  USDC
+  XLM
+  EURC
 }
 
 enum PayoutType {
-	GRANT
+  GRANT
   BOUNTY
   HACKATHON
 }
@@ -238,15 +159,15 @@ enum MilestoneStatus {
 }
 
 enum LogType {
-  ACTIVITY    
-  ERROR      
-  SECURITY    
-  TRANSACTION 
+  ACTIVITY
+  ERROR
+  SECURITY
+  TRANSACTION
 }
 
 enum LogStatus {
   INFO
   WARNING
   ERROR
-  CRITICAL
+  CRITICAL
 }
