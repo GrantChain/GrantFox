@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "biome": "biome check --write",
     "biome:check": "biome check",
     "biome:fix": "biome check --write",
     "biome:format": "biome format --write",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.7.1",
