@@ -5,8 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import type { ProfileUpdateData } from "../../../../@types/profile";
 import { useAuth } from "../../auth/context/AuthContext";
-import type { ProfileUpdateData } from "../@types/profile";
 import { GeneralInfoForm } from "../components/GeneralInfoForm";
 import { GrantProviderForm } from "../components/GrantProviderForm";
 import { GranteeForm } from "../components/GranteeForm";
@@ -17,7 +17,7 @@ import type {
 } from "../schemas/profile.schema";
 
 export default function ProfilePage() {
-  const { user, grantee, grantProvider, isLoading } = useAuth();
+  const { user, grantee, payoutProvider, isLoading } = useAuth();
 
   const updateProfile = async (payload: ProfileUpdateData) => {
     const res = await fetch("/api/profile", {
@@ -109,16 +109,28 @@ export default function ProfilePage() {
         <GeneralInfoForm user={user} onSubmit={handleGeneralInfoSubmit} />
 
         {/* Role-Specific Forms */}
-        {user.role === "GRANT_PROVIDER" && (
+        {user.role === "PAYOUT_PROVIDER" && (
           <GrantProviderForm
-            grantProvider={grantProvider ?? undefined}
+            grantProvider={payoutProvider ?? undefined}
             onSubmit={handleGrantProviderSubmit}
           />
+          // todo: refact to payout provider form
         )}
 
         {user.role === "GRANTEE" && (
           <GranteeForm
-            grantee={grantee ?? undefined}
+            grantee={
+              grantee
+                ? {
+                    ...grantee,
+                    social_media: (grantee.social_media as {
+                      twitter: string;
+                      linkedin: string;
+                      github: string;
+                    }) || { twitter: "", linkedin: "", github: "" },
+                  }
+                : undefined
+            }
             onSubmit={handleGranteeSubmit}
           />
         )}

@@ -1,6 +1,5 @@
 "use client";
 
-import type { Grantee } from "@/@types/grantee.entity";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,13 +17,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import type { Grantee } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { type GranteeFormData, granteeSchema } from "../schemas/profile.schema";
 
 interface GranteeFormProps {
-  grantee?: Grantee;
+  grantee?: Grantee & {
+    social_media: { twitter: string; linkedin: string; github: string };
+  };
   onSubmit: (data: GranteeFormData) => void;
 }
 

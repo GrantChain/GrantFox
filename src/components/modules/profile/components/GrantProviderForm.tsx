@@ -1,6 +1,5 @@
 "use client";
 
-import type { GrantProvider } from "@/@types/grant-provider.entity";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { PayoutProvider } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -34,7 +34,7 @@ import {
 } from "../schemas/profile.schema";
 
 interface GrantProviderFormProps {
-  grantProvider?: GrantProvider;
+  grantProvider?: PayoutProvider;
   onSubmit: (data: GrantProviderFormData) => void;
 }
 

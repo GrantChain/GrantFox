@@ -28,7 +28,7 @@ export const useRoleSelection = ({ onClose }: RoleSelectionHookProps) => {
         throw new Error("User not authenticated");
       }
 
-      const result = await authService.registerRole(user.id, selectedRole);
+      const result = await authService.registerRole(user.user_id, selectedRole);
 
       if (result.success) {
         toast.success("Role registered successfully");
