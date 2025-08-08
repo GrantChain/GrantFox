@@ -4,10 +4,12 @@ import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import { handleError } from "@/errors/mapping.utils";
 import { signTransaction } from "@/lib/wallet-kit";
 import {
+  useFundEscrow,
   useInitializeEscrow,
   useSendTransaction,
 } from "@trustless-work/escrow/hooks";
 import type {
+  FundEscrowPayload,
   InitializeMultiReleaseEscrowPayload,
   InitializeMultiReleaseEscrowResponse,
 } from "@trustless-work/escrow/types";
@@ -22,9 +24,7 @@ export const useEscrows = () => {
   const { sendTransaction } = useSendTransaction();
 
   const { deployEscrow } = useInitializeEscrow();
-
-  // all the escrows list from the indexer endpoint
-  // get the payout matching the escrowId and the contractId
+  const { fundEscrow } = useFundEscrow();
 
   const handleDeployEscrow = async (
     payload: InitializeMultiReleaseEscrowPayload,
@@ -32,7 +32,6 @@ export const useEscrows = () => {
     setLoading(true);
 
     try {
-      // This is the final payload that will be sent to the API
       const finalPayload: InitializeMultiReleaseEscrowPayload = {
         ...payload,
         receiverMemo: payload.receiverMemo ?? 0,
@@ -82,53 +81,55 @@ export const useEscrows = () => {
     }
   };
 
-  // const handleFundEscrow = async (payload: FundEscrowPayload) => {
-  //   setLoading(true);
+  const handleFundEscrow = async (
+    payload: Pick<FundEscrowPayload, "amount" | "contractId">,
+  ) => {
+    setLoading(true);
 
-  //   try {
-  //     // This is the final payload that will be sent to the API
-  //     const finalPayload: FundEscrowPayload = {
-  //       ...payload,
-  //       signer: address || "",
-  //     };
+    try {
+      const finalPayload: FundEscrowPayload = {
+        ...payload,
+        signer: address || "",
+      };
 
-  //     const { unsignedTransaction } = await deployEscrow(
-  //       finalPayload,
-  //       "multi-release",
-  //     );
+      const { unsignedTransaction } = await fundEscrow(
+        finalPayload,
+        "multi-release",
+      );
 
-  //     if (!unsignedTransaction) {
-  //       throw new Error(
-  //         "Unsigned transaction is missing from deployEscrow response.",
-  //       );
-  //     }
+      if (!unsignedTransaction) {
+        throw new Error(
+          "Unsigned transaction is missing from fundEscrow response.",
+        );
+      }
 
-  //     const signedXdr = await signTransaction({
-  //       unsignedTransaction,
-  //       address: address || "",
-  //     });
+      const signedXdr = await signTransaction({
+        unsignedTransaction,
+        address: address || "",
+      });
 
-  //     if (!signedXdr) {
-  //       throw new Error("Signed transaction is missing.");
-  //     }
+      if (!signedXdr) {
+        throw new Error("Signed transaction is missing.");
+      }
 
-  //     await sendTransaction(signedXdr);
-  //     return true;
-  //   } catch (error: unknown) {
-  //     const mappedError = handleError(error as AxiosError | WalletError);
-  //     console.error("Error:", mappedError.message);
+      await sendTransaction(signedXdr);
+      return true;
+    } catch (error: unknown) {
+      const mappedError = handleError(error as AxiosError | WalletError);
+      console.error("Error:", mappedError.message);
 
-  //     toast.error(
-  //       mappedError ? mappedError.message : "An unknown error occurred",
-  //     );
-  //     return false;
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+      toast.error(
+        mappedError ? mappedError.message : "An unknown error occurred",
+      );
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     loading,
     handleDeployEscrow,
+    handleFundEscrow,
   };
 };

@@ -3,11 +3,23 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
-import { Calendar, DollarSign, FileText, User, Wallet } from "lucide-react";
+import { useGetMultipleEscrowBalances } from "@trustless-work/escrow";
+import Decimal from "decimal.js";
+import {
+  Calendar,
+  DollarSign,
+  ExternalLink,
+  FileText,
+  Loader2,
+  User,
+  Wallet,
+} from "lucide-react";
 import Image from "next/image";
-import { useEffect } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePayout } from "../../context/PayoutContext";
 import { usePayoutSheet } from "../../hooks/usePayoutSheet";
 import { statusColors } from "../../utils/card.utils";
@@ -34,6 +46,10 @@ export function PayoutDetailsSheet({
     statusColors[payout.status as keyof typeof statusColors] ||
     statusColors.DRAFT;
 
+  const [escrowBalance, setEscrowBalance] = useState<number | null>(null);
+  const { address } = useGlobalWalletStore();
+  const { getMultipleBalances } = useGetMultipleEscrowBalances();
+
   const {
     fetchSelectedGrantee,
     fetchCreator,
@@ -45,6 +61,26 @@ export function PayoutDetailsSheet({
     usePayout();
   const { user } = useAuth();
 
+  const fetchEscrowBalances = async () => {
+    if (!payout.escrow_id || !address) return;
+
+    try {
+      const balance = await getMultipleBalances(
+        {
+          signer: address,
+          addresses: [payout.escrow_id],
+        },
+        "multi-release",
+      );
+
+      if (balance.length > 0) {
+        setEscrowBalance(balance[0].balance);
+      }
+    } catch (error) {
+      console.error("Error fetching escrow balance:", error);
+    }
+  };
+
   useEffect(() => {
     const loadData = async () => {
       setSelectedGrantee(null);
@@ -54,10 +90,22 @@ export function PayoutDetailsSheet({
         await fetchSelectedGrantee(payout.grantee_id);
         await fetchCreator(payout.created_by);
       }
+
+      // Fetch escrow balance when sheet opens
+      if (open) {
+        await fetchEscrowBalances();
+      }
     };
 
     loadData();
-  }, [open, payout.grantee_id, payout.created_by, fetchSelectedGrantee]);
+  }, [
+    open,
+    payout.grantee_id,
+    payout.created_by,
+    payout.escrow_id,
+    address,
+    fetchSelectedGrantee,
+  ]);
 
   const handleOpenChange = (newOpen: boolean) => {
     setSelectedGrantee(null);
@@ -123,6 +171,31 @@ export function PayoutDetailsSheet({
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
+                  <Wallet className="h-4 w-4" />
+                  Escrow Balance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl font-bold">
+                  {escrowBalance !== null ? (
+                    <span>
+                      {formatCurrency(
+                        payout.currency,
+                        new Decimal(escrowBalance),
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="col-span-2">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   Created
                 </CardTitle>
@@ -186,9 +259,21 @@ export function PayoutDetailsSheet({
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Description
+              <CardTitle className="text-base flex justify-between items-center gap-2">
+                <div className="flex gap-2">
+                  <FileText className="h-4 w-4" />
+                  Description
+                </div>
+
+                <Link
+                  href={`https://stellar.expert/explorer/testnet/contract/${payout.escrow_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground gap-2 flex items-center hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Stellar Explorer
+                </Link>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -218,7 +303,7 @@ export function PayoutDetailsSheet({
                           Amount:{" "}
                           {formatCurrency(
                             payout.currency,
-                            milestone.amount.toString(),
+                            new Decimal(milestone.amount),
                           )}
                         </p>
                       </div>
