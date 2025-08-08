@@ -5,7 +5,7 @@ import type { Trustline } from "@trustless-work/escrow/types";
  * The allows the user to interact with some tokens, in this case, we're using USDC and EURC. But you can add more trustlines.
  *
  */
-export const trustlines = [
+export const trustlines: (Trustline & { name: string })[] = [
   {
     name: "USDC",
     address: "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",

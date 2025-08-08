@@ -1,4 +1,8 @@
-import type { EmailData, EmailResponse } from "../@types/email.entity";
+import type {
+  EmailData,
+  EmailPayload,
+  EmailResponse,
+} from "../@types/email.entity";
 import { type TemplateVariables, renderBasicTemplate } from "./email-templates";
 import { resend } from "./resend";
 
@@ -10,12 +14,11 @@ export async function sendEmail(emailData: EmailData): Promise<EmailResponse> {
       throw new Error("Either html or text content must be provided");
     }
 
-    console.log("[EMAIL] Sending email to:", emailData.to);
-
-    const emailPayload: any = {
+    const emailPayload: EmailPayload = {
       from: emailData.from || DEFAULT_FROM,
       to: emailData.to,
       subject: emailData.subject,
+      text: emailData.text || "",
     };
 
     if (emailData.html) emailPayload.html = emailData.html;
@@ -24,15 +27,11 @@ export async function sendEmail(emailData: EmailData): Promise<EmailResponse> {
 
     const result = await resend.emails.send(emailPayload);
 
-    console.log("[EMAIL] Email sent successfully:", result.data?.id);
-
     return {
       success: true,
-      data: result.data,
+      data: result.data?.id ?? "", // todo: delete .id
     };
   } catch (error) {
-    console.error("[EMAIL] Failed to send email:", error);
-
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",

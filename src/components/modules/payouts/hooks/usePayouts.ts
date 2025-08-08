@@ -28,7 +28,7 @@ export const usePayouts = (options?: UsePayoutsOptions) => {
         options?.userId,
       ),
     enabled: !!options?.userId,
-    retry: (failureCount, error) => {
+    retry: (failureCount) => {
       if (!options?.role && failureCount < 3) {
         return true;
       }

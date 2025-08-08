@@ -9,7 +9,6 @@ export function renderBasicTemplate(variables: TemplateVariables = {}): string {
     message = "This is a notification from Grant Fox.",
     ctaText = "View Details",
     ctaUrl = "#",
-    ...otherVars
   } = variables;
 
   return `

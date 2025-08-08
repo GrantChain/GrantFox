@@ -1,4 +1,3 @@
-import type { UserRole } from "@/generated/prisma";
 import { handleDatabaseError, prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -15,7 +14,6 @@ export async function GET(request: Request) {
       );
     }
 
-    // Select a richer set of fields when role is EMPTY; otherwise return the common fields
     const selectFields: Record<string, boolean> = {
       user_id: true,
       email: true,
@@ -36,7 +34,6 @@ export async function GET(request: Request) {
       });
     }
 
-    // Find by unique user_id only to avoid Prisma errors
     let user = null as
       | ({
           user_id: string;

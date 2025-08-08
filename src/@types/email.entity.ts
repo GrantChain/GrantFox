@@ -6,8 +6,16 @@ export interface EmailData {
   from?: string;
 }
 
+export interface EmailPayload {
+  from: string;
+  to: string | string[];
+  subject: string;
+  html?: string;
+  text: string;
+}
+
 export interface EmailResponse {
   success: boolean;
-  data?: any;
+  data?: string;
   error?: string;
 }

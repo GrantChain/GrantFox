@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
-import { OptimizedLoading } from "@/components/shared/OptimizedLoading";
 import TooltipInfo from "@/components/shared/TooltipInfo";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -26,7 +25,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
 import { useMemo } from "react";
-import { type NavItem, navItems } from "./constants/items.constant";
+import { navItems } from "./constants/items.constant";
 import { NavUser } from "./nav-user";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

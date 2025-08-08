@@ -20,6 +20,7 @@ export const usePayoutMutations = () => {
         throw new Error("User must be a payout provider to create payouts");
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { grantee_id, ...restData } = data;
 
       return payoutsService.create({
@@ -40,6 +41,7 @@ export const usePayoutMutations = () => {
 
   const updatePayout = useMutation({
     mutationFn: ({ id, data }: { id: string; data: PayoutFormValues }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { grantee_id, ...restData } = data;
 
       return payoutsService.update(id, {
