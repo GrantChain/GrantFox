@@ -1,15 +1,15 @@
 import type { WalletError } from "@/@types/error.entity";
+import type { DeployResponse } from "@/@types/responses.entity";
 import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import { handleError } from "@/errors/mapping.utils";
 import { signTransaction } from "@/lib/wallet-kit";
 import {
-  useFundEscrow,
   useInitializeEscrow,
   useSendTransaction,
 } from "@trustless-work/escrow/hooks";
 import type {
-  FundEscrowPayload,
   InitializeMultiReleaseEscrowPayload,
+  InitializeMultiReleaseEscrowResponse,
 } from "@trustless-work/escrow/types";
 import type { AxiosError } from "axios";
 import { useState } from "react";
@@ -22,14 +22,13 @@ export const useEscrows = () => {
   const { sendTransaction } = useSendTransaction();
 
   const { deployEscrow } = useInitializeEscrow();
-  const { fundEscrow } = useFundEscrow();
 
   // all the escrows list from the indexer endpoint
-  //
+  // get the payout matching the escrowId and the contractId
 
   const handleDeployEscrow = async (
     payload: InitializeMultiReleaseEscrowPayload,
-  ): Promise<boolean> => {
+  ): Promise<DeployResponse> => {
     setLoading(true);
 
     try {
@@ -60,8 +59,16 @@ export const useEscrows = () => {
         throw new Error("Signed transaction is missing.");
       }
 
-      await sendTransaction(signedXdr);
-      return true;
+      const response = await sendTransaction(signedXdr);
+
+      if (!response) {
+        throw new Error("Escrow is missing.");
+      }
+
+      return {
+        response: response as InitializeMultiReleaseEscrowResponse,
+        success: true,
+      };
     } catch (error: unknown) {
       const mappedError = handleError(error as AxiosError | WalletError);
       console.error("Error:", mappedError.message);
@@ -69,7 +76,7 @@ export const useEscrows = () => {
       toast.error(
         mappedError ? mappedError.message : "An unknown error occurred",
       );
-      return false;
+      return { success: false };
     } finally {
       setLoading(false);
     }

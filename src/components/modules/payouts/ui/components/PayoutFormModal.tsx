@@ -1,3 +1,4 @@
+import type { DeployResponse } from "@/@types/responses.entity";
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
 import {
@@ -33,13 +34,8 @@ export const PayoutFormModal = ({
   initialValues,
   mode = "create",
 }: PayoutFormModalProps) => {
-  const {
-    handleCreatePayout,
-    handleUpdatePayout,
-    handleDeletePayout,
-    isUpdating,
-    isCreating,
-  } = usePayoutMutations();
+  const { handleCreatePayout, handleUpdatePayout, isUpdating, isCreating } =
+    usePayoutMutations();
   const { setShowCreateModal, setSelectedGrantee, selectedGrantee } =
     usePayout();
   const { address } = useGlobalWalletStore();
@@ -62,7 +58,7 @@ export const PayoutFormModal = ({
 
   const handleInitializeEscrow = async (
     data: PayoutFormValues,
-  ): Promise<boolean> => {
+  ): Promise<DeployResponse> => {
     if (data.grantee_id && selectedGrantee && user) {
       const payload = await buildEscrowPayload({
         data,
@@ -70,10 +66,10 @@ export const PayoutFormModal = ({
         payoutProvider: user,
         grantee: selectedGrantee,
       });
-      const ok = await handleDeployEscrow(payload);
-      return ok;
+      const result = await handleDeployEscrow(payload);
+      return result;
     }
-    return false;
+    return { success: false };
   };
 
   const handleCreatePayoutSubmit = async (data: PayoutFormValues) => {
@@ -82,25 +78,30 @@ export const PayoutFormModal = ({
         toast.error("Missing grantee or user to initialize escrow");
         return;
       }
+
       const payload = {
         ...data,
         grantee_id: selectedGrantee?.user_id || "",
       };
 
-      // Step 1: create payout in DB
-      const createdPayout = await handleCreatePayout(payload);
-      if (!createdPayout) {
-        toast.error("Failed to create payout");
+      // Step 1: deploy escrow on-chain
+      const { success: escrowOk, response: escrow } =
+        await handleInitializeEscrow(payload);
+
+      const finalPayload = {
+        ...payload,
+        escrow_id: escrow?.contractId,
+      };
+
+      if (!escrowOk || !escrow) {
+        toast.error("Escrow initialization failed.");
         return;
       }
 
-      // Step 2: initialize escrow on-chain
-      const escrowOk = await handleInitializeEscrow(payload);
-      if (!escrowOk) {
-        toast.error("Escrow initialization failed. Rolling back...");
-        if (createdPayout.payout_id) {
-          await handleDeletePayout(createdPayout.payout_id, false, true);
-        }
+      // Step 2: create payout in DB
+      const createdPayout = await handleCreatePayout(finalPayload);
+      if (!createdPayout) {
+        toast.error("Failed to create payout");
         return;
       }
 

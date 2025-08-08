@@ -38,6 +38,7 @@ export const payoutFormSchema = z.object({
       message: "Must be a valid email",
     })
     .optional(),
+  escrow_id: z.string().optional(),
 });
 
 export type PayoutFormValues = z.infer<typeof payoutFormSchema>;

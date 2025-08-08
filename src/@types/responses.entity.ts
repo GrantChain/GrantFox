@@ -1,4 +1,8 @@
 import type { Grantee, PayoutProvider, User } from "@/generated/prisma";
+import {
+  type InitializeMultiReleaseEscrowResponse,
+  SendTransactionResponse,
+} from "@trustless-work/escrow";
 
 export type GetUserServiceResponse =
   | { exists: true; user: User }
@@ -19,3 +23,9 @@ export type CheckRoleServiceResponse =
 export type GetUserRoleServiceResponse =
   | { success: true; user: User | Grantee | PayoutProvider }
   | { success: false; message: string };
+
+// Escrows
+export type DeployResponse = {
+  response?: InitializeMultiReleaseEscrowResponse;
+  success: boolean;
+};

@@ -28,6 +28,7 @@ export const usePayoutMutations = () => {
         created_by: user.user_id,
         grantee_id: data.grantee_id || null,
         image_url: data.image_url || null,
+        escrow_id: data.escrow_id || null,
       });
     },
     // Do not invalidate here. Caller will decide when to invalidate
