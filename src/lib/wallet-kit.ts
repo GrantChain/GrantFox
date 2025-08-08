@@ -1,7 +1,7 @@
 import {
+  AlbedoModule,
   FREIGHTER_ID,
   FreighterModule,
-  AlbedoModule,
   StellarWalletsKit,
   WalletNetwork,
 } from "@creit.tech/stellar-wallets-kit";
