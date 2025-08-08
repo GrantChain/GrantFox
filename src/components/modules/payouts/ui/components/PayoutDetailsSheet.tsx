@@ -5,9 +5,9 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
+import { useIsMobile } from "@/hooks/useMobile";
 import { formatCurrency } from "@/utils/format.utils";
 import { useGetMultipleEscrowBalances } from "@trustless-work/escrow";
-import { useIsMobile } from "@/hooks/useMobile";
 import Decimal from "decimal.js";
 import {
   Calendar,
