@@ -3,6 +3,7 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQueryClient } from "@tanstack/react-query";
 import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import type { ProfileUpdateData } from "../../../../@types/profile";
@@ -18,6 +19,7 @@ import type {
 
 export default function ProfilePage() {
   const { user, grantee, payoutProvider, isLoading } = useAuth();
+  const queryClient = useQueryClient();
 
   const updateProfile = async (payload: ProfileUpdateData) => {
     const res = await fetch("/api/profile", {
@@ -32,6 +34,21 @@ export default function ProfilePage() {
     if (!res.ok) {
       const { error } = await res.json();
       throw new Error(error || "Error updating profile");
+    }
+
+    // Invalidate cached user queries so changes reflect immediately
+    if (user?.user_id) {
+      queryClient.invalidateQueries({
+        queryKey: ["user-by-id", "GRANTEE", user.user_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["user-role-by-id", "GRANTEE", user.user_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["user-role-by-id", "PAYOUT_PROVIDER", user.user_id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["user-data", user.user_id] });
+      queryClient.invalidateQueries({ queryKey: ["role-data", user.user_id] });
     }
   };
 

@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,7 +22,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePayout } from "../../context/PayoutContext";
 import { usePayoutSheet } from "../../hooks/usePayoutSheet";
 import { statusColors } from "../../utils/card.utils";
@@ -50,7 +51,8 @@ export function PayoutDetailsSheet({
 
   const [escrowBalance, setEscrowBalance] = useState<number | null>(null);
   const { address } = useGlobalWalletStore();
-  const { getMultipleBalances } = useGetMultipleEscrowBalances();
+  const { fetchEscrowBalances, updateEscrowBalance, escrowBalances } =
+    usePayout();
   const isMobile = useIsMobile();
 
   const {
@@ -64,54 +66,72 @@ export function PayoutDetailsSheet({
     usePayout();
   const { user } = useAuth();
 
-  const fetchEscrowBalances = async () => {
-    if (!payout.escrow_id || !address) return;
+  const cachedBalance = useMemo(() => {
+    if (!payout.escrow_id) return null;
+    const val = escrowBalances[payout.escrow_id];
+    return typeof val === "number" ? val : null;
+  }, [escrowBalances, payout.escrow_id]);
 
-    try {
-      const balance = await getMultipleBalances(
-        {
-          signer: address,
-          addresses: [payout.escrow_id],
-        },
-        "multi-release",
-      );
-
-      if (balance.length > 0) {
-        setEscrowBalance(balance[0].balance);
-      }
-    } catch (error) {
-      console.error("Error fetching escrow balance:", error);
-    }
-  };
-
+  // Load grantee/creator only when open is true
   useEffect(() => {
-    const loadData = async () => {
-      setSelectedGrantee(null);
-      setCreator(null);
-
-      if (open && payout.grantee_id && payout.created_by) {
+    if (!open) return;
+    const run = async () => {
+      if (payout.grantee_id) {
         await fetchSelectedGrantee(payout.grantee_id);
+      }
+      if (payout.created_by) {
         await fetchCreator(payout.created_by);
       }
-
-      // Fetch escrow balance when sheet opens
-      if (open) {
-        await fetchEscrowBalances();
-      }
     };
-
-    loadData();
+    void run();
   }, [
     open,
     payout.grantee_id,
     payout.created_by,
-    payout.escrow_id,
-    address,
     fetchSelectedGrantee,
+    fetchCreator,
   ]);
 
+  // Fetch balance once per open (even if key is same), and also when key changes while open.
+  const wasOpenRef = useRef<boolean>(false);
+  const lastFetchedKeyRef = useRef<string | null>(null);
+
+  // Edge: open transition (false -> true)
+  useEffect(() => {
+    if (open && !wasOpenRef.current) {
+      wasOpenRef.current = true;
+      // Only fetch if not cached or stale: handled by context fetcher
+      if (payout.escrow_id) {
+        void fetchEscrowBalances([payout.escrow_id]);
+      }
+    }
+    if (!open && wasOpenRef.current) {
+      wasOpenRef.current = false;
+    }
+  }, [open]);
+
+  // Changes in signer or escrow while open
+  useEffect(() => {
+    if (!open) return;
+    const currentKey = `${address || "no-address"}-${payout.escrow_id || "no-escrow"}`;
+    if (lastFetchedKeyRef.current !== currentKey) {
+      lastFetchedKeyRef.current = currentKey;
+      if (payout.escrow_id) {
+        void fetchEscrowBalances([payout.escrow_id]);
+      }
+    }
+  }, [open, payout.escrow_id, address, fetchEscrowBalances]);
+
+  // Keep local state in sync for rendering
+  useEffect(() => {
+    setEscrowBalance(cachedBalance);
+  }, [cachedBalance]);
+
   const handleOpenChange = (newOpen: boolean) => {
-    setSelectedGrantee(null);
+    if (!newOpen) {
+      setSelectedGrantee(null);
+      setCreator(null);
+    }
     onOpenChange(newOpen);
   };
 
@@ -299,8 +319,9 @@ export function PayoutDetailsSheet({
           </Card>
 
           <Card>
-            <CardHeader className="pb-2">
+            <CardHeader className="flex flex-row justify-between pb-2 items-center">
               <CardTitle className="text-base">Milestones</CardTitle>
+              <Button>Manage Milestones</Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-3 pr-2">

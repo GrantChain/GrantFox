@@ -1,12 +1,14 @@
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { authService } from "../services/auth.service";
+import { useAuthMutations } from "./useAuthMutations";
 
 export function useRoleCheck() {
   const [shouldShowModal, setShouldShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { user, isLoading: isAuthLoading } = useAuth();
+  const { useUserRole } = useAuthMutations();
+  const roleQuery = useUserRole(user?.user_id || "");
 
   useEffect(() => {
     async function checkUserRole() {
@@ -30,6 +32,7 @@ export function useRoleCheck() {
 
         if (isOAuthUser) {
           try {
+            const { authService } = await import("../services/auth.service");
             const response = await authService.verifyAndCreateOAuthUser(
               user.user_id,
               user.email || "",
@@ -53,21 +56,21 @@ export function useRoleCheck() {
           }
         }
 
-        const response = await authService.checkRole(user.user_id);
-
-        if (response.success && response.role === "EMPTY") {
-          setShouldShowModal(true);
+        // rely on shared role query to avoid duplicate /check-role
+        if (!roleQuery.isLoading) {
+          if (roleQuery.data === "EMPTY") {
+            setShouldShowModal(true);
+          }
+          setIsLoading(false);
         }
-
-        setIsLoading(false);
       } catch (error) {
         console.error("Error checking user role:", error);
         setIsLoading(false);
       }
     }
 
-    checkUserRole();
-  }, [isAuthLoading, user?.user_id]);
+    void checkUserRole();
+  }, [isAuthLoading, user?.user_id, roleQuery.isLoading, roleQuery.data]);
 
   return { shouldShowModal, isLoading, setShouldShowModal };
 }

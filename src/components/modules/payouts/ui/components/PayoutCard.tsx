@@ -1,5 +1,4 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
-import { authService } from "@/components/modules/auth/services/auth.service";
 import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
 import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
 import TooltipInfo from "@/components/shared/TooltipInfo";
@@ -19,8 +18,9 @@ import {
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { usePayout } from "../../context/PayoutContext";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
 import { statusColors } from "../../utils/card.utils";
@@ -39,60 +39,36 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [isFundDialogOpen, setIsFundDialogOpen] = useState(false);
   const { handleFundEscrow } = useEscrows();
-  const { handleDeletePayout, isDeleting } = usePayoutMutations();
+  const { handleDeletePayout, isDeleting, getGranteeById } =
+    usePayoutMutations();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [granteeEmail, setGranteeEmail] = useState<string | null>(null);
-  const [escrowBalance, setEscrowBalance] = useState<number | null>(null);
+  const { escrowBalances, fetchEscrowBalances } = usePayout();
 
   const { address } = useGlobalWalletStore();
 
-  const { getMultipleBalances } = useGetMultipleEscrowBalances();
-
-  const fetchEscrowBalances = async () => {
-    if (!payout.escrow_id || !address) return;
-
-    try {
-      const balance = await getMultipleBalances(
-        {
-          signer: address,
-          addresses: [payout.escrow_id],
-        },
-        "multi-release",
-      );
-
-      if (balance.length > 0) {
-        setEscrowBalance(balance[0].balance);
-      }
-    } catch (error) {
-      console.error("Error fetching escrow balance:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchEscrowBalances();
-  }, [payout.escrow_id, address]);
+  const escrowBalance = useMemo(() => {
+    if (!payout.escrow_id) return 0;
+    return escrowBalances[payout.escrow_id] ?? 0;
+  }, [escrowBalances, payout.escrow_id]);
 
   useEffect(() => {
     const fetchGranteeEmail = async () => {
-      if (payout.grantee_id) {
-        setIsLoadingEmail(true);
-        try {
-          const result = await authService.getUserById(
-            payout.grantee_id,
-            "GRANTEE",
-          );
-          if (result.exists && result.user) {
-            setGranteeEmail(result.user.email);
-          }
-        } catch (error) {
-          console.error("Error fetching grantee email:", error);
-        } finally {
-          setIsLoadingEmail(false);
+      if (!payout.grantee_id) return;
+      setIsLoadingEmail(true);
+      try {
+        const result = await getGranteeById(payout.grantee_id);
+        if (result.exists && result.user) {
+          setGranteeEmail(result.user.email);
         }
+      } catch (error) {
+        console.error("Error fetching grantee email:", error);
+      } finally {
+        setIsLoadingEmail(false);
       }
     };
-    fetchGranteeEmail();
-  }, [payout.grantee_id]);
+    void fetchGranteeEmail();
+  }, [payout.grantee_id, getGranteeById]);
 
   const handleDelete = async () => {
     const success = await handleDeletePayout(payout.payout_id);
@@ -118,8 +94,10 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
       });
       setIsFundDialogOpen(false);
 
-      // Refresh balance after successful funding
-      await fetchEscrowBalances();
+      // Force refresh the funded escrow balance immediately in shared cache
+      if (payout.escrow_id) {
+        await fetchEscrowBalances([payout.escrow_id], { force: true });
+      }
 
       toast.success("Payout funded successfully");
     } catch (error) {

@@ -2,13 +2,40 @@ import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import type { Payout } from "@/generated/prisma";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Decimal } from "decimal.js";
+import { useCallback } from "react";
 import { toast } from "sonner";
+import { authService } from "../../auth/services/auth.service";
 import type { PayoutFormValues } from "../schemas/payout.schema";
 import { payoutsService } from "../services/payouts.service";
 
 export const usePayoutMutations = () => {
   const queryClient = useQueryClient();
   const { user, payoutProvider } = useAuth();
+
+  // Cached data loaders for user/role to be reused by any consumer
+  const getGranteeById = useCallback(
+    async (userId: string) => {
+      return queryClient.ensureQueryData({
+        queryKey: ["user-by-id", "GRANTEE", userId] as const,
+        queryFn: () => authService.getUserById(userId, "GRANTEE"),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 15 * 60 * 1000,
+      });
+    },
+    [queryClient],
+  );
+
+  const getPayoutProviderById = useCallback(
+    async (userId: string) => {
+      return queryClient.ensureQueryData({
+        queryKey: ["user-role-by-id", "PAYOUT_PROVIDER", userId] as const,
+        queryFn: () => authService.getUserRoleById(userId, "PAYOUT_PROVIDER"),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 15 * 60 * 1000,
+      });
+    },
+    [queryClient],
+  );
 
   const createPayout = useMutation({
     mutationFn: (data: PayoutFormValues) => {
@@ -170,5 +197,8 @@ export const usePayoutMutations = () => {
     isUpdating: updatePayout.isPending,
     isCreating: createPayout.isPending,
     isDeleting: deletePayout.isPending,
+    // expose cached loaders
+    getGranteeById,
+    getPayoutProviderById,
   };
 };

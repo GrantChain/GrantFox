@@ -32,6 +32,8 @@ export const useAuthMutations = () => {
         return response.role;
       },
       enabled: !!userId,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,
     });
@@ -56,6 +58,8 @@ export const useAuthMutations = () => {
         };
       },
       enabled: !!userId && !!role,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,
     });
@@ -77,6 +81,8 @@ export const useAuthMutations = () => {
         return response.data.user;
       },
       enabled: !!userId && !!role,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000,
       gcTime: 10 * 60 * 1000,
     });

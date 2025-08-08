@@ -1,5 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import {
+  DEFAULT_FILTERS,
+  DEFAULT_PAGINATION,
+} from "../../payouts/hooks/usePayoutsFilters";
 import { payoutsService } from "../../payouts/services/payouts.service";
 import { useAuth } from "../context/AuthContext";
 
@@ -16,15 +20,15 @@ export const usePrefetchData = () => {
         await queryClient.prefetchQuery({
           queryKey: [
             "payouts",
-            {},
-            { page: 1, pageSize: 10 },
+            DEFAULT_FILTERS,
+            DEFAULT_PAGINATION,
             user.role,
             user.user_id,
           ],
           queryFn: () =>
             payoutsService.findAll(
-              {},
-              { page: 1, pageSize: 10 },
+              DEFAULT_FILTERS,
+              DEFAULT_PAGINATION,
               user.role,
               user.user_id,
             ),

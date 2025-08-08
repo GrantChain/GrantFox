@@ -2,7 +2,9 @@
 
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { ErrorFetching } from "@/components/shared/ErrorFetching";
+import { useEffect, useMemo } from "react";
 import { NoData } from "../../../../shared/NoData";
+import { usePayout } from "../../context/PayoutContext";
 import { usePayouts } from "../../hooks/usePayouts";
 import { usePayoutsFilters } from "../../hooks/usePayoutsFilters";
 import { PayoutCard } from "./PayoutCard";
@@ -19,6 +21,7 @@ export const PayoutsSection = () => {
     handlePageSizeChange,
   } = usePayoutsFilters();
   const { user } = useAuth();
+  const { escrowBalances, fetchEscrowBalances } = usePayout();
 
   const { data, isLoading, error } = usePayouts(
     user?.user_id
@@ -30,6 +33,21 @@ export const PayoutsSection = () => {
         }
       : undefined,
   );
+
+  // Batch fetch escrow balances for visible payouts (only once per page/filter change)
+  const visibleEscrowIds = useMemo(() => {
+    return (data?.data || [])
+      .map((p) => p.escrow_id)
+      .filter((id): id is string => Boolean(id));
+  }, [data?.data]);
+
+  useEffect(() => {
+    const run = async () => {
+      if (!visibleEscrowIds.length) return;
+      await fetchEscrowBalances(visibleEscrowIds);
+    };
+    void run();
+  }, [visibleEscrowIds.join("|")]);
 
   if (error) {
     return (

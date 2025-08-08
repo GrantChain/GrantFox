@@ -3,7 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import type { PayoutFilters } from "../@types/filters.entity";
 
-const DEFAULT_FILTERS: PayoutFilters = {
+export const DEFAULT_FILTERS: PayoutFilters = {
   search: "",
   minFunding: "",
   maxFunding: "",
@@ -11,6 +11,11 @@ const DEFAULT_FILTERS: PayoutFilters = {
   endDate: "",
   payoutProviderName: "",
   granteeName: "",
+};
+
+export const DEFAULT_PAGINATION: Pagination = {
+  page: 1,
+  pageSize: 10,
 };
 
 export const usePayoutsFilters = () => {
@@ -34,8 +39,9 @@ export const usePayoutsFilters = () => {
 
   const getPaginationFromUrl = useCallback((): Pagination => {
     return {
-      page: Number(searchParams.get("page")) || 1,
-      pageSize: Number(searchParams.get("pageSize")) || 10,
+      page: Number(searchParams.get("page")) || DEFAULT_PAGINATION.page,
+      pageSize:
+        Number(searchParams.get("pageSize")) || DEFAULT_PAGINATION.pageSize,
     };
   }, [searchParams]);
 

@@ -28,6 +28,8 @@ export const usePayouts = (options?: UsePayoutsOptions) => {
         options?.userId,
       ),
     enabled: !!options?.userId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     retry: (failureCount) => {
       if (!options?.role && failureCount < 3) {
         return true;
