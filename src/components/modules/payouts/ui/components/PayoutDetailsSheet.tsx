@@ -7,6 +7,7 @@ import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
 import { useGetMultipleEscrowBalances } from "@trustless-work/escrow";
+import { useIsMobile } from "@/hooks/useMobile";
 import Decimal from "decimal.js";
 import {
   Calendar,
@@ -16,6 +17,7 @@ import {
   Loader2,
   User,
   Wallet,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,6 +51,7 @@ export function PayoutDetailsSheet({
   const [escrowBalance, setEscrowBalance] = useState<number | null>(null);
   const { address } = useGlobalWalletStore();
   const { getMultipleBalances } = useGetMultipleEscrowBalances();
+  const isMobile = useIsMobile();
 
   const {
     fetchSelectedGrantee,
@@ -137,6 +140,18 @@ export function PayoutDetailsSheet({
               </div>
             </div>
           )}
+          {/* Mobile close button */}
+          {isMobile && (
+            <button
+              type="button"
+              onClick={() => handleOpenChange(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/30 transition-colors z-10"
+              aria-label="Cerrar"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
+
           <div className="absolute bottom-0 left-0 right-0 p-4">
             <div className="flex items-start justify-between">
               <SheetTitle className="text-xl font-bold text-white drop-shadow-lg">
