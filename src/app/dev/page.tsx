@@ -9,7 +9,7 @@ export default function App() {
 
   return (
     <div className="p-4">
-      <div className="flex gap-8">
+      <div className="flex gap-6">
         <DndContext onDragEnd={handleDragEnd}>
           {COLUMNS.map((column) => {
             return (
