@@ -6,7 +6,7 @@ export const HeroSection = () => {
   return (
     <section className="w-full min-h-screen flex justify-center bg-gradient-to-br from-background via-background to-muted/20">
       <div className="container px-4 md:px-6 mx-auto">
-        <div className="max-w-4xl mx-auto text-center space-y-8 mt-0 md:mt-40">
+        <div className="max-w-4xl mx-auto text-center space-y-8 mt-10 md:mt-40">
           {/* Main Heading */}
           <div className="space-y-6">
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl text-black/70 dark:text-white">

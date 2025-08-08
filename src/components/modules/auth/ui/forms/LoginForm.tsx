@@ -113,7 +113,7 @@ export const LoginForm = () => {
             </div>
           </div>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col md:flex-row justify-center gap-4">
             <GoogleSignInButton />
             <GithubSignInButton />
           </div>
