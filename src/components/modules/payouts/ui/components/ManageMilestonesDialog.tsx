@@ -1,7 +1,7 @@
 "use client";
 
+import type { Milestone } from "@/@types/milestones.entity";
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,7 +14,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -24,20 +23,12 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { Payout } from "@/generated/prisma";
-import type { Prisma } from "@/generated/prisma";
-import { formatCurrency, formatDate } from "@/utils/format.utils";
-import { isImage } from "@/utils/is-valid.utils";
+import { formatCurrency } from "@/utils/format.utils";
 import Decimal from "decimal.js";
 import {
-  CheckCircle2,
-  Clock,
-  Download,
-  ExternalLink,
   Eye,
-  type File,
   FileText,
   FileUp,
-  Image as ImageIcon,
   MessageCircle,
   MessageSquare,
   Paperclip,
@@ -45,13 +36,11 @@ import {
   ShieldX,
   SquareArrowOutUpRight,
   User,
-  X,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
-import { usePayoutMutations } from "../../hooks/usePayoutMutations";
+import { useMilestoneActions } from "../../hooks/useMilestoneActions";
+import { getStatusBadge } from "../../shared/status-badge";
 
 type EvidenceFeedback = {
   message?: string | null;
@@ -72,7 +61,7 @@ type EvidenceEntry = {
 type MilestoneItem = {
   description: string;
   amount: number;
-  status?: "PENDING" | "SUBMITTED" | "REJECTED";
+  status?: "PENDING" | "SUBMITTED" | "REJECTED" | "COMPLETED";
   flags?: { approved?: boolean };
   evidences?: EvidenceEntry[] | null;
 };
@@ -102,6 +91,7 @@ export const ManageMilestonesDialog = ({
         | { url?: string; notes?: string }
         | undefined;
       const legacyFiles = base.files as string[] | undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const legacyFeedback = base.feedback as any[] | undefined;
       const legacyFilesFeedback = base.filesFeedback as string[] | undefined;
 
@@ -146,19 +136,15 @@ export const ManageMilestonesDialog = ({
   const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
   const [feedbackFiles, setFeedbackFiles] = useState<File[]>([]);
 
-  const getPublicUrl = (path: string): string => {
-    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const bucket =
-      process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET ||
-      process.env.NEXT_PUBLIC_SUPABASE_BUCKET ||
-      "evidences";
-    if (!baseUrl) return "#";
-    return `${baseUrl}/storage/v1/object/public/${bucket}/${path}`;
-  };
-
   const { user } = useAuth();
-  const { updatePayoutMilestones, isUpdatingMilestones, uploadFiles } =
-    usePayoutMutations();
+  const {
+    submitEvidence,
+    submitFeedback,
+    rejectMilestone,
+    approveMilestone,
+    completeMilestone,
+    isUpdatingMilestones,
+  } = useMilestoneActions();
   const router = useRouter();
 
   useEffect(() => {
@@ -223,201 +209,79 @@ export const ManageMilestonesDialog = ({
 
   const handleSubmitEvidence = async () => {
     if (selectedIndex === null) return;
-    if (!evidenceUrl && !evidenceNotes && evidenceFiles.length === 0) {
-      toast.error("Provide evidence or attach up to 3 files");
-      return;
-    }
-    if (evidenceFiles.length > 3) {
-      toast.error("You can upload a maximum of 3 files");
-      return;
-    }
-
-    let uploadedPaths: string[] = [];
-    try {
-      const res = await uploadFiles.mutateAsync({
-        payoutId: payout.payout_id,
-        milestoneIdx: selectedIndex,
-        folder: "evidence",
-        files: evidenceFiles,
-      });
-      uploadedPaths = res.paths || [];
-    } catch (e) {
-      console.error("Error uploading evidence files:", e);
-    }
-
-    const next: MilestoneItem[] = localMilestones.map((m, i) => {
-      if (i !== selectedIndex) return m;
-      const newEntry: EvidenceEntry = {
-        url: evidenceUrl || null,
-        notes: evidenceNotes || null,
-        files: uploadedPaths.length ? uploadedPaths : null,
-        feedback: [],
-        created_at: new Date().toISOString(),
-        author: user?.email || null,
-      };
-      return {
-        ...m,
-        status: "SUBMITTED",
-        evidences: [...(m.evidences || []), newEntry],
-      };
+    await submitEvidence({
+      payoutId: payout.payout_id,
+      milestoneIdx: selectedIndex,
+      url: evidenceUrl,
+      notes: evidenceNotes,
+      files: evidenceFiles,
+      // Type cast is safe for our internal usage
+      localMilestones: localMilestones as unknown as Milestone[],
+      setLocalMilestones: (next) =>
+        setLocalMilestones(next as unknown as MilestoneItem[]),
     });
-
-    try {
-      await updatePayoutMilestones.mutateAsync({
-        id: payout.payout_id,
-        milestones: JSON.parse(JSON.stringify(next)),
-      });
-      setLocalMilestones(next);
-      setEvidenceFiles([]);
-      toast.success("Evidence submitted successfully");
-    } catch (e) {
-      console.error("Error submitting evidence:", e);
-      toast.error("Failed to submit evidence. Please try again.");
-    }
+    setEvidenceFiles([]);
   };
 
   const handleSubmitFeedback = async () => {
     if (selectedIndex === null || !feedbackMessage.trim()) return;
-    if (feedbackFiles.length > 3) {
-      toast.error("You can upload a maximum of 3 files");
-      return;
-    }
-
-    let uploadedPaths: string[] = [];
-    try {
-      const res = await uploadFiles.mutateAsync({
-        payoutId: payout.payout_id,
-        milestoneIdx: selectedIndex,
-        folder: "feedback",
-        files: feedbackFiles,
-      });
-      uploadedPaths = res.paths || [];
-    } catch (e) {
-      console.error("Error uploading feedback files:", e);
-    }
-
-    const next: MilestoneItem[] = localMilestones.map((m, i) => {
-      if (i !== selectedIndex) return m;
-      const evidences = [...(m.evidences || [])];
-      const targetIdx = selectedEvidenceIdx ?? evidences.length - 1;
-      if (targetIdx < 0) return m;
-
-      const target = evidences[targetIdx] || { feedback: [] };
-      const newFeedback: EvidenceFeedback = {
-        message: feedbackMessage.trim(),
-        timestamp: new Date().toISOString(),
-        author: user?.email || "Unknown",
-        files: uploadedPaths.length ? uploadedPaths : null,
-      };
-      const updatedEntry: EvidenceEntry = {
-        ...target,
-        feedback: [...(target.feedback || []), newFeedback],
-      };
-      evidences[targetIdx] = updatedEntry;
-      return { ...m, evidences };
+    await submitFeedback({
+      payoutId: payout.payout_id,
+      milestoneIdx: selectedIndex,
+      message: feedbackMessage,
+      files: feedbackFiles,
+      localMilestones: localMilestones as unknown as Milestone[],
+      setLocalMilestones: (next) =>
+        setLocalMilestones(next as unknown as MilestoneItem[]),
+      selectedEvidenceIdx,
+      author: user?.email || undefined,
     });
-
-    try {
-      await updatePayoutMilestones.mutateAsync({
-        id: payout.payout_id,
-        milestones: JSON.parse(JSON.stringify(next)),
-      });
-      setLocalMilestones(next);
-      setFeedbackMessage("");
-      setFeedbackFiles([]);
-      toast.success("Feedback submitted successfully");
-    } catch (e) {
-      console.error("Error submitting feedback:", e);
-      toast.error("Failed to submit feedback. Please try again.");
-    }
+    setFeedbackMessage("");
+    setFeedbackFiles([]);
   };
 
   const handleReject = async () => {
-    if (!canModerate || selectedIndex === null) return;
-    const next: MilestoneItem[] = localMilestones.map((m, i) => {
-      if (i !== selectedIndex) return m;
-      const updated: MilestoneItem = {
-        ...m,
-        status: "REJECTED",
-        flags: { approved: false },
-      };
-      return updated;
+    if (selectedIndex === null) return;
+    await rejectMilestone({
+      payoutId: payout.payout_id,
+      milestoneIdx: selectedIndex,
+      localMilestones: localMilestones as unknown as Milestone[],
+      setLocalMilestones: (next) =>
+        setLocalMilestones(next as unknown as MilestoneItem[]),
+      canModerate,
     });
+  };
 
-    try {
-      await updatePayoutMilestones.mutateAsync({
-        id: payout.payout_id,
-        milestones: next as unknown as Prisma.JsonValue,
-      });
-      setLocalMilestones(next);
-      toast.success("Milestone rejected");
-    } catch (e) {
-      console.error("Error rejecting milestone:", e);
-      toast.error("Failed to reject milestone. Please try again.");
-    }
+  const handleComplete = async () => {
+    if (selectedIndex === null) return;
+    await completeMilestone({
+      payoutId: payout.payout_id,
+      milestoneIdx: selectedIndex,
+      localMilestones: localMilestones as unknown as Milestone[],
+      setLocalMilestones: (next) =>
+        setLocalMilestones(next as unknown as MilestoneItem[]),
+      canModerate: true,
+      contractId: payout.escrow_id || undefined,
+      serviceProviderAddress: user?.wallet_address || undefined,
+    });
   };
 
   const handleApprove = async () => {
-    if (!canModerate || selectedIndex === null) return;
-    const next: MilestoneItem[] = localMilestones.map((m, i) => {
-      if (i !== selectedIndex) return m;
-      const updated: MilestoneItem = { ...m, flags: { approved: true } };
-      return updated;
+    if (selectedIndex === null) return;
+    await approveMilestone({
+      payoutId: payout.payout_id,
+      milestoneIdx: selectedIndex,
+      localMilestones: localMilestones as unknown as Milestone[],
+      setLocalMilestones: (next) =>
+        setLocalMilestones(next as unknown as MilestoneItem[]),
+      canModerate,
+      contractId: payout.escrow_id || undefined,
+      approverAddress: user?.wallet_address || undefined,
     });
-
-    try {
-      await updatePayoutMilestones.mutateAsync({
-        id: payout.payout_id,
-        milestones: next as unknown as Prisma.JsonValue,
-      });
-      setLocalMilestones(next);
-      toast.success("Milestone approved");
-    } catch (e) {
-      console.error("Error approving milestone:", e);
-      toast.error("Failed to approve milestone. Please try again.");
-    }
   };
 
   const handleOpenChange = (next: boolean) => {
     onOpenChange(next);
-  };
-
-  const getStatusBadge = (milestone: MilestoneItem) => {
-    if (milestone.flags?.approved) {
-      return (
-        <Badge
-          variant="default"
-          className="bg-emerald-500 hover:bg-emerald-600"
-        >
-          <CheckCircle2 className="h-3 w-3 mr-1" />
-          Approved
-        </Badge>
-      );
-    }
-
-    switch (milestone.status) {
-      case "SUBMITTED":
-        return (
-          <Badge className="bg-blue-500 hover:bg-blue-600 text-white">
-            <FileText className="h-3 w-3 mr-1" />
-            Submitted
-          </Badge>
-        );
-      case "REJECTED":
-        return (
-          <Badge variant="destructive">
-            <X className="h-3 w-3 mr-1" />
-            Rejected
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="outline">
-            <Clock className="h-3 w-3 mr-1" />
-            Pending
-          </Badge>
-        );
-    }
   };
 
   return (
@@ -455,45 +319,72 @@ export const ManageMilestonesDialog = ({
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {localMilestones.map((milestone, index) => (
-                      <Card
-                        key={`${milestone.description}-${index}`}
-                        className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                          selectedIndex === index
-                            ? "ring-2 ring-primary-500/70 border-primary-500/50"
-                            : "hover:border-primary-500/50"
-                        }`}
-                        onClick={() => handleSelect(index)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-sm mb-1">
-                                {milestone.description}
-                              </h4>
-                              <p className="text-sm text-muted-foreground mb-2">
-                                Amount:{" "}
-                                {formatCurrency(
-                                  payout.currency,
-                                  new Decimal(milestone.amount),
+                    {localMilestones.map((milestone, index) => {
+                      const isApproved = Boolean(
+                        (
+                          milestone as unknown as {
+                            flags?: { approved?: boolean };
+                          }
+                        ).flags?.approved,
+                      );
+                      const isSelected = selectedIndex === index;
+                      const canSelect = !isApproved || canSubmitEvidence;
+                      return (
+                        <button
+                          type="button"
+                          key={`${milestone.description}-${index}`}
+                          className={`rounded-xl border bg-card text-card-foreground shadow transition-all duration-200 ${
+                            canSelect
+                              ? `cursor-pointer hover:shadow-md ${
+                                  isSelected
+                                    ? "ring-2 ring-primary-500/70 border-primary-500/50"
+                                    : "hover:border-primary-500/50"
+                                }`
+                              : "cursor-not-allowed opacity-60"
+                          }`}
+                          disabled={!canSelect}
+                          onClick={() => {
+                            if (!canSelect) return;
+                            handleSelect(index);
+                          }}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-sm mb-1">
+                                  {milestone.description}
+                                </h4>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  Amount:{" "}
+                                  {formatCurrency(
+                                    payout.currency,
+                                    new Decimal(milestone.amount),
+                                  )}
+                                </p>
+                                {milestone.evidences &&
+                                  milestone.evidences.length > 0 && (
+                                    <div className="text-xs text-muted-foreground mt-2">
+                                      <p>
+                                        <span className="font-bold mr-1">
+                                          {milestone.evidences.length}
+                                        </span>
+                                        {milestone.evidences.length === 1
+                                          ? "evidence"
+                                          : "evidences"}
+                                      </p>
+                                    </div>
+                                  )}
+                              </div>
+                              <div className="ml-4">
+                                {getStatusBadge(
+                                  milestone as unknown as Milestone,
                                 )}
-                              </p>
-                              {milestone.evidences &&
-                                milestone.evidences.length > 0 && (
-                                  <div className="text-xs text-muted-foreground mt-2">
-                                    <p>
-                                      📎 {milestone.evidences.length} evidences
-                                    </p>
-                                  </div>
-                                )}
+                              </div>
                             </div>
-                            <div className="ml-4">
-                              {getStatusBadge(milestone)}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                          </CardContent>
+                        </button>
+                      );
+                    })}
                   </CardContent>
                 </Card>
 
@@ -516,72 +407,128 @@ export const ManageMilestonesDialog = ({
                       </div>
                     ) : (
                       <div className="space-y-6">
-                        {/* Evidence Section - Only for Grantees */}
-                        {canSubmitEvidence && (
-                          <div className="space-y-4">
-                            <div className="flex items-center gap-2">
-                              <User className="h-4 w-4" />
-                              <h4 className="font-medium">Submit Evidence</h4>
-                            </div>
-                            <div className="space-y-3">
-                              <Label htmlFor="evidence">Evidence</Label>
-                              <Textarea
-                                id="evidence"
-                                placeholder="Paste a URL or write a short evidence description"
-                                value={evidenceUrl}
-                                onChange={(e) => setEvidenceUrl(e.target.value)}
-                                rows={2}
-                              />
-                            </div>
-                            <div className="space-y-3">
-                              <Label htmlFor="evidence-notes">
-                                Evidence Notes
-                              </Label>
-                              <Textarea
-                                id="evidence-notes"
-                                placeholder="Describe your work, provide context, or add any relevant information..."
-                                value={evidenceNotes}
-                                onChange={(e) =>
-                                  setEvidenceNotes(e.target.value)
-                                }
-                                rows={3}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="evidence-files">
-                                Attach up to 3 files
-                              </Label>
-                              <Input
-                                id="evidence-files"
-                                type="file"
-                                multiple
-                                onChange={(e) =>
-                                  setEvidenceFiles(
-                                    Array.from(e.target.files || []).slice(
-                                      0,
-                                      3,
-                                    ),
-                                  )
-                                }
-                              />
-                              {evidenceFiles.length > 0 && (
-                                <div className="text-xs text-muted-foreground">
-                                  {evidenceFiles.map((f) => f.name).join(", ")}
-                                </div>
-                              )}
-                            </div>
-                            <Button
-                              onClick={handleSubmitEvidence}
-                              disabled={
-                                isUpdatingMilestones || selectedIndex === null
+                        {/* Grantee: Show Complete CTA when milestone is approved */}
+                        {(() => {
+                          const current = localMilestones[selectedIndex];
+                          const currentApproved = Boolean(
+                            (
+                              current as unknown as {
+                                flags?: { approved?: boolean };
                               }
-                              className="w-full"
-                            >
-                              <FileUp className="h-4 w-4 mr-2" />
-                              Submit Evidence
-                            </Button>
-                          </div>
-                        )}
+                            ).flags?.approved,
+                          );
+                          if (canSubmitEvidence && currentApproved) {
+                            return (
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                  <User className="h-4 w-4" />
+                                  <h4 className="font-medium">
+                                    Mark as completed
+                                  </h4>
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                  This will mark the milestone as completed for
+                                  your grant.
+                                </p>
+                                <Button
+                                  onClick={handleComplete}
+                                  disabled={isUpdatingMilestones}
+                                  className="w-full"
+                                >
+                                  Complete
+                                </Button>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+
+                        {/* Evidence Section - Only for Grantees (when not approved) */}
+                        {canSubmitEvidence &&
+                          (() => {
+                            const current = localMilestones[selectedIndex];
+                            const isCompleted = current?.status === "COMPLETED";
+                            const currentApproved = Boolean(
+                              (
+                                current as unknown as {
+                                  flags?: { approved?: boolean };
+                                }
+                              ).flags?.approved,
+                            );
+                            if (currentApproved || isCompleted) return null;
+                            return (
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                  <User className="h-4 w-4" />
+                                  <h4 className="font-medium">
+                                    Submit Evidence
+                                  </h4>
+                                </div>
+                                <div className="space-y-3">
+                                  <Label htmlFor="evidence">Evidence</Label>
+                                  <Textarea
+                                    id="evidence"
+                                    placeholder="Paste a URL or write a short evidence description"
+                                    value={evidenceUrl}
+                                    onChange={(e) =>
+                                      setEvidenceUrl(e.target.value)
+                                    }
+                                    rows={2}
+                                  />
+                                </div>
+                                <div className="space-y-3">
+                                  <Label htmlFor="evidence-notes">
+                                    Evidence Notes
+                                  </Label>
+                                  <Textarea
+                                    id="evidence-notes"
+                                    placeholder="Describe your work, provide context, or add any relevant information..."
+                                    value={evidenceNotes}
+                                    onChange={(e) =>
+                                      setEvidenceNotes(e.target.value)
+                                    }
+                                    rows={3}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor="evidence-files">
+                                    Attach up to 3 files
+                                  </Label>
+                                  <Input
+                                    id="evidence-files"
+                                    type="file"
+                                    multiple
+                                    onChange={(e) =>
+                                      setEvidenceFiles(
+                                        Array.from(e.target.files || []).slice(
+                                          0,
+                                          3,
+                                        ),
+                                      )
+                                    }
+                                  />
+                                  {evidenceFiles.length > 0 && (
+                                    <div className="text-xs text-muted-foreground">
+                                      {evidenceFiles
+                                        .map((f) => f.name)
+                                        .join(", ")}
+                                    </div>
+                                  )}
+                                </div>
+                                <Button
+                                  onClick={handleSubmitEvidence}
+                                  disabled={
+                                    isUpdatingMilestones ||
+                                    selectedIndex === null
+                                  }
+                                  className="w-full"
+                                >
+                                  <FileUp className="h-4 w-4 mr-2" />
+                                  Submit Evidence
+                                </Button>
+                              </div>
+                            );
+                          })()}
 
                         {/* Feedback Section - For Payout Providers */}
                         {canModerate && (

@@ -105,7 +105,7 @@ export const usePayoutMutations = () => {
         updated_at: new Date(),
       });
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["payouts"],
         refetchType: "active",

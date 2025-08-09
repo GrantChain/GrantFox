@@ -4,11 +4,15 @@ import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import { handleError } from "@/errors/mapping.utils";
 import { signTransaction } from "@/lib/wallet-kit";
 import {
+  useApproveMilestone,
+  useChangeMilestoneStatus,
   useFundEscrow,
   useInitializeEscrow,
   useSendTransaction,
 } from "@trustless-work/escrow/hooks";
 import type {
+  ApproveMilestonePayload,
+  ChangeMilestoneStatusPayload,
   FundEscrowPayload,
   InitializeMultiReleaseEscrowPayload,
   InitializeMultiReleaseEscrowResponse,
@@ -25,6 +29,8 @@ export const useEscrows = () => {
 
   const { deployEscrow } = useInitializeEscrow();
   const { fundEscrow } = useFundEscrow();
+  const { approveMilestone } = useApproveMilestone();
+  const { changeMilestoneStatus } = useChangeMilestoneStatus();
 
   const handleDeployEscrow = async (
     payload: InitializeMultiReleaseEscrowPayload,
@@ -127,9 +133,110 @@ export const useEscrows = () => {
     }
   };
 
+  const handleApproveMilestone = async (
+    payload: ApproveMilestonePayload,
+  ): Promise<boolean> => {
+    setLoading(true);
+
+    try {
+      const finalPayload: ApproveMilestonePayload = {
+        ...payload,
+        approver: address || "",
+        contractId: payload.contractId,
+        newFlag: true,
+        milestoneIndex: payload.milestoneIndex,
+      };
+
+      const { unsignedTransaction } = await approveMilestone(
+        finalPayload,
+        "multi-release",
+      );
+
+      if (!unsignedTransaction) {
+        throw new Error(
+          "Unsigned transaction is missing from approveMilestone response.",
+        );
+      }
+
+      const signedXdr = await signTransaction({
+        unsignedTransaction,
+        address: address || "",
+      });
+
+      if (!signedXdr) {
+        throw new Error("Signed transaction is missing.");
+      }
+
+      await sendTransaction(signedXdr);
+      return true;
+    } catch (error: unknown) {
+      const mappedError = handleError(error as AxiosError | WalletError);
+      console.error("Error:", mappedError.message);
+
+      toast.error(
+        mappedError ? mappedError.message : "An unknown error occurred",
+      );
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCompleteMilestone = async (
+    payload: ChangeMilestoneStatusPayload,
+  ): Promise<boolean> => {
+    setLoading(true);
+
+    try {
+      const finalPayload: ChangeMilestoneStatusPayload = {
+        ...payload,
+        newStatus: "COMPLETED",
+        serviceProvider: address || "",
+        contractId: payload.contractId,
+        milestoneIndex: payload.milestoneIndex,
+        newEvidence: payload.newEvidence,
+      };
+
+      const { unsignedTransaction } = await changeMilestoneStatus(
+        finalPayload,
+        "multi-release",
+      );
+
+      if (!unsignedTransaction) {
+        throw new Error(
+          "Unsigned transaction is missing from changeMilestoneStatus response.",
+        );
+      }
+
+      const signedXdr = await signTransaction({
+        unsignedTransaction,
+        address: address || "",
+      });
+
+      if (!signedXdr) {
+        throw new Error("Signed transaction is missing.");
+      }
+
+      await sendTransaction(signedXdr);
+      return true;
+    } catch (error: unknown) {
+      const mappedError = handleError(error as AxiosError | WalletError);
+      console.error("Error:", mappedError.message);
+
+      toast.error(
+        mappedError ? mappedError.message : "An unknown error occurred",
+      );
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     handleDeployEscrow,
     handleFundEscrow,
+    handleApproveMilestone,
+    handleCompleteMilestone,
   };
 };

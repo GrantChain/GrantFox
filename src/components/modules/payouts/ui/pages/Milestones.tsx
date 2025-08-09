@@ -3,7 +3,6 @@
 import type { Evidence, Feedback, Milestone } from "@/@types/milestones.entity";
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { usePayouts } from "@/components/modules/payouts/hooks/usePayouts";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,34 +22,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Payout } from "@/generated/prisma";
-import type { Prisma } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
 import { getPublicUrl } from "@/utils/images.utils";
 import { isImage } from "@/utils/is-valid.utils";
 import { useQuery } from "@tanstack/react-query";
 import Decimal from "decimal.js";
 import {
-  Calendar,
-  Download,
   ExternalLink,
-  Eye,
   FileText,
-  Image as ImageIcon,
-  MessageCircle,
   Package,
-  Paperclip,
-  Plus,
   ShieldCheck,
   ShieldX,
   Strikethrough,
-  User,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useMilestoneActions } from "../../hooks/useMilestoneActions";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import { payoutsService } from "../../services/payouts.service";
+import { getStatusBadge } from "../../shared/status-badge";
+import MilestoneCardSkeleton from "../components/MilestoneCardSkeleton";
 
 const Milestones = () => {
   const params = useParams<{ id: string }>();
@@ -86,16 +78,18 @@ const Milestones = () => {
 
   if (isLoading) {
     return (
-      <div className="container py-10">
-        <Card>
-          <CardHeader>
-            <CardTitle>Loading milestones…</CardTitle>
-            <CardDescription>Please wait</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-6 w-48 animate-pulse rounded bg-muted" />
-          </CardContent>
-        </Card>
+      <div className="container py-6 space-y-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 w-full max-w-[70%] space-y-2">
+            <div className="h-6 w-2/3 animate-pulse rounded bg-muted" />
+            <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <MilestoneCardSkeleton key={i} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -148,8 +142,6 @@ export default Milestones;
 
 // Sub-components and logic
 const PageHeader = ({ payout }: { payout: Payout }) => {
-  const { user } = useAuth();
-  const rolePath = user?.role === "GRANTEE" ? "grantee" : "payout-provider";
   return (
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
@@ -157,11 +149,6 @@ const PageHeader = ({ payout }: { payout: Payout }) => {
         <p className="text-xs text-muted-foreground">
           Milestones management, evidence & feedback
         </p>
-      </div>
-      <div className="flex gap-2 shrink-0">
-        <Button asChild variant="outline" size="sm">
-          <Link href={`/dashboard/${rolePath}/payouts`}>Back</Link>
-        </Button>
       </div>
     </div>
   );
@@ -172,8 +159,14 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
   const canSubmitEvidence = user?.role === "GRANTEE";
   const canModerate =
     user?.role === "PAYOUT_PROVIDER" || user?.role === "ADMIN";
-  const { updatePayoutMilestones, isUpdatingMilestones, uploadFiles } =
-    usePayoutMutations();
+  const { isUpdatingMilestones } = usePayoutMutations();
+  const {
+    submitEvidence,
+    submitFeedback,
+    rejectMilestone,
+    approveMilestone,
+    completeMilestone,
+  } = useMilestoneActions();
 
   const [localMilestones, setLocalMilestones] = useState<Milestone[]>(
     (payout.milestones as unknown as Milestone[]) || [],
@@ -199,206 +192,86 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
   );
 
   const handleSubmitEvidence = async (milestoneIdx: number) => {
-    const url = evidenceUrl[milestoneIdx] || "";
-    const notes = evidenceNotes[milestoneIdx] || "";
-    const files = evidenceFiles[milestoneIdx] || [];
-
-    if (!url && !notes && files.length === 0) {
-      toast.error("Provide evidence or attach up to 3 files");
-      return;
-    }
-    if (files.length > 3) {
-      toast.error("You can upload a maximum of 3 files");
-      return;
-    }
-
-    let uploadedPaths: string[] = [];
-    try {
-      if (files.length) {
-        const res = await uploadFiles.mutateAsync({
-          payoutId: payout.payout_id,
-          milestoneIdx,
-          folder: "evidence",
-          files,
-        });
-        uploadedPaths = res.paths || [];
-      }
-    } catch (e) {
-      console.error("Error uploading evidence files:", e);
-    }
-
-    const next: Milestone[] = localMilestones.map((m, i) => {
-      if (i !== milestoneIdx) return m;
-      const newEntry: Evidence = {
-        url: url || undefined,
-        notes: notes || undefined,
-        files: uploadedPaths.length ? uploadedPaths : undefined,
-        feedback: [],
-      };
-      return {
-        ...m,
-        status: "SUBMITTED",
-        evidences: [...(m.evidences || []), newEntry],
-      };
+    await submitEvidence({
+      payoutId: payout.payout_id,
+      milestoneIdx,
+      url: evidenceUrl[milestoneIdx] || "",
+      notes: evidenceNotes[milestoneIdx] || "",
+      files: evidenceFiles[milestoneIdx] || [],
+      localMilestones,
+      setLocalMilestones,
     });
-
-    try {
-      await updatePayoutMilestones.mutateAsync({
-        id: payout.payout_id,
-        milestones: next as unknown as Prisma.JsonValue,
-      });
-      setLocalMilestones(next);
-      setEvidenceFiles((prev) => ({ ...prev, [milestoneIdx]: [] }));
-      toast.success("Evidence submitted successfully");
-    } catch (e) {
-      console.error("Error submitting evidence:", e);
-      toast.error("Failed to submit evidence. Please try again.");
-    }
+    setEvidenceFiles((prev) => ({ ...prev, [milestoneIdx]: [] }));
   };
 
-  const [feedbackTargetIdx, setFeedbackTargetIdx] = useState<
-    Record<number, number | null>
-  >({});
+  const handleComplete = async (milestoneIdx: number) => {
+    if (milestoneIdx === null) return;
+    await completeMilestone({
+      payoutId: payout.payout_id,
+      milestoneIdx: milestoneIdx,
+      localMilestones: localMilestones as unknown as Milestone[],
+      setLocalMilestones: (next) =>
+        setLocalMilestones(next as unknown as Milestone[]),
+      canModerate: true,
+      contractId: payout.escrow_id || undefined,
+      serviceProviderAddress: user?.wallet_address || undefined,
+    });
+  };
+
+  const [feedbackTargetIdx] = useState<Record<number, number | null>>({});
 
   const handleSubmitFeedback = async (milestoneIdx: number) => {
-    const message = (feedbackMessage[milestoneIdx] || "").trim();
-    const files = feedbackFiles[milestoneIdx] || [];
-    if (!message) return;
-    if (files.length > 3) {
-      toast.error("You can upload a maximum of 3 files");
-      return;
-    }
-
-    let uploadedPaths: string[] = [];
-    try {
-      if (files.length) {
-        const res = await uploadFiles.mutateAsync({
-          payoutId: payout.payout_id,
-          milestoneIdx,
-          folder: "feedback",
-          files,
-        });
-        uploadedPaths = res.paths || [];
-      }
-    } catch (e) {
-      console.error("Error uploading feedback files:", e);
-    }
-
-    const next: Milestone[] = localMilestones.map((m, i) => {
-      if (i !== milestoneIdx) return m;
-      const evidences = [...(m.evidences || [])];
-      const targetIdx =
+    await submitFeedback({
+      payoutId: payout.payout_id,
+      milestoneIdx,
+      message: feedbackMessage[milestoneIdx] || "",
+      files: feedbackFiles[milestoneIdx] || [],
+      localMilestones,
+      setLocalMilestones,
+      selectedEvidenceIdx:
         typeof feedbackTargetIdx[milestoneIdx] === "number"
           ? (feedbackTargetIdx[milestoneIdx] as number)
-          : evidences.length - 1;
-      if (targetIdx < 0) return m; // cannot add feedback without evidence
-
-      const target = evidences[targetIdx] || { feedback: [] };
-      const newFeedback: Feedback = {
-        message,
-        timestamp: new Date().toISOString(),
-        author: user?.email || "Unknown",
-        files: uploadedPaths.length ? uploadedPaths : undefined,
-      };
-      const updatedEntry: Evidence = {
-        ...target,
-        feedback: [...(target.feedback || []), newFeedback],
-      };
-      evidences[targetIdx] = updatedEntry;
-      return { ...m, evidences };
+          : undefined,
+      author: user?.email || undefined,
     });
-
-    try {
-      await updatePayoutMilestones.mutateAsync({
-        id: payout.payout_id,
-        milestones: next as unknown as Prisma.JsonValue,
-      });
-      setLocalMilestones(next);
-      setFeedbackMessage((prev) => ({ ...prev, [milestoneIdx]: "" }));
-      setFeedbackFiles((prev) => ({ ...prev, [milestoneIdx]: [] }));
-      toast.success("Feedback submitted successfully");
-    } catch (e) {
-      console.error("Error submitting feedback:", e);
-      toast.error("Failed to submit feedback. Please try again.");
-    }
+    setFeedbackMessage((prev) => ({ ...prev, [milestoneIdx]: "" }));
+    setFeedbackFiles((prev) => ({ ...prev, [milestoneIdx]: [] }));
   };
 
   const handleReject = async (milestoneIdx: number) => {
-    if (!canModerate) return;
-    const next: Milestone[] = localMilestones.map((m, i) => {
-      if (i !== milestoneIdx) return m;
-      const prevFlags =
-        (m as unknown as { flags?: { approved?: boolean } }).flags || {};
-      return {
-        ...m,
-        status: "REJECTED",
-        ...(m as Record<string, unknown>),
-        flags: { ...prevFlags, approved: false },
-      } as Milestone;
+    await rejectMilestone({
+      payoutId: payout.payout_id,
+      milestoneIdx,
+      localMilestones,
+      setLocalMilestones,
+      canModerate,
     });
-    try {
-      await updatePayoutMilestones.mutateAsync({
-        id: payout.payout_id,
-        milestones: next as unknown as Prisma.JsonValue,
-      });
-      setLocalMilestones(next);
-      toast.success("Milestone rejected");
-    } catch (e) {
-      console.error("Error rejecting milestone:", e);
-      toast.error("Failed to reject milestone. Please try again.");
-    }
   };
 
   const handleApprove = async (milestoneIdx: number) => {
-    if (!canModerate) return;
-    const next: Milestone[] = localMilestones.map((m, i) => {
-      if (i !== milestoneIdx) return m;
-      const prevFlags =
-        (m as unknown as { flags?: { approved?: boolean } }).flags || {};
-      return {
-        ...m,
-        status: m.status || "PENDING",
-        flags: { ...prevFlags, approved: true },
-      } as Milestone;
+    await approveMilestone({
+      payoutId: payout.payout_id,
+      milestoneIdx,
+      localMilestones,
+      setLocalMilestones,
+      canModerate,
+      contractId: payout.escrow_id || undefined,
+      approverAddress: user?.wallet_address || undefined,
     });
-    try {
-      await updatePayoutMilestones.mutateAsync({
-        id: payout.payout_id,
-        milestones: next as unknown as Prisma.JsonValue,
-      });
-      setLocalMilestones(next);
-      toast.success("Milestone approved");
-    } catch (e) {
-      console.error("Error approving milestone:", e);
-      toast.error("Failed to approve milestone. Please try again.");
-    }
-  };
-
-  const getStatusBadge = (milestone: Milestone) => {
-    const approved = Boolean(
-      (
-        milestone as Record<string, unknown> & {
-          flags?: { approved?: boolean };
-        }
-      ).flags?.approved,
-    );
-    if (approved) {
-      return <Badge variant="success">Approved</Badge>;
-    }
-    switch (milestone.status) {
-      case "SUBMITTED":
-        return <Badge>Submitted</Badge>;
-      case "REJECTED":
-        return <Badge variant="destructive">Rejected</Badge>;
-      default:
-        return <Badge variant="outline">Pending</Badge>;
-    }
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {localMilestones.map((m, idx) => {
         const evidences = (m?.evidences as Evidence[] | undefined) || [];
+        const isApproved = Boolean(
+          (
+            m as unknown as {
+              flags?: { approved?: boolean };
+            }
+          ).flags?.approved,
+        );
+        const isCompleted = m.status === "COMPLETED";
         return (
           <Card key={idx} className="border">
             <CardHeader>
@@ -407,99 +280,133 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                   <CardTitle className="text-lg">{m.description}</CardTitle>
                   <CardDescription>
                     <span className="font-bold mr-1">Amount:</span>{" "}
+                    {formatCurrency(payout.currency, new Decimal(m.amount))}
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
                   {getStatusBadge(m)}
-                  {(canSubmitEvidence || canModerate) && (
+                  {((canSubmitEvidence && !isCompleted) || canModerate) && (
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button size="sm" variant="outline">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={isApproved && canModerate}
+                          aria-disabled={isApproved && canModerate}
+                          className={
+                            isApproved && canModerate
+                              ? "pointer-events-none opacity-60"
+                              : ""
+                          }
+                        >
                           {canSubmitEvidence ? (
                             <Package className="h-4 w-4 mr-1" />
                           ) : (
                             <ShieldCheck className="h-4 w-4 mr-1" />
                           )}
-                          {canSubmitEvidence ? "Submit Evidence" : "Moderate"}
+                          {canSubmitEvidence
+                            ? isApproved && !isCompleted
+                              ? "Complete"
+                              : "Submit Evidence"
+                            : "Moderate"}
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle>
-                            {canSubmitEvidence ? "Submit Evidence" : "Moderate"}
+                            {canSubmitEvidence
+                              ? isApproved && !isCompleted
+                                ? "Complete"
+                                : "Submit Evidence"
+                              : "Moderate"}
                           </DialogTitle>
                         </DialogHeader>
                         <div className="space-y-6">
-                          {canSubmitEvidence && (
-                            <div className="space-y-3">
-                              <div className="space-y-2">
-                                <Label htmlFor={`evidence-${idx}`}>
-                                  Evidence
-                                </Label>
-                                <Textarea
-                                  id={`evidence-${idx}`}
-                                  placeholder="Paste a URL or write a short evidence description"
-                                  value={evidenceUrl[idx] || ""}
-                                  onChange={(e) =>
-                                    setEvidenceUrl((prev) => ({
-                                      ...prev,
-                                      [idx]: e.target.value,
-                                    }))
-                                  }
-                                  rows={2}
-                                />
+                          {canSubmitEvidence &&
+                            (isApproved && !isCompleted ? (
+                              <div className="space-y-3">
+                                <p className="text-sm text-muted-foreground">
+                                  Mark this milestone as completed once your
+                                  work is done.
+                                </p>
+                                <Button
+                                  onClick={() => handleComplete(idx)}
+                                  disabled={isUpdatingMilestones}
+                                  className="w-full"
+                                >
+                                  Complete
+                                </Button>
                               </div>
-                              <div className="space-y-2">
-                                <Label htmlFor={`evidence-notes-${idx}`}>
-                                  Evidence Notes
-                                </Label>
-                                <Textarea
-                                  id={`evidence-notes-${idx}`}
-                                  placeholder="Describe your work, provide context, or add any relevant information..."
-                                  value={evidenceNotes[idx] || ""}
-                                  onChange={(e) =>
-                                    setEvidenceNotes((prev) => ({
-                                      ...prev,
-                                      [idx]: e.target.value,
-                                    }))
-                                  }
-                                  rows={3}
-                                />
+                            ) : (
+                              <div className="space-y-3">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`evidence-${idx}`}>
+                                    Evidence
+                                  </Label>
+                                  <Textarea
+                                    id={`evidence-${idx}`}
+                                    placeholder="Paste a URL or write a short evidence description"
+                                    value={evidenceUrl[idx] || ""}
+                                    onChange={(e) =>
+                                      setEvidenceUrl((prev) => ({
+                                        ...prev,
+                                        [idx]: e.target.value,
+                                      }))
+                                    }
+                                    rows={2}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`evidence-notes-${idx}`}>
+                                    Evidence Notes
+                                  </Label>
+                                  <Textarea
+                                    id={`evidence-notes-${idx}`}
+                                    placeholder="Describe your work, provide context, or add any relevant information..."
+                                    value={evidenceNotes[idx] || ""}
+                                    onChange={(e) =>
+                                      setEvidenceNotes((prev) => ({
+                                        ...prev,
+                                        [idx]: e.target.value,
+                                      }))
+                                    }
+                                    rows={3}
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`evidence-files-${idx}`}>
+                                    Attach up to 3 files
+                                  </Label>
+                                  <Input
+                                    id={`evidence-files-${idx}`}
+                                    type="file"
+                                    multiple
+                                    onChange={(e) =>
+                                      setEvidenceFiles((prev) => ({
+                                        ...prev,
+                                        [idx]: Array.from(
+                                          e.target.files || [],
+                                        ).slice(0, 3),
+                                      }))
+                                    }
+                                  />
+                                  {(evidenceFiles[idx]?.length || 0) > 0 && (
+                                    <div className="text-xs text-muted-foreground">
+                                      {evidenceFiles[idx]
+                                        ?.map((f) => f.name)
+                                        .join(", ")}
+                                    </div>
+                                  )}
+                                </div>
+                                <Button
+                                  onClick={() => handleSubmitEvidence(idx)}
+                                  disabled={isUpdatingMilestones}
+                                  className="w-full"
+                                >
+                                  Submit Evidence
+                                </Button>
                               </div>
-                              <div className="space-y-2">
-                                <Label htmlFor={`evidence-files-${idx}`}>
-                                  Attach up to 3 files
-                                </Label>
-                                <Input
-                                  id={`evidence-files-${idx}`}
-                                  type="file"
-                                  multiple
-                                  onChange={(e) =>
-                                    setEvidenceFiles((prev) => ({
-                                      ...prev,
-                                      [idx]: Array.from(
-                                        e.target.files || [],
-                                      ).slice(0, 3),
-                                    }))
-                                  }
-                                />
-                                {(evidenceFiles[idx]?.length || 0) > 0 && (
-                                  <div className="text-xs text-muted-foreground">
-                                    {evidenceFiles[idx]
-                                      ?.map((f) => f.name)
-                                      .join(", ")}
-                                  </div>
-                                )}
-                              </div>
-                              <Button
-                                onClick={() => handleSubmitEvidence(idx)}
-                                disabled={isUpdatingMilestones}
-                                className="w-full"
-                              >
-                                Submit Evidence
-                              </Button>
-                            </div>
-                          )}
+                            ))}
 
                           {canSubmitEvidence && canModerate && (
                             <div className="border-t border-muted my-4" />

@@ -84,11 +84,17 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
     if (!payout.payout_id) return;
 
     try {
-      await handleFundEscrow({
-        amount,
-        contractId: payout.escrow_id || "",
-      });
-      setIsFundDialogOpen(false);
+      if (payout.escrow_id) {
+        const result = await handleFundEscrow({
+          amount,
+          contractId: payout.escrow_id,
+        });
+
+        if (!result) {
+          toast.error("Failed to fund escrow");
+          return;
+        }
+      }
 
       // Force refresh the funded escrow balance immediately in shared cache
       if (payout.escrow_id) {

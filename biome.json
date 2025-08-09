@@ -7,11 +7,13 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noExplicitAny": "off"
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "off"
-      }
+      },
+      "style": {}
     }
   },
   "formatter": {

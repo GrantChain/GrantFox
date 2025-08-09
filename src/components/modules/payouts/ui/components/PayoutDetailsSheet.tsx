@@ -16,7 +16,6 @@ import {
   FileText,
   List,
   Loader2,
-  Pencil,
   User,
   Wallet,
   X,

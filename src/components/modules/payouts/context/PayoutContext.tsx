@@ -3,13 +3,7 @@
 import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { PayoutProvider, User } from "@/generated/prisma";
 import { useGetMultipleEscrowBalances } from "@trustless-work/escrow";
-import {
-  type ReactNode,
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { type ReactNode, createContext, useContext, useState } from "react";
 
 interface PayoutContextType {
   selectedGrantee: User | null;
