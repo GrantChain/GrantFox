@@ -8,14 +8,15 @@ import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
 import { useIsMobile } from "@/hooks/useMobile";
 import { formatCurrency } from "@/utils/format.utils";
-import { useGetMultipleEscrowBalances } from "@trustless-work/escrow";
 import Decimal from "decimal.js";
 import {
   Calendar,
   DollarSign,
   ExternalLink,
   FileText,
+  List,
   Loader2,
+  Pencil,
   User,
   Wallet,
   X,
@@ -27,6 +28,7 @@ import { usePayout } from "../../context/PayoutContext";
 import { usePayoutSheet } from "../../hooks/usePayoutSheet";
 import { statusColors } from "../../utils/card.utils";
 import { GranteeDetailsCard } from "./GranteeDetailsCard";
+import { ManageMilestonesDialog } from "./ManageMilestonesDialog";
 
 // todo: add from tw
 type Milestone = {
@@ -51,8 +53,7 @@ export function PayoutDetailsSheet({
 
   const [escrowBalance, setEscrowBalance] = useState<number | null>(null);
   const { address } = useGlobalWalletStore();
-  const { fetchEscrowBalances, updateEscrowBalance, escrowBalances } =
-    usePayout();
+  const { fetchEscrowBalances, escrowBalances } = usePayout();
   const isMobile = useIsMobile();
 
   const {
@@ -65,6 +66,7 @@ export function PayoutDetailsSheet({
   const { selectedGrantee, creator, setSelectedGrantee, setCreator } =
     usePayout();
   const { user } = useAuth();
+  const [isManageMilestonesOpen, setIsManageMilestonesOpen] = useState(false);
 
   const cachedBalance = useMemo(() => {
     if (!payout.escrow_id) return null;
@@ -133,6 +135,11 @@ export function PayoutDetailsSheet({
       setCreator(null);
     }
     onOpenChange(newOpen);
+  };
+
+  // open dialog from sheet
+  const handleOpenManageMilestones = () => {
+    setIsManageMilestonesOpen(true);
   };
 
   return (
@@ -321,10 +328,17 @@ export function PayoutDetailsSheet({
           <Card>
             <CardHeader className="flex flex-row justify-between pb-2 items-center">
               <CardTitle className="text-base">Milestones</CardTitle>
-              <Button>Manage Milestones</Button>
+              <Button
+                variant="outline"
+                className="text-sm gap-2"
+                onClick={handleOpenManageMilestones}
+              >
+                <List className="h-4 w-4" />
+                Manage Milestones
+              </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3 pr-2">
+              <div className="space-y-3 pr-2 max-h-56 overflow-auto">
                 {(payout?.milestones as Milestone[])?.map(
                   (milestone, index) => (
                     <div
@@ -375,6 +389,11 @@ export function PayoutDetailsSheet({
           </Card>
         </div>
       </SheetContent>
+      <ManageMilestonesDialog
+        open={isManageMilestonesOpen}
+        onOpenChange={setIsManageMilestonesOpen}
+        payout={payout}
+      />
     </Sheet>
   );
 }

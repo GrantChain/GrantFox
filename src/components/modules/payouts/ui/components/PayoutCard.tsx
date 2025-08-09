@@ -5,10 +5,8 @@ import TooltipInfo from "@/components/shared/TooltipInfo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
-import { useGetMultipleEscrowBalances } from "@trustless-work/escrow";
 import Decimal from "decimal.js";
 import {
   Calendar,
@@ -44,8 +42,6 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [granteeEmail, setGranteeEmail] = useState<string | null>(null);
   const { escrowBalances, fetchEscrowBalances } = usePayout();
-
-  const { address } = useGlobalWalletStore();
 
   const escrowBalance = useMemo(() => {
     if (!payout.escrow_id) return 0;

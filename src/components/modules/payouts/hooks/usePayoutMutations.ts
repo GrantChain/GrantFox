@@ -1,11 +1,13 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import type { Payout } from "@/generated/prisma";
+import type { Prisma } from "@/generated/prisma";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Decimal } from "decimal.js";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { authService } from "../../auth/services/auth.service";
 import type { PayoutFormValues } from "../schemas/payout.schema";
+import { filesService } from "../services/files.service";
 import { payoutsService } from "../services/payouts.service";
 
 export const usePayoutMutations = () => {
@@ -91,11 +93,49 @@ export const usePayoutMutations = () => {
     },
   });
 
+  type UpdateMilestonesPayload = {
+    id: string;
+    milestones: Prisma.JsonValue;
+  };
+
+  const updatePayoutMilestones = useMutation({
+    mutationFn: ({ id, milestones }: UpdateMilestonesPayload) => {
+      return payoutsService.update(id, {
+        milestones,
+        updated_at: new Date(),
+      });
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["payouts"],
+        refetchType: "active",
+      });
+    },
+    onError: (error: Error) => {
+      console.error("Error updating payout milestones:", error);
+      toast.error(error.message || "Failed to update milestones");
+    },
+  });
+
   type DeletePayoutVariables = {
     id: string;
     showSuccessToast?: boolean;
     suppressInvalidate?: boolean;
   };
+
+  const uploadFiles = useMutation({
+    mutationFn: ({
+      payoutId,
+      milestoneIdx,
+      folder,
+      files,
+    }: {
+      payoutId: string;
+      milestoneIdx: number;
+      folder: "evidence" | "feedback";
+      files: File[];
+    }) => filesService.upload({ payoutId, milestoneIdx, folder, files }),
+  });
 
   const deletePayout = useMutation({
     mutationFn: ({ id }: DeletePayoutVariables) => payoutsService.delete(id),
@@ -190,11 +230,14 @@ export const usePayoutMutations = () => {
   return {
     createPayout,
     updatePayout,
+    updatePayoutMilestones,
+    uploadFiles,
     deletePayout,
     handleCreatePayout,
     handleUpdatePayout,
     handleDeletePayout,
     isUpdating: updatePayout.isPending,
+    isUpdatingMilestones: updatePayoutMilestones.isPending,
     isCreating: createPayout.isPending,
     isDeleting: deletePayout.isPending,
     // expose cached loaders

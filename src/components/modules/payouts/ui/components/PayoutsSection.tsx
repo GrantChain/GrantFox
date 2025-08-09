@@ -21,7 +21,7 @@ export const PayoutsSection = () => {
     handlePageSizeChange,
   } = usePayoutsFilters();
   const { user } = useAuth();
-  const { escrowBalances, fetchEscrowBalances } = usePayout();
+  const { fetchEscrowBalances } = usePayout();
 
   const { data, isLoading, error } = usePayouts(
     user?.user_id
