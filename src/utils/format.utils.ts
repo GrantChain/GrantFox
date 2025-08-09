@@ -8,3 +8,7 @@ export const formatCurrency = (currency?: string, amount?: Decimal) => {
 
   return currency ? `${currency} ${formattedAmount}` : formattedAmount;
 };
+
+export const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleString();
+};
