@@ -28,6 +28,9 @@ import { usePayoutSheet } from "../../hooks/usePayoutSheet";
 import { statusColors } from "../../utils/card.utils";
 import { GranteeDetailsCard } from "./GranteeDetailsCard";
 import { ManageMilestonesDialog } from "./ManageMilestonesDialog";
+import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
+import { usePayoutMutations } from "../../hooks/usePayoutMutations";
+import type { Prisma } from "@/generated/prisma";
 
 // todo: add from tw
 type Milestone = {
@@ -65,6 +68,77 @@ export function PayoutDetailsSheet({
     usePayout();
   const { user } = useAuth();
   const [isManageMilestonesOpen, setIsManageMilestonesOpen] = useState(false);
+  const { handleGetEscrowByContractIds } = useEscrows();
+  const { updatePayoutMilestones } = usePayoutMutations();
+
+  const handleOpenManageMilestones = async () => {
+    try {
+      if (payout.escrow_id) {
+        const escrow = await handleGetEscrowByContractIds([payout.escrow_id]);
+        const escrowItem = Array.isArray(escrow) ? escrow[0] : escrow;
+        const milestonesFromEscrow = (escrowItem?.milestones || []) as Array<{
+          flags?: { resolved?: boolean };
+        }>;
+
+        const currentMilestones =
+          (payout.milestones as unknown as Milestone[]) || [];
+        let changed = false;
+        const nextMilestones = currentMilestones.map((m, idx) => {
+          const escrowResolved = Boolean(
+            (
+              milestonesFromEscrow[idx]?.flags as
+                | { resolved?: boolean }
+                | undefined
+            )?.resolved,
+          );
+          const escrowDisputed = Boolean(
+            (
+              milestonesFromEscrow[idx]?.flags as
+                | { disputed?: boolean }
+                | undefined
+            )?.disputed,
+          );
+          const prevFlags =
+            (
+              m as unknown as {
+                flags?: { resolved?: boolean; disputed?: boolean };
+              }
+            ).flags || {};
+          const wasResolved = Boolean(prevFlags.resolved);
+          const wasDisputed = Boolean(prevFlags.disputed);
+
+          if (!escrowResolved) {
+            return m;
+          }
+
+          const nextFlags = {
+            ...prevFlags,
+            resolved: true,
+            disputed: escrowDisputed,
+          };
+
+          if (
+            nextFlags.resolved !== wasResolved ||
+            nextFlags.disputed !== wasDisputed
+          ) {
+            changed = true;
+            return { ...m, flags: nextFlags } as Milestone;
+          }
+          return m;
+        });
+
+        if (changed) {
+          await updatePayoutMilestones.mutateAsync({
+            id: payout.payout_id,
+            milestones: nextMilestones as unknown as Prisma.JsonValue,
+          });
+          await fetchEscrowBalances([payout.escrow_id], { force: true });
+        }
+      }
+    } finally {
+      setIsManageMilestonesOpen(true);
+    }
+  };
 
   const cachedBalance = useMemo(() => {
     if (!payout.escrow_id) return null;
@@ -353,7 +427,7 @@ export function PayoutDetailsSheet({
                 <Button
                   variant="outline"
                   className="text-sm gap-2"
-                  onClick={() => setIsManageMilestonesOpen(true)}
+                  onClick={handleOpenManageMilestones}
                   disabled={payout.status !== "PUBLISHED"}
                 >
                   <List className="h-4 w-4" />

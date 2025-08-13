@@ -194,6 +194,19 @@ export const ManageMilestonesDialog = ({
     }, 0);
   }, [localMilestones]);
 
+  const allResolvedOrReleased = useMemo(() => {
+    if (!localMilestones.length) return false;
+    return localMilestones.every((m) => {
+      const flags =
+        (
+          m as unknown as {
+            flags?: { released?: boolean; resolved?: boolean };
+          }
+        ).flags || {};
+      return Boolean(flags.resolved) || Boolean(flags.released);
+    });
+  }, [localMilestones]);
+
   useEffect(() => {
     if (!open) return;
     const MAX_ACTIVITY_FOR_MODAL = 12;
@@ -503,12 +516,25 @@ export const ManageMilestonesDialog = ({
                 </CardHeader>
                 <CardContent className="flex-1 min-h-0 overflow-auto">
                   {selectedIndex === null ? (
-                    <div className="flex items-center justify-center h-32 text-muted-foreground">
-                      <div className="text-center">
-                        <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                        <p>Select a milestone to manage</p>
+                    allResolvedOrReleased ? (
+                      <div className="flex items-center justify-center h-32">
+                        <div className="text-center p-4 rounded-xl border ">
+                          <ShieldCheck className="h-8 w-8 mx-auto mb-2" />
+                          <p className="font-medium">All milestones finished</p>
+                          <p className="text-sm text-muted-foreground">
+                            This payout appears finished. You can proceed to
+                            close it.
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-32 text-muted-foreground">
+                        <div className="text-center">
+                          <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                          <p>Select a milestone to manage</p>
+                        </div>
+                      </div>
+                    )
                   ) : (
                     <div className="space-y-6">
                       {/* Grantee: Show Complete CTA when milestone is approved */}
@@ -658,6 +684,11 @@ export const ManageMilestonesDialog = ({
                           0) > 0 &&
                         localMilestones[selectedIndex]?.status !==
                           "COMPLETED" &&
+                        !(
+                          localMilestones[selectedIndex] as unknown as {
+                            flags?: { disputed?: boolean };
+                          }
+                        ).flags?.disputed &&
                         (() => {
                           const current = localMilestones[selectedIndex] || "";
                           const flags =
@@ -733,13 +764,15 @@ export const ManageMilestonesDialog = ({
                           );
                         })()}
 
-                      {/* Moderation Actions - For Payout Providers */}
+                      {/* Moderation Actions - For Payout Providers (Reject/Approve only when not COMPLETED) */}
                       {canModerate &&
                         !(
                           localMilestones[selectedIndex] as unknown as {
                             flags?: { disputed?: boolean };
                           }
-                        ).flags?.disputed && (
+                        ).flags?.disputed &&
+                        localMilestones[selectedIndex]?.status !==
+                          "COMPLETED" && (
                           <div className="space-y-4">
                             <Separator />
                             <div className="flex items-center gap-2">
@@ -779,34 +812,47 @@ export const ManageMilestonesDialog = ({
                                 <ShieldCheck className="h-4 w-4 mr-2" />
                                 Approve
                               </Button>
-                              {(() => {
-                                const current = localMilestones[selectedIndex];
-                                const released = Boolean(
-                                  (
-                                    current as unknown as {
-                                      flags?: { released?: boolean };
-                                    }
-                                  ).flags?.released,
-                                );
-                                if (current?.status !== "COMPLETED" || released)
-                                  return null;
-                                return (
-                                  <Button
-                                    variant="success"
-                                    onClick={handleRelease}
-                                    disabled={
-                                      isUpdatingMilestones || !hasEscrowBalance
-                                    }
-                                    className="flex-1"
-                                  >
-                                    <PiggyBank className="h-4 w-4 mr-2" />
-                                    Release
-                                  </Button>
-                                );
-                              })()}
                             </div>
                           </div>
                         )}
+
+                      {/* Release only when COMPLETED */}
+                      {canModerate &&
+                        localMilestones[selectedIndex]?.status ===
+                          "COMPLETED" &&
+                        (() => {
+                          const current = localMilestones[selectedIndex];
+                          const flags =
+                            (
+                              current as unknown as {
+                                flags?: {
+                                  released?: boolean;
+                                  resolved?: boolean;
+                                };
+                              }
+                            ).flags || {};
+                          if (flags.released || flags.resolved) return null;
+                          return (
+                            <div className="space-y-4">
+                              <Separator />
+                              <div className="flex items-center gap-2">
+                                <ShieldCheck className="h-4 w-4" />
+                                <h4 className="font-medium">Release Funds</h4>
+                              </div>
+                              <Button
+                                variant="success"
+                                onClick={handleRelease}
+                                disabled={
+                                  isUpdatingMilestones || !hasEscrowBalance
+                                }
+                                className="w-full"
+                              >
+                                <PiggyBank className="h-4 w-4 mr-2" />
+                                Release
+                              </Button>
+                            </div>
+                          );
+                        })()}
 
                       {Boolean(
                         (

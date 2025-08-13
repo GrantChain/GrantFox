@@ -164,6 +164,24 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
               <span className="text-muted-foreground">No image</span>
             </div>
           )}
+          {(payout.status === "CLOSED" || payout.status === "CANCELED") && (
+            <div
+              className="absolute inset-0 bg-black/80 flex items-center justify-center pointer-events-none"
+              aria-label={
+                payout.status === "CLOSED" ? "Payout closed" : "Payout canceled"
+              }
+            >
+              <span
+                className={`uppercase select-none text-2xl md:text-3xl font-extrabold tracking-widest px-6 py-3 border-4 border-destructive rounded rotate-[-15deg] drop-shadow-sm ${
+                  payout.status === "CLOSED"
+                    ? "text-destructive border-destructive"
+                    : "text-destructive"
+                }`}
+              >
+                {payout.status === "CLOSED" ? "Closed" : "Canceled"}
+              </span>
+            </div>
+          )}
         </div>
 
         <CardContent className="p-5">
