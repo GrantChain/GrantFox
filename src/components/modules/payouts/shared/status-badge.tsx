@@ -4,6 +4,16 @@ import { Badge } from "@/components/ui/badge";
 
 export const getStatusBadge = (milestone: Milestone) => {
   const status = milestone.status as string | undefined;
+  const flags =
+    (
+      milestone as Record<string, unknown> & {
+        flags?: { approved?: boolean; disputed?: boolean; released?: boolean };
+      }
+    ).flags || {};
+
+  if (flags.released) {
+    return <Badge variant="success">Released</Badge>;
+  }
 
   // Show Pending Release for COMPLETED regardless of approved flag
   if (status === "COMPLETED") {
@@ -14,15 +24,13 @@ export const getStatusBadge = (milestone: Milestone) => {
     );
   }
 
-  const approved = Boolean(
-    (
-      milestone as Record<string, unknown> & {
-        flags?: { approved?: boolean };
-      }
-    ).flags?.approved,
-  );
+  const approved = Boolean(flags.approved);
   if (approved) {
     return <Badge variant="success">Approved</Badge>;
+  }
+
+  if (flags.disputed) {
+    return <Badge variant="destructive">Disputed</Badge>;
   }
 
   switch (status) {
