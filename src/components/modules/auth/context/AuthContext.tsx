@@ -2,6 +2,7 @@
 
 import type { Grantee, PayoutProvider, User } from "@/generated/prisma";
 import { supabase } from "@/lib/supabase";
+import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import {
   createContext,
   useCallback,
@@ -85,6 +86,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setPayoutProvider(null);
         setCurrentUserId(null);
         await handleClearCache();
+        // Auto-disconnect wallet in store on logout
+        try {
+          useGlobalWalletStore.getState().disconnectWalletStore();
+        } catch (e) {
+          console.error("Failed to auto-disconnect wallet on logout:", e);
+        }
       }
     });
 
