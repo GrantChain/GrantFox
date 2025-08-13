@@ -80,6 +80,18 @@ class PayoutsService {
     }
   }
 
+  async updateStatus(id: string, status: PayoutStatus): Promise<Payout> {
+    try {
+      const response = await http.patch<Payout>(`/payout/update-status/${id}`, {
+        status,
+      });
+      return this.transformPayout(response.data);
+    } catch (error) {
+      console.error("Error in updateStatus:", error);
+      throw error;
+    }
+  }
+
   async delete(id: string): Promise<void> {
     try {
       await http.delete(`/payout/delete/${id}`);
