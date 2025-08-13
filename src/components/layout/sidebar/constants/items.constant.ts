@@ -17,13 +17,13 @@ export const navItems: NavItem[] = [
     roles: ["PAYOUT_PROVIDER", "GRANTEE"],
     group: "Platform",
   },
-  {
-    title: "Support",
-    url: "/dashboard/support",
-    icon: LifeBuoy,
-    roles: ["SUPPORT", "PAYOUT_PROVIDER", "GRANTEE"],
-    group: "Platform",
-  },
+  // {
+  //   title: "Support",
+  //   url: "/dashboard/support",
+  //   icon: LifeBuoy,
+  //   roles: ["SUPPORT", "PAYOUT_PROVIDER", "GRANTEE"],
+  //   group: "Platform",
+  // },
   {
     title: "Payouts",
     url: "/dashboard/payout-provider/payouts",
