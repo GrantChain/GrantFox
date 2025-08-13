@@ -19,8 +19,12 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
   const { address } = useGlobalWalletStore();
 
   useEffect(() => {
-    if (!address && pathname !== "/dashboard/profile") {
-      router.push("/dashboard");
+    if (!address) {
+      const isPublicProfile = pathname?.startsWith("/dashboard/public-profile");
+      const isProfile = pathname === "/dashboard/profile";
+      if (!isProfile && !isPublicProfile) {
+        router.push("/dashboard");
+      }
     }
   }, [address, pathname]);
 
