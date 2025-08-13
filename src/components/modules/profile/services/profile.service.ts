@@ -1,5 +1,5 @@
-import type { ProfileUpdatePayload } from "../schemas/profile.schema";
 import { http } from "@/lib/axios";
+import type { ProfileUpdatePayload } from "../schemas/profile.schema";
 
 class ProfileService {
   async update(payload: ProfileUpdatePayload): Promise<{ success: boolean }> {
