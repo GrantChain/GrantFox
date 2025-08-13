@@ -2,6 +2,8 @@
 
 import type { Milestone } from "@/@types/milestones.entity";
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
+import { PayoutContext } from "@/components/modules/payouts/context/PayoutContext";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,25 +22,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
 import Decimal from "decimal.js";
 import {
+  AlertCircleIcon,
   Eye,
   FileText,
   FileUp,
   MessageCircle,
   MessageSquare,
   Paperclip,
+  PiggyBank,
   ShieldCheck,
   ShieldX,
-  SquareArrowOutUpRight,
   User,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useMilestoneActions } from "../../hooks/useMilestoneActions";
 import { getStatusBadge } from "../../shared/status-badge";
 
@@ -137,6 +139,7 @@ export const ManageMilestonesDialog = ({
   const [feedbackFiles, setFeedbackFiles] = useState<File[]>([]);
 
   const { user } = useAuth();
+  const payoutCtx = useContext(PayoutContext);
   const {
     submitEvidence,
     submitFeedback,
@@ -144,8 +147,14 @@ export const ManageMilestonesDialog = ({
     approveMilestone,
     completeMilestone,
     isUpdatingMilestones,
+    releaseMilestone,
   } = useMilestoneActions();
   const router = useRouter();
+
+  const escrowId = payout.escrow_id || "";
+  const escrowBalance =
+    escrowId && payoutCtx ? payoutCtx.escrowBalances[escrowId] || 0 : 0;
+  const hasEscrowBalance = (escrowBalance || 0) > 0;
 
   useEffect(() => {
     if (!open) return;
@@ -158,6 +167,12 @@ export const ManageMilestonesDialog = ({
     setEvidenceFiles([]);
     setFeedbackFiles([]);
   }, [open, initialMilestones]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (!escrowId || !payoutCtx) return;
+    payoutCtx.fetchEscrowBalances([escrowId]).catch(() => {});
+  }, [open, escrowId, payoutCtx]);
 
   // Sync local milestones when payout milestones change
   useEffect(() => {
@@ -249,6 +264,7 @@ export const ManageMilestonesDialog = ({
       setLocalMilestones: (next) =>
         setLocalMilestones(next as unknown as MilestoneItem[]),
       canModerate,
+      contractId: payout.escrow_id || undefined,
     });
   };
 
@@ -277,6 +293,19 @@ export const ManageMilestonesDialog = ({
       canModerate,
       contractId: payout.escrow_id || undefined,
       approverAddress: user?.wallet_address || undefined,
+    });
+  };
+
+  const handleRelease = async () => {
+    if (selectedIndex === null) return;
+    await releaseMilestone({
+      payoutId: payout.payout_id,
+      milestoneIdx: selectedIndex,
+      localMilestones: localMilestones as unknown as Milestone[],
+      setLocalMilestones: (next) =>
+        setLocalMilestones(next as unknown as MilestoneItem[]),
+      canModerate,
+      contractId: payout.escrow_id || undefined,
     });
   };
 
@@ -332,17 +361,29 @@ export const ManageMilestonesDialog = ({
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent className=" grid grid-cols-1 md:grid-cols-2 gap-2">
+                <CardContent className=" grid grid-cols-1 gap-2">
                   {localMilestones.map((milestone, index) => {
-                    const isApproved = Boolean(
+                    const flags =
                       (
                         milestone as unknown as {
-                          flags?: { approved?: boolean };
+                          flags?: {
+                            approved?: boolean;
+                            released?: boolean;
+                            resolved?: boolean;
+                          };
                         }
-                      ).flags?.approved,
-                    );
+                      ).flags || {};
+                    const isApproved = Boolean(flags.approved);
+                    const isReleased = Boolean(flags.released);
+                    const isResolved = Boolean(flags.resolved);
+                    const isCompleted = milestone.status === "COMPLETED";
                     const isSelected = selectedIndex === index;
-                    const canSelect = !isApproved || canSubmitEvidence;
+                    const canSelect =
+                      (!isApproved ||
+                        canSubmitEvidence ||
+                        (canModerate && isCompleted)) &&
+                      !isReleased &&
+                      !isResolved;
                     return (
                       <button
                         type="button"
@@ -368,7 +409,7 @@ export const ManageMilestonesDialog = ({
                               <h4 className="font-semibold text-sm mb-1 text-start">
                                 {milestone.description}
                               </h4>
-                              <p className="text-sm text-muted-foreground mb-2">
+                              <p className="text-sm text-muted-foreground mb-2 text-start">
                                 Amount:{" "}
                                 <span className="font-semibold">
                                   {formatCurrency(
@@ -382,10 +423,10 @@ export const ManageMilestonesDialog = ({
                                 {(milestone.evidences || []).length === 0 ? (
                                   <span>No evidence submitted</span>
                                 ) : (
-                                  <div className="flex items-center gap-4">
+                                  <div className="flex items-center gap-5">
                                     <span>
-                                      {milestone.evidences?.length} evidence
-                                      items
+                                      {milestone.evidences?.length} Evidence
+                                      Items
                                     </span>
                                     {milestone.evidences?.some(
                                       (ev) => ev.files && ev.files.length > 0,
@@ -397,7 +438,7 @@ export const ManageMilestonesDialog = ({
                                             acc + (ev.files?.length || 0),
                                           0,
                                         )}{" "}
-                                        files
+                                        Files
                                       </span>
                                     )}
                                     {milestone.evidences?.some(
@@ -511,6 +552,20 @@ export const ManageMilestonesDialog = ({
                         (() => {
                           const current = localMilestones[selectedIndex];
                           const isCompleted = current?.status === "COMPLETED";
+                          const flags =
+                            (
+                              current as unknown as {
+                                flags?: {
+                                  disputed?: boolean;
+                                  released?: boolean;
+                                  resolved?: boolean;
+                                  approved?: boolean;
+                                };
+                              }
+                            ).flags || {};
+                          const isDisputed = Boolean(flags.disputed);
+                          const isReleased = Boolean(flags.released);
+                          const isResolved = Boolean(flags.resolved);
                           const currentApproved = Boolean(
                             (
                               current as unknown as {
@@ -518,7 +573,14 @@ export const ManageMilestonesDialog = ({
                               }
                             ).flags?.approved,
                           );
-                          if (currentApproved || isCompleted) return null;
+                          if (
+                            currentApproved ||
+                            isCompleted ||
+                            isDisputed ||
+                            isReleased ||
+                            isResolved
+                          )
+                            return null;
                           return (
                             <div className="space-y-4">
                               <div className="flex items-center gap-2">
@@ -590,108 +652,181 @@ export const ManageMilestonesDialog = ({
                           );
                         })()}
 
-                      {/* Feedback Section - For Payout Providers (requires at least 1 evidence) */}
+                      {/* Feedback Section - For Payout Providers (requires at least 1 evidence and not completed) */}
                       {canModerate &&
                         (localMilestones[selectedIndex]?.evidences?.length ||
-                          0) > 0 && (
+                          0) > 0 &&
+                        localMilestones[selectedIndex]?.status !==
+                          "COMPLETED" &&
+                        (() => {
+                          const current = localMilestones[selectedIndex]!;
+                          const flags =
+                            (
+                              current as unknown as {
+                                flags?: {
+                                  released?: boolean;
+                                  resolved?: boolean;
+                                };
+                              }
+                            ).flags || {};
+                          if (flags.released || flags.resolved) return null;
+                          return (
+                            <div className="space-y-4">
+                              <Separator />
+                              <div className="flex items-center gap-2">
+                                <MessageSquare className="h-4 w-4" />
+                                <h4 className="font-medium">Add Feedback</h4>
+                              </div>
+                              <div className="space-y-3">
+                                <Label htmlFor="feedback-message">
+                                  Feedback Message
+                                </Label>
+                                <Textarea
+                                  id="feedback-message"
+                                  placeholder="Provide feedback, suggestions, or comments for the grantee..."
+                                  value={feedbackMessage}
+                                  onChange={(e) =>
+                                    setFeedbackMessage(e.target.value)
+                                  }
+                                  rows={3}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="feedback-files">
+                                  Attach up to 3 files
+                                </Label>
+                                <Input
+                                  id="feedback-files"
+                                  type="file"
+                                  multiple
+                                  onChange={(e) =>
+                                    setFeedbackFiles(
+                                      Array.from(e.target.files || []).slice(
+                                        0,
+                                        3,
+                                      ),
+                                    )
+                                  }
+                                />
+                                {feedbackFiles.length > 0 && (
+                                  <div className="text-xs text-muted-foreground">
+                                    {feedbackFiles
+                                      .map((f) => f.name)
+                                      .join(", ")}
+                                  </div>
+                                )}
+                              </div>
+                              <Button
+                                onClick={handleSubmitFeedback}
+                                disabled={
+                                  isUpdatingMilestones ||
+                                  selectedIndex === null ||
+                                  !feedbackMessage.trim()
+                                }
+                                variant="outline"
+                                className="w-full"
+                              >
+                                <MessageSquare className="h-4 w-4 mr-2" />
+                                Submit Feedback
+                              </Button>
+                            </div>
+                          );
+                        })()}
+
+                      {/* Moderation Actions - For Payout Providers */}
+                      {canModerate &&
+                        !Boolean(
+                          (
+                            localMilestones[selectedIndex] as unknown as {
+                              flags?: { disputed?: boolean };
+                            }
+                          ).flags?.disputed,
+                        ) && (
                           <div className="space-y-4">
                             <Separator />
                             <div className="flex items-center gap-2">
-                              <MessageSquare className="h-4 w-4" />
-                              <h4 className="font-medium">Add Feedback</h4>
+                              <ShieldCheck className="h-4 w-4" />
+                              <h4 className="font-medium">
+                                Moderation Actions
+                              </h4>
                             </div>
-                            <div className="space-y-3">
-                              <Label htmlFor="feedback-message">
-                                Feedback Message
-                              </Label>
-                              <Textarea
-                                id="feedback-message"
-                                placeholder="Provide feedback, suggestions, or comments for the grantee..."
-                                value={feedbackMessage}
-                                onChange={(e) =>
-                                  setFeedbackMessage(e.target.value)
+
+                            <div className="flex gap-2">
+                              <Button
+                                variant="destructive"
+                                onClick={handleReject}
+                                disabled={
+                                  isUpdatingMilestones ||
+                                  selectedIndex === null ||
+                                  (localMilestones[selectedIndex]?.evidences
+                                    ?.length || 0) === 0 ||
+                                  !hasEscrowBalance
                                 }
-                                rows={3}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="feedback-files">
-                                Attach up to 3 files
-                              </Label>
-                              <Input
-                                id="feedback-files"
-                                type="file"
-                                multiple
-                                onChange={(e) =>
-                                  setFeedbackFiles(
-                                    Array.from(e.target.files || []).slice(
-                                      0,
-                                      3,
-                                    ),
-                                  )
+                                className="flex-1"
+                              >
+                                <ShieldX className="h-4 w-4 mr-2" />
+                                Reject
+                              </Button>
+                              <Button
+                                variant="success"
+                                onClick={handleApprove}
+                                disabled={
+                                  isUpdatingMilestones ||
+                                  selectedIndex === null ||
+                                  (localMilestones[selectedIndex]?.evidences
+                                    ?.length || 0) === 0
                                 }
-                              />
-                              {feedbackFiles.length > 0 && (
-                                <div className="text-xs text-muted-foreground">
-                                  {feedbackFiles.map((f) => f.name).join(", ")}
-                                </div>
-                              )}
+                                className="flex-1"
+                              >
+                                <ShieldCheck className="h-4 w-4 mr-2" />
+                                Approve
+                              </Button>
+                              {(() => {
+                                const current = localMilestones[selectedIndex];
+                                const released = Boolean(
+                                  (
+                                    current as unknown as {
+                                      flags?: { released?: boolean };
+                                    }
+                                  ).flags?.released,
+                                );
+                                if (current?.status !== "COMPLETED" || released)
+                                  return null;
+                                return (
+                                  <Button
+                                    variant="success"
+                                    onClick={handleRelease}
+                                    disabled={
+                                      isUpdatingMilestones || !hasEscrowBalance
+                                    }
+                                    className="flex-1"
+                                  >
+                                    <PiggyBank className="h-4 w-4 mr-2" />
+                                    Release
+                                  </Button>
+                                );
+                              })()}
                             </div>
-                            <Button
-                              onClick={handleSubmitFeedback}
-                              disabled={
-                                isUpdatingMilestones ||
-                                selectedIndex === null ||
-                                !feedbackMessage.trim()
-                              }
-                              variant="outline"
-                              className="w-full"
-                            >
-                              <MessageSquare className="h-4 w-4 mr-2" />
-                              Submit Feedback
-                            </Button>
                           </div>
                         )}
 
-                      {/* Moderation Actions - For Payout Providers */}
-                      {canModerate && (
-                        <div className="space-y-4">
-                          <Separator />
-                          <div className="flex items-center gap-2">
-                            <ShieldCheck className="h-4 w-4" />
-                            <h4 className="font-medium">Moderation Actions</h4>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="destructive"
-                              onClick={handleReject}
-                              disabled={
-                                isUpdatingMilestones ||
-                                selectedIndex === null ||
-                                (localMilestones[selectedIndex]?.evidences
-                                  ?.length || 0) === 0
-                              }
-                              className="flex-1"
-                            >
-                              <ShieldX className="h-4 w-4 mr-2" />
-                              Reject
-                            </Button>
-                            <Button
-                              variant="success"
-                              onClick={handleApprove}
-                              disabled={
-                                isUpdatingMilestones ||
-                                selectedIndex === null ||
-                                (localMilestones[selectedIndex]?.evidences
-                                  ?.length || 0) === 0
-                              }
-                              className="flex-1"
-                            >
-                              <ShieldCheck className="h-4 w-4 mr-2" />
-                              Approve
-                            </Button>
-                          </div>
-                        </div>
+                      {Boolean(
+                        (
+                          localMilestones[selectedIndex] as unknown as {
+                            flags?: { disputed?: boolean };
+                          }
+                        ).flags?.disputed,
+                      ) && (
+                        <Alert variant="destructive">
+                          <AlertCircleIcon />
+                          <AlertTitle>This milestone is disputed.</AlertTitle>
+                          <AlertDescription>
+                            <p>
+                              Please contact the GrantFox Platform to resolve
+                              the dispute.
+                            </p>
+                          </AlertDescription>
+                        </Alert>
                       )}
                     </div>
                   )}

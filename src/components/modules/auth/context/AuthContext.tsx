@@ -1,8 +1,8 @@
 "use client";
 
+import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Grantee, PayoutProvider, User } from "@/generated/prisma";
 import { supabase } from "@/lib/supabase";
-import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import {
   createContext,
   useCallback,
