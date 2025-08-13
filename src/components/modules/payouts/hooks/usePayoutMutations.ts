@@ -227,6 +227,29 @@ export const usePayoutMutations = () => {
     }
   };
 
+  const handleUpdateStatus = async (
+    id: string,
+    status: Payout["status"],
+  ): Promise<Payout | null> => {
+    try {
+      const updated = await payoutsService.updateStatus(id, status);
+      // Optimistically update cache for the payout list
+      queryClient.setQueriesData<{ data: Payout[]; total: number }>(
+        { queryKey: ["payouts"] },
+        (old) => {
+          if (!old) return old as { data: Payout[]; total: number } | undefined;
+          const nextData = old.data.map((p) =>
+            p.payout_id === id ? { ...p, status: updated.status } : p,
+          );
+          return { ...old, data: nextData };
+        },
+      );
+      return updated;
+    } catch (error) {
+      throw error as Error;
+    }
+  };
+
   return {
     createPayout,
     updatePayout,
@@ -236,6 +259,7 @@ export const usePayoutMutations = () => {
     handleCreatePayout,
     handleUpdatePayout,
     handleDeletePayout,
+    handleUpdateStatus,
     isUpdating: updatePayout.isPending,
     isUpdatingMilestones: updatePayoutMilestones.isPending,
     isCreating: createPayout.isPending,
