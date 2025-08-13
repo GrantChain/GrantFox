@@ -6,8 +6,9 @@ const useLayoutDashboard = () => {
 
   let label = "Home";
   if (crumbs.length > 0) {
-    // If the route is /dashboard/user/[userID], show 'User Profile' instead of the userID
-    if (
+    if (crumbs[0] === "dashboard" && crumbs[1] === "public-profile") {
+      label = "Public Profile";
+    } else if (
       crumbs.length >= 3 &&
       crumbs[0] === "dashboard" &&
       crumbs[1] === "user" &&
