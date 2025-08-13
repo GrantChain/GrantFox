@@ -1,9 +1,9 @@
-import { kit } from "@/lib/wallet-kit";
-import { profileService } from "@/components/modules/profile/services/profile.service";
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
+import { profileService } from "@/components/modules/profile/services/profile.service";
+import { kit } from "@/lib/wallet-kit";
 import type { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
-import { useGlobalWalletStore } from "../store/store";
 import { toast } from "sonner";
+import { useGlobalWalletStore } from "../store/store";
 
 export const useWallet = () => {
   const { connectWalletStore, disconnectWalletStore, address } =
