@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -19,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import type { Grantee } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserCheck } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { type GranteeFormData, granteeSchema } from "../schemas/profile.schema";
 
@@ -27,12 +21,16 @@ interface GranteeFormProps {
   grantee?: Grantee & {
     social_media: { twitter: string; linkedin: string; github: string };
   };
-  onSubmit: (data: GranteeFormData) => void;
+  onSubmit: (
+    data: Partial<Omit<Grantee, "user_id" | "created_at" | "updated_at">>,
+  ) => void;
 }
 
 export function GranteeForm({ grantee, onSubmit }: GranteeFormProps) {
   const form = useForm<GranteeFormData>({
     resolver: zodResolver(granteeSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       name: grantee?.name || "",
       position_title: grantee?.position_title || "",
@@ -51,7 +49,9 @@ export function GranteeForm({ grantee, onSubmit }: GranteeFormProps) {
       ...(github && { github }),
     };
 
-    const finalData = {
+    const finalData: Partial<
+      Omit<Grantee, "user_id" | "created_at" | "updated_at">
+    > = {
       ...rest,
       social_media: Object.keys(social_media).length > 0 ? social_media : null,
     };
@@ -60,52 +60,47 @@ export function GranteeForm({ grantee, onSubmit }: GranteeFormProps) {
   };
 
   return (
-    <Card className="w-full md:w-1/2">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <UserCheck className="h-5 w-5" />
-          Grantee Information
-        </CardTitle>
-        <CardDescription>
-          Manage your grantee profile and social links
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card className="w-full">
+      <CardContent className="p-6">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-4"
           >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Name <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="position_title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Position Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="e.g., Lead Developer, Project Manager"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="position_title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Position Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Lead Developer, Project Manager"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
@@ -155,8 +150,19 @@ export function GranteeForm({ grantee, onSubmit }: GranteeFormProps) {
               )}
             />
 
-            <Button type="submit" className="w-full">
-              Save
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
             </Button>
           </form>
         </Form>

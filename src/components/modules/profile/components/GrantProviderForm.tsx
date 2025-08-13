@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -26,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import type { PayoutProvider } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import {
   type GrantProviderFormData,
@@ -44,6 +38,8 @@ export function GrantProviderForm({
 }: GrantProviderFormProps) {
   const form = useForm<GrantProviderFormData>({
     resolver: zodResolver(grantProviderSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       organization_name: grantProvider?.organization_name || "",
       network_type: grantProvider?.network_type || "",
@@ -66,63 +62,58 @@ export function GrantProviderForm({
   ];
 
   return (
-    <Card className="w-full md:w-1/2">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Building2 className="h-5 w-5" />
-          Grant Provider Information
-        </CardTitle>
-        <CardDescription>
-          Manage your organization details and grant provider settings
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card className="w-full">
+      <CardContent className="p-6">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-4"
           >
-            <FormField
-              control={form.control}
-              name="organization_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization Name *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter organization name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="network_type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Network Type</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="organization_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Organization Name <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select network type" />
-                      </SelectTrigger>
+                      <Input placeholder="Enter organization name" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {networkTypes.map((network) => (
-                        <SelectItem key={network} value={network}>
-                          {network}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="network_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Network Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select network type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {networkTypes.map((network) => (
+                          <SelectItem key={network} value={network}>
+                            {network}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
@@ -142,8 +133,19 @@ export function GrantProviderForm({
               )}
             />
 
-            <Button type="submit" className="w-full">
-              Save
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
             </Button>
           </form>
         </Form>
