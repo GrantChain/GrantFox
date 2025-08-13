@@ -9,8 +9,6 @@ export async function PUT(
     const payout = await request.json();
     const { id } = await params;
 
-    console.log(payout);
-
     const { data, error } = await supabase
       .from("payout")
       .update(payout)
