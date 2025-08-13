@@ -14,6 +14,7 @@ export interface EmailPayload {
   text: string;
 }
 
+// response
 export interface EmailResponse {
   success: boolean;
   data?: string;
