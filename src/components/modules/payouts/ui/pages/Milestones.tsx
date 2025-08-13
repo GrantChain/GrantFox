@@ -75,7 +75,7 @@ const Milestones = () => {
 
   const payout: Payout | undefined = payoutFromList ?? oneData ?? undefined;
 
-  // no-eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { isChecking: isCheckingEscrowResolution, checkEscrowResolution } =
     useEscrowResolutionWatch({
       payout: payout || ({} as Payout),

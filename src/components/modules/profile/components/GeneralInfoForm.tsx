@@ -12,10 +12,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useWallet } from "@/components/wallet/hooks/useWallet";
 import type { User } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, WalletIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import {
   type GeneralInfoFormData,
@@ -28,9 +27,6 @@ interface GeneralInfoFormProps {
 }
 
 export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
-  const { handleConnect, handleDisconnect, account } = useWallet();
-  const isConnected = Boolean(account);
-
   const form = useForm<GeneralInfoFormData>({
     resolver: zodResolver(generalInfoSchema),
     mode: "onChange",
