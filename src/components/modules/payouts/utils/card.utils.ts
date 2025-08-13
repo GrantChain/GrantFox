@@ -2,8 +2,8 @@ import type { BadgeProps } from "@/components/ui/badge";
 import type { PayoutStatus } from "@/generated/prisma";
 
 export const statusColors: Record<PayoutStatus, BadgeProps["variant"]> = {
-  DRAFT: "outline",
+  DRAFT: "default",
   PUBLISHED: "success",
-  CLOSED: "secondary",
+  CLOSED: "destructive",
   CANCELED: "destructive",
 };

@@ -3,6 +3,7 @@ import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
 import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
 import TooltipInfo from "@/components/shared/TooltipInfo";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -10,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
 import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
 import Decimal from "decimal.js";
