@@ -7,6 +7,7 @@ import {
   useApproveMilestone,
   useChangeMilestoneStatus,
   useFundEscrow,
+  useGetEscrowFromIndexerByContractIds,
   useInitializeEscrow,
   useReleaseFunds,
   useResolveDispute,
@@ -17,8 +18,10 @@ import type {
   ApproveMilestonePayload,
   ChangeMilestoneStatusPayload,
   FundEscrowPayload,
+  GetEscrowsFromIndexerResponse,
   InitializeMultiReleaseEscrowPayload,
   InitializeMultiReleaseEscrowResponse,
+  MultiReleaseEscrow,
   MultiReleaseReleaseFundsPayload,
   MultiReleaseResolveDisputePayload,
   MultiReleaseStartDisputePayload,
@@ -40,6 +43,7 @@ export const useEscrows = () => {
   const { startDispute } = useStartDispute();
   const { resolveDispute } = useResolveDispute();
   const { releaseFunds } = useReleaseFunds();
+  const { getEscrowByContractIds } = useGetEscrowFromIndexerByContractIds();
 
   const handleDeployEscrow = async (
     payload: InitializeMultiReleaseEscrowPayload,
@@ -387,6 +391,18 @@ export const useEscrows = () => {
     }
   };
 
+  const handleGetEscrowByContractIds = async (
+    contractIds: string[],
+  ): Promise<GetEscrowsFromIndexerResponse> => {
+    const escrowData = await getEscrowByContractIds({
+      contractIds: contractIds,
+      signer: address || "",
+      validateOnChain: true,
+    });
+
+    return escrowData;
+  };
+
   return {
     loading,
     handleDeployEscrow,
@@ -396,5 +412,6 @@ export const useEscrows = () => {
     handleRejectMilestone,
     handleResolveMilestone,
     handleReleaseMilestone,
+    handleGetEscrowByContractIds,
   };
 };
