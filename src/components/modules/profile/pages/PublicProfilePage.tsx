@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCopyUtils } from "@/utils/copy.utils";
 import { Building, Calendar, Copy, Mail, MapPin, Wallet } from "lucide-react";
+import Link from "next/link";
 import { usePublicProfile } from "../hooks/useUserProfile";
 
 interface PublicProfileClientProps {
@@ -115,7 +116,7 @@ export default function PublicProfilePage({
                       aria-label="Copy wallet address"
                       className="inline-flex items-center gap-2 rounded-md border px-2 py-1 text-xs hover:bg-accent hover:text-accent-foreground"
                       onClick={() =>
-                        copyText(user.user_id, user.wallet_address!)
+                        copyText(user.user_id, user.wallet_address || "")
                       }
                     >
                       <Copy className="h-3.5 w-3.5" />
@@ -211,7 +212,7 @@ function GranteeSocial({ social }: { social: Record<string, string> | null }) {
   return (
     <div className="flex items-center gap-3">
       {social.twitter && (
-        <a
+        <Link
           href={social.twitter}
           target="_blank"
           rel="noreferrer"
@@ -224,10 +225,10 @@ function GranteeSocial({ social }: { social: Record<string, string> | null }) {
               d="M22.46 6c-.77.35-1.6.58-2.46.69a4.27 4.27 0 0 0 1.88-2.36 8.57 8.57 0 0 1-2.71 1.04 4.26 4.26 0 0 0-7.27 3.88 12.1 12.1 0 0 1-8.79-4.46 4.26 4.26 0 0 0 1.32 5.69 4.24 4.24 0 0 1-1.93-.53v.06a4.26 4.26 0 0 0 3.41 4.18 4.3 4.3 0 0 1-1.92.07 4.27 4.27 0 0 0 3.98 2.96A8.54 8.54 0 0 1 2 19.54 12.07 12.07 0 0 0 8.29 21c7.55 0 11.68-6.26 11.68-11.68 0-.18 0-.35-.01-.53A8.35 8.35 0 0 0 22.46 6z"
             />
           </svg>
-        </a>
+        </Link>
       )}
       {social.linkedin && (
-        <a
+        <Link
           href={social.linkedin}
           target="_blank"
           rel="noreferrer"
@@ -240,10 +241,10 @@ function GranteeSocial({ social }: { social: Record<string, string> | null }) {
               d="M6.94 6.5a1.94 1.94 0 1 1-3.88 0 1.94 1.94 0 0 1 3.88 0zM3.5 8.75h3.5V21H3.5V8.75zm7 0H14v1.68h.05c.63-1.18 2.17-2.43 4.47-2.43 4.78 0 5.66 3.15 5.66 7.25V21h-3.5v-5.6c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95V21h-3.5V8.75z"
             />
           </svg>
-        </a>
+        </Link>
       )}
       {social.github && (
-        <a
+        <Link
           href={social.github}
           target="_blank"
           rel="noreferrer"
@@ -256,7 +257,7 @@ function GranteeSocial({ social }: { social: Record<string, string> | null }) {
               d="M12 2C6.48 2 2 6.58 2 12.26c0 4.52 2.87 8.35 6.84 9.71.5.09.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.61-3.37-1.37-3.37-1.37-.45-1.17-1.11-1.48-1.11-1.48-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.58 2.36 1.12 2.94.86.09-.66.35-1.12.64-1.38-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.05A9.28 9.28 0 0 1 12 7.5c.86 0 1.72.12 2.52.36 1.9-1.32 2.74-1.05 2.74-1.05.55 1.42.2 2.47.1 2.73.64.72 1.03 1.63 1.03 2.75 0 3.94-2.33 4.81-4.55 5.07.36.32.68.95.68 1.92 0 1.39-.01 2.51-.01 2.85 0 .27.18.59.69.49A10.28 10.28 0 0 0 22 12.26C22 6.58 17.52 2 12 2z"
             />
           </svg>
-        </a>
+        </Link>
       )}
     </div>
   );

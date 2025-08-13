@@ -198,8 +198,6 @@ export default function ProfilePage() {
         <div className="flex items-center gap-4">
           <div
             className="relative group cursor-pointer"
-            role="button"
-            tabIndex={0}
             aria-label="Change profile image"
             onClick={handleAvatarClick}
             onKeyDown={handleAvatarKeyDown}

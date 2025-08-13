@@ -659,7 +659,7 @@ export const ManageMilestonesDialog = ({
                         localMilestones[selectedIndex]?.status !==
                           "COMPLETED" &&
                         (() => {
-                          const current = localMilestones[selectedIndex]!;
+                          const current = localMilestones[selectedIndex] || "";
                           const flags =
                             (
                               current as unknown as {
@@ -735,13 +735,11 @@ export const ManageMilestonesDialog = ({
 
                       {/* Moderation Actions - For Payout Providers */}
                       {canModerate &&
-                        !Boolean(
-                          (
-                            localMilestones[selectedIndex] as unknown as {
-                              flags?: { disputed?: boolean };
-                            }
-                          ).flags?.disputed,
-                        ) && (
+                        !(
+                          localMilestones[selectedIndex] as unknown as {
+                            flags?: { disputed?: boolean };
+                          }
+                        ).flags?.disputed && (
                           <div className="space-y-4">
                             <Separator />
                             <div className="flex items-center gap-2">
