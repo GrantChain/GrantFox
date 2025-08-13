@@ -2,26 +2,25 @@ import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
 import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
 import TooltipInfo from "@/components/shared/TooltipInfo";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Payout } from "@/generated/prisma";
 import { formatCurrency } from "@/utils/format.utils";
 import Decimal from "decimal.js";
-import {
-  Calendar,
-  CircleDollarSign,
-  Loader2,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Calendar, CircleDollarSign, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { usePayout } from "../../context/PayoutContext";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import type { PayoutFormValues } from "../../schemas/payout.schema";
-import { statusColors } from "../../utils/card.utils";
 import { FundFormModal } from "./FundFormModal";
 import { PayoutDetailsSheet } from "./PayoutDetailsSheet";
 import { PayoutFormModal } from "./PayoutFormModal";
@@ -37,9 +36,11 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [isFundDialogOpen, setIsFundDialogOpen] = useState(false);
   const { handleFundEscrow } = useEscrows();
-  const { handleDeletePayout, isDeleting, getGranteeById } =
+  const { handleDeletePayout, isDeleting, getGranteeById, handleUpdateStatus } =
     usePayoutMutations();
-  const [isLoadingEmail, setIsLoadingEmail] = useState(false);
+  const [, setIsUpdatingStatus] = useState(false);
+  const [statusValue, setStatusValue] = useState(payout.status);
+  const [, setIsLoadingEmail] = useState(false);
   const [granteeEmail, setGranteeEmail] = useState<string | null>(null);
   const { escrowBalances, fetchEscrowBalances } = usePayout();
 
@@ -73,12 +74,12 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
     }
   };
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isLoadingEmail) {
-      setShowEditModal(true);
-    }
-  };
+  // const handleEdit = (e: React.MouseEvent) => {
+  //   e.stopPropagation();
+  //   if (!isLoadingEmail) {
+  //     setShowEditModal(true);
+  //   }
+  // };
 
   const handleFund = async (amount: number) => {
     if (!payout.payout_id) return;
@@ -104,6 +105,26 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
       toast.success("Payout funded successfully");
     } catch (error) {
       console.error("Error funding payout:", error);
+    }
+  };
+
+  const handleChangeStatus = async (val: string) => {
+    if (val === statusValue) return;
+    try {
+      setIsUpdatingStatus(true);
+      const updated = await handleUpdateStatus(
+        payout.payout_id,
+        val as unknown as Payout["status"],
+      );
+      if (updated) {
+        setStatusValue(updated.status);
+        toast.success("Status updated");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to update status");
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -143,12 +164,6 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
               <span className="text-muted-foreground">No image</span>
             </div>
           )}
-          <Badge
-            variant={statusColors[payout.status]}
-            className="absolute top-2 right-2 text-xs"
-          >
-            {payout.status}
-          </Badge>
         </div>
 
         <CardContent className="p-5">
@@ -158,7 +173,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
               {payout.title}
             </h2>
 
-            <div className="text-2xl font-bold text-primary shrink-0">
+            <div className="text-2xl font-bold text-primary shrink-0 flex items-center">
               {payout.currency && (
                 <span className="text-lg font-medium text-muted-foreground mr-2">
                   {payout.currency}
@@ -203,6 +218,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
                   <Button
                     variant="outline"
                     size="icon"
+                    disabled={payout.status === "PUBLISHED"}
                     className="h-8 w-8"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -218,6 +234,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
+                    disabled={payout.status !== "PUBLISHED"}
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsFundDialogOpen(true);
@@ -226,6 +243,23 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
                     <CircleDollarSign className="h-4 w-4" />
                   </Button>
                 </TooltipInfo>
+
+                {user?.role === "PAYOUT_PROVIDER" && (
+                  <Select
+                    defaultValue={statusValue}
+                    onValueChange={handleChangeStatus}
+                  >
+                    <SelectTrigger className="h-8 w-36">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DRAFT">DRAFT</SelectItem>
+                      <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
+                      <SelectItem value="CLOSED">CLOSED</SelectItem>
+                      <SelectItem value="CANCELED">CANCELED</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             )}
             <div className="flex gap-2">

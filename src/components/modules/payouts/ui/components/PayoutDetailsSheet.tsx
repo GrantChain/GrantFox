@@ -46,9 +46,7 @@ export function PayoutDetailsSheet({
   open,
   onOpenChange,
 }: PayoutDetailsSheetProps) {
-  const statusColor =
-    statusColors[payout.status as keyof typeof statusColors] ||
-    statusColors.DRAFT;
+  const statusColor = statusColors[payout.status];
 
   const [escrowBalance, setEscrowBalance] = useState<number | null>(null);
   const { address } = useGlobalWalletStore();
@@ -154,7 +152,7 @@ export function PayoutDetailsSheet({
                 className="object-cover"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             </>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center">
@@ -350,6 +348,7 @@ export function PayoutDetailsSheet({
                 variant="outline"
                 className="text-sm gap-2"
                 onClick={handleOpenManageMilestones}
+                disabled={payout.status !== "PUBLISHED"}
               >
                 <List className="h-4 w-4" />
                 Manage Milestones
