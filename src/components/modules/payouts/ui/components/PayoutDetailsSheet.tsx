@@ -241,14 +241,36 @@ export function PayoutDetailsSheet({
                   Created
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex justify-between gap-2">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground flex gap-2">
                     {payout.created_at.toLocaleDateString()}
+                    <span className="text-muted-foreground">
+                      {payout.created_at.toLocaleTimeString()}
+                    </span>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {payout.created_at.toLocaleTimeString()}
-                  </div>
+                </div>
+
+                <div className="flex flex-col items-center gap-2">
+                  <Link
+                    href={`https://stellar.expert/explorer/testnet/contract/${payout.escrow_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground gap-2 flex items-center hover:underline"
+                  >
+                    Stellar Explorer
+                    <ExternalLink className="h-4 w-4" />
+                  </Link>
+
+                  <Link
+                    href={`https://viewer.trustlesswork.com/${payout.escrow_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground gap-2 flex items-center hover:underline"
+                  >
+                    Escrow Viewer
+                    <ExternalLink className="h-4 w-4" />
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -312,16 +334,6 @@ export function PayoutDetailsSheet({
                   <FileText className="h-4 w-4" />
                   Description
                 </div>
-
-                <Link
-                  href={`https://stellar.expert/explorer/testnet/contract/${payout.escrow_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground gap-2 flex items-center hover:underline"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Stellar Explorer
-                </Link>
               </CardTitle>
             </CardHeader>
             <CardContent>
