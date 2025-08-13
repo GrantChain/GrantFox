@@ -1,4 +1,4 @@
-import { Home, LifeBuoy, Sparkles } from "lucide-react";
+import { Home, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface NavItem {
@@ -17,13 +17,13 @@ export const navItems: NavItem[] = [
     roles: ["PAYOUT_PROVIDER", "GRANTEE"],
     group: "Platform",
   },
-  {
-    title: "Support",
-    url: "/dashboard/support",
-    icon: LifeBuoy,
-    roles: ["SUPPORT", "PAYOUT_PROVIDER", "GRANTEE"],
-    group: "Platform",
-  },
+  // {
+  //   title: "Support",
+  //   url: "/dashboard/support",
+  //   icon: LifeBuoy,
+  //   roles: ["SUPPORT", "PAYOUT_PROVIDER", "GRANTEE"],
+  //   group: "Platform",
+  // },
   {
     title: "Payouts",
     url: "/dashboard/payout-provider/payouts",

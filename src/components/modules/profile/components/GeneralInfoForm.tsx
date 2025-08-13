@@ -1,14 +1,7 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -21,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { User } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Camera } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import {
   type GeneralInfoFormData,
@@ -36,6 +29,8 @@ interface GeneralInfoFormProps {
 export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
   const form = useForm<GeneralInfoFormData>({
     resolver: zodResolver(generalInfoSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       username: user.username || "",
       email: user.email || "",
@@ -51,65 +46,16 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
     onSubmit(data);
   };
 
-  const profileUrl = form.watch("profile_url");
-  const userName = form.watch("username");
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Camera className="h-5 w-5" />
-          General Information
-        </CardTitle>
-        <CardDescription>
-          Update your personal information and profile details
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card className="w-full">
+      <CardContent className="p-6">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
-            {/* Profile Picture Section */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="relative">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage
-                    src={profileUrl || "/placeholder.svg"}
-                    alt={userName}
-                  />
-                  <AvatarFallback className="text-lg">
-                    {userName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              <div className="flex-1 w-full">
-                <FormField
-                  control={form.control}
-                  name="profile_url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Profile Image URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="https://example.com/profile.jpg"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
             {/* Cover Image */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="cover_url"
               render={({ field }) => (
@@ -124,7 +70,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -133,7 +79,9 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username *</FormLabel>
+                    <FormLabel>
+                      Username <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Enter your username" {...field} />
                     </FormControl>
@@ -147,9 +95,10 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email Address *</FormLabel>
+                    <FormLabel>Email Address</FormLabel>
                     <FormControl>
                       <Input
+                        disabled
                         type="email"
                         placeholder="Enter your email"
                         {...field}
@@ -166,10 +115,18 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                 control={form.control}
                 name="wallet_address"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Stellar Wallet Address</FormLabel>
+                  <FormItem className="w-full">
+                    <FormLabel>
+                      Stellar Wallet Address{" "}
+                      <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="G..." {...field} />
+                      <Input
+                        disabled
+                        placeholder="GAGWK5..."
+                        className="w-full"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -209,8 +166,19 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
               )}
             />
 
-            <Button type="submit" className="w-full">
-              Save
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
             </Button>
           </form>
         </Form>

@@ -33,7 +33,9 @@ interface PayoutContextType {
   ) => void;
 }
 
-const PayoutContext = createContext<PayoutContextType | undefined>(undefined);
+export const PayoutContext = createContext<PayoutContextType | undefined>(
+  undefined,
+);
 
 export function PayoutContextProvider({ children }: { children: ReactNode }) {
   const [selectedGrantee, setSelectedGrantee] = useState<User | null>(null);

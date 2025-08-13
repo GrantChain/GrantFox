@@ -1,5 +1,10 @@
 import { authService } from "@/components/modules/auth/services/auth.service";
-import type { Grantee, PayoutProvider, User } from "@/generated/prisma";
+import type {
+  Grantee,
+  PayoutProvider,
+  User,
+  UserRole,
+} from "@/generated/prisma";
 import { useQuery } from "@tanstack/react-query";
 import { use } from "react";
 
@@ -10,15 +15,18 @@ interface UserProfileData {
 }
 
 const fetchUserProfile = async (userID: string): Promise<UserProfileData> => {
-  // Get user data without role filtering
-  const userResponse = await authService.getUserById(userID);
+  // Fetch user and include role in the response by using role=EMPTY
+  const userResponse = await authService.getUserById(
+    userID,
+    "EMPTY" as UserRole,
+  );
 
   if (!userResponse.exists) {
     throw new Error("User not found");
   }
 
-  const userData = userResponse.user;
-  const userRole = userData.role;
+  const userData = userResponse.user as User & { role: UserRole };
+  const userRole = userData.role as UserRole;
 
   // Now that we have the user and know their role, fetch role-specific data
   if (userRole === "GRANTEE") {
@@ -70,10 +78,10 @@ export const useUserProfile = (params: Promise<{ userID: string }>) => {
     queryKey: ["user-profile", userID],
     queryFn: () => fetchUserProfile(userID),
     enabled: !!userID,
-    retry: 3, // Simple retry 3 times
-    retryDelay: 1000, // Fixed 1 second delay
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: 3,
+    retryDelay: 1000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const handleBack = () => {
@@ -85,6 +93,26 @@ export const useUserProfile = (params: Promise<{ userID: string }>) => {
     isLoading: query.isLoading,
     error: query.error?.message || null,
     handleBack,
+    isError: query.isError,
+    refetch: query.refetch,
+  };
+};
+
+export const usePublicProfile = (userID: string) => {
+  const query = useQuery({
+    queryKey: ["user-profile", userID],
+    queryFn: () => fetchUserProfile(userID),
+    enabled: !!userID,
+    retry: 3,
+    retryDelay: 1000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  return {
+    profileData: query.data,
+    isLoading: query.isLoading,
+    error: query.error?.message || null,
     isError: query.isError,
     refetch: query.refetch,
   };

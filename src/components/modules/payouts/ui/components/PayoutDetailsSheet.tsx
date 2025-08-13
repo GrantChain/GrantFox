@@ -1,4 +1,5 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
+import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +7,8 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
-import { useIsMobile } from "@/hooks/useMobile";
+import type { Prisma } from "@/generated/prisma";
+import { useIsMobile, useIsTabletOrBelow } from "@/hooks/useMobile";
 import { formatCurrency } from "@/utils/format.utils";
 import Decimal from "decimal.js";
 import {
@@ -24,6 +26,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePayout } from "../../context/PayoutContext";
+import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import { usePayoutSheet } from "../../hooks/usePayoutSheet";
 import { statusColors } from "../../utils/card.utils";
 import { GranteeDetailsCard } from "./GranteeDetailsCard";
@@ -46,14 +49,13 @@ export function PayoutDetailsSheet({
   open,
   onOpenChange,
 }: PayoutDetailsSheetProps) {
-  const statusColor =
-    statusColors[payout.status as keyof typeof statusColors] ||
-    statusColors.DRAFT;
+  const statusColor = statusColors[payout.status];
 
   const [escrowBalance, setEscrowBalance] = useState<number | null>(null);
   const { address } = useGlobalWalletStore();
   const { fetchEscrowBalances, escrowBalances } = usePayout();
   const isMobile = useIsMobile();
+  const isTabletOrBelow = useIsTabletOrBelow();
 
   const {
     fetchSelectedGrantee,
@@ -66,6 +68,77 @@ export function PayoutDetailsSheet({
     usePayout();
   const { user } = useAuth();
   const [isManageMilestonesOpen, setIsManageMilestonesOpen] = useState(false);
+  const { handleGetEscrowByContractIds } = useEscrows();
+  const { updatePayoutMilestones } = usePayoutMutations();
+
+  const handleOpenManageMilestones = async () => {
+    try {
+      if (payout.escrow_id) {
+        const escrow = await handleGetEscrowByContractIds([payout.escrow_id]);
+        const escrowItem = Array.isArray(escrow) ? escrow[0] : escrow;
+        const milestonesFromEscrow = (escrowItem?.milestones || []) as Array<{
+          flags?: { resolved?: boolean };
+        }>;
+
+        const currentMilestones =
+          (payout.milestones as unknown as Milestone[]) || [];
+        let changed = false;
+        const nextMilestones = currentMilestones.map((m, idx) => {
+          const escrowResolved = Boolean(
+            (
+              milestonesFromEscrow[idx]?.flags as
+                | { resolved?: boolean }
+                | undefined
+            )?.resolved,
+          );
+          const escrowDisputed = Boolean(
+            (
+              milestonesFromEscrow[idx]?.flags as
+                | { disputed?: boolean }
+                | undefined
+            )?.disputed,
+          );
+          const prevFlags =
+            (
+              m as unknown as {
+                flags?: { resolved?: boolean; disputed?: boolean };
+              }
+            ).flags || {};
+          const wasResolved = Boolean(prevFlags.resolved);
+          const wasDisputed = Boolean(prevFlags.disputed);
+
+          if (!escrowResolved) {
+            return m;
+          }
+
+          const nextFlags = {
+            ...prevFlags,
+            resolved: true,
+            disputed: escrowDisputed,
+          };
+
+          if (
+            nextFlags.resolved !== wasResolved ||
+            nextFlags.disputed !== wasDisputed
+          ) {
+            changed = true;
+            return { ...m, flags: nextFlags } as Milestone;
+          }
+          return m;
+        });
+
+        if (changed) {
+          await updatePayoutMilestones.mutateAsync({
+            id: payout.payout_id,
+            milestones: nextMilestones as unknown as Prisma.JsonValue,
+          });
+          await fetchEscrowBalances([payout.escrow_id], { force: true });
+        }
+      }
+    } finally {
+      setIsManageMilestonesOpen(true);
+    }
+  };
 
   const cachedBalance = useMemo(() => {
     if (!payout.escrow_id) return null;
@@ -136,11 +209,6 @@ export function PayoutDetailsSheet({
     onOpenChange(newOpen);
   };
 
-  // open dialog from sheet
-  const handleOpenManageMilestones = () => {
-    setIsManageMilestonesOpen(true);
-  };
-
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent className="w-full sm:max-w-lg p-0 flex flex-col [&>button]:hidden">
@@ -154,7 +222,7 @@ export function PayoutDetailsSheet({
                 className="object-cover"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             </>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center">
@@ -194,8 +262,8 @@ export function PayoutDetailsSheet({
         </div>
 
         <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-4">
-            <Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="col-span-2 md:col-span-1">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
@@ -209,11 +277,11 @@ export function PayoutDetailsSheet({
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="col-span-2 md:col-span-1">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Wallet className="h-4 w-4" />
-                  Escrow Balance
+                  Current Balance
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -241,60 +309,89 @@ export function PayoutDetailsSheet({
                   Created
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex justify-between gap-2">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground flex gap-2">
                     {payout.created_at.toLocaleDateString()}
+                    <span className="text-muted-foreground">
+                      {payout.created_at.toLocaleTimeString()}
+                    </span>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {payout.created_at.toLocaleTimeString()}
-                  </div>
+                </div>
+
+                <div className="flex flex-col items-center gap-2">
+                  <Link
+                    href={`https://stellar.expert/explorer/testnet/contract/${payout.escrow_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground gap-2 flex items-center hover:underline"
+                  >
+                    Stellar Explorer
+                    <ExternalLink className="h-4 w-4" />
+                  </Link>
+
+                  <Link
+                    href={`https://viewer.trustlesswork.com/${payout.escrow_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground gap-2 flex items-center hover:underline"
+                  >
+                    Escrow Viewer
+                    <ExternalLink className="h-4 w-4" />
+                  </Link>
                 </div>
               </CardContent>
             </Card>
 
             {user?.role === "GRANTEE" && (
-              <Card className="col-span-2">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Created By
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingCreator ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-6 w-32" />
-                      <Skeleton className="h-4 w-full" />
-                    </div>
-                  ) : creator ? (
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          Organization:
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {creator?.organization_name || "No set"}
-                        </span>
+              <Link
+                href={`/dashboard/public-profile/${creator?.user_id}`}
+                className="col-span-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Created By
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoadingCreator ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-6 w-32" />
+                        <Skeleton className="h-4 w-full" />
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          Network Type:
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {creator?.network_type || "No set"}
-                        </span>
+                    ) : creator ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            Organization:
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {creator?.organization_name || "No set"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            Network Type:
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {creator?.network_type || "No set"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Email:</span>
+                          <span className="text-sm text-muted-foreground">
+                            {creator?.email || "No set"}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Email:</span>
-                        <span className="text-sm text-muted-foreground">
-                          {creator?.email || "No set"}
-                        </span>
-                      </div>
-                    </div>
-                  ) : null}
-                </CardContent>
-              </Card>
+                    ) : null}
+                  </CardContent>
+                </Card>
+              </Link>
             )}
           </div>
 
@@ -305,16 +402,6 @@ export function PayoutDetailsSheet({
                   <FileText className="h-4 w-4" />
                   Description
                 </div>
-
-                <Link
-                  href={`https://stellar.expert/explorer/testnet/contract/${payout.escrow_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground gap-2 flex items-center hover:underline"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Stellar Explorer
-                </Link>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -327,14 +414,26 @@ export function PayoutDetailsSheet({
           <Card>
             <CardHeader className="flex flex-row justify-between pb-2 items-center">
               <CardTitle className="text-base">Milestones</CardTitle>
-              <Button
-                variant="outline"
-                className="text-sm gap-2"
-                onClick={handleOpenManageMilestones}
-              >
-                <List className="h-4 w-4" />
-                Manage Milestones
-              </Button>
+              {isTabletOrBelow ? (
+                <Link
+                  href={`/dashboard/payout-provider/payouts/${payout.payout_id}/milestones`}
+                >
+                  <Button variant="outline" className="text-sm gap-2">
+                    <List className="h-4 w-4" />
+                    Manage Milestones
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="text-sm gap-2"
+                  onClick={handleOpenManageMilestones}
+                  disabled={payout.status !== "PUBLISHED"}
+                >
+                  <List className="h-4 w-4" />
+                  Manage Milestones
+                </Button>
+              )}
             </CardHeader>
             <CardContent>
               <div className="space-y-3 pr-2 max-h-56 overflow-auto">

@@ -136,10 +136,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className="flex flex-col gap-2 px-4 py-2 group-data-[collapsible=icon]:px-0">
           {!isConnected &&
             (open ? (
-              <div className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-200 rounded-md p-2 text-xs whitespace-nowrap">
-                <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-                <span>Connect wallet to continue</span>
-              </div>
+              <Link href="/dashboard/profile">
+                <div className="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-200 rounded-md p-2 text-xs whitespace-nowrap">
+                  <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                  <span>Connect wallet in your Profile</span>
+                </div>
+              </Link>
             ) : (
               <div className="flex items-center justify-center p-2 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-200 rounded-md text-xs">
                 <TooltipInfo content="Connect wallet to continue">

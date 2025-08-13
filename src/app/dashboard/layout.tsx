@@ -8,9 +8,25 @@ import { usePrefetchData } from "@/components/modules/auth/hooks/usePrefetchData
 import { PayoutContextProvider } from "@/components/modules/payouts/context/PayoutContext";
 import { RoleSelectionProvider } from "@/components/providers/role-selection.provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { useGlobalWalletStore } from "@/components/wallet/store/store";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const DashboardContent = ({ children }: { children: React.ReactNode }) => {
   usePrefetchData();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { address } = useGlobalWalletStore();
+
+  useEffect(() => {
+    if (!address) {
+      const isPublicProfile = pathname?.startsWith("/dashboard/public-profile");
+      const isProfile = pathname === "/dashboard/profile";
+      if (!isProfile && !isPublicProfile) {
+        router.push("/dashboard");
+      }
+    }
+  }, [address, pathname]);
 
   return (
     <SidebarProvider>

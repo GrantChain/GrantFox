@@ -8,11 +8,9 @@ export const generalInfoSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   wallet_address: z
     .string()
-    .optional()
-    .or(z.literal(""))
+    .min(1, "Wallet address is required")
     .refine(
       (val) => {
-        if (!val) return true;
         const regex = /^G[A-Z2-7]{55}$/;
         return regex.test(val);
       },
@@ -42,11 +40,7 @@ export const grantProviderSchema = z.object({
     .min(1, "Organization name is required")
     .max(100, "Organization name must be less than 100 characters"),
   network_type: z.string().optional().or(z.literal("")),
-  email: z
-    .string()
-    .email("Please enter a valid email address")
-    .optional()
-    .or(z.literal("")),
+  email: z.string().optional().or(z.literal("")),
 });
 
 export const granteeSchema = z.object({
@@ -67,3 +61,19 @@ export const granteeSchema = z.object({
 export type GeneralInfoFormData = z.infer<typeof generalInfoSchema>;
 export type GrantProviderFormData = z.infer<typeof grantProviderSchema>;
 export type GranteeFormData = z.infer<typeof granteeSchema>;
+
+// Payload schema for the /api/profile endpoint
+export const profileUpdatePayloadSchema = z.object({
+  userId: z.string().min(1),
+  user: generalInfoSchema.partial(),
+  grantee: z
+    .object({
+      name: z.string().max(100).optional(),
+      position_title: z.string().max(100).optional(),
+      social_media: z.record(z.string(), z.string()).nullable().optional(),
+    })
+    .optional(),
+  grantProvider: grantProviderSchema.partial().optional(),
+});
+
+export type ProfileUpdatePayload = z.infer<typeof profileUpdatePayloadSchema>;

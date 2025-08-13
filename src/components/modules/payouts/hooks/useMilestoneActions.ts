@@ -46,10 +46,23 @@ type CompleteArgs = ModerateArgs & {
   serviceProviderAddress?: string | null;
 };
 
+type RejectArgs = ModerateArgs & {
+  contractId?: string | null;
+};
+
+type ReleaseArgs = ModerateArgs & {
+  contractId?: string | null;
+};
+
 export const useMilestoneActions = () => {
   const { updatePayoutMilestones, uploadFiles, isUpdatingMilestones } =
     usePayoutMutations();
-  const { handleApproveMilestone, handleCompleteMilestone } = useEscrows();
+  const {
+    handleApproveMilestone,
+    handleCompleteMilestone,
+    handleRejectMilestone,
+    handleReleaseMilestone,
+  } = useEscrows();
 
   const completeMilestone = async (args: CompleteArgs) => {
     const {
@@ -98,7 +111,7 @@ export const useMilestoneActions = () => {
         });
 
         if (!result) {
-          toast.error("Failed to approve milestone");
+          toast.error("Failed to mark as completed");
           return;
         }
       }
@@ -250,29 +263,43 @@ export const useMilestoneActions = () => {
     }
   };
 
-  const rejectMilestone = async (args: ModerateArgs) => {
+  const rejectMilestone = async (args: RejectArgs) => {
     const {
       payoutId,
       milestoneIdx,
       localMilestones,
       setLocalMilestones,
       canModerate,
+      contractId,
     } = args;
     if (!canModerate) return;
 
     const next: Milestone[] = localMilestones.map((m, i) => {
       if (i !== milestoneIdx) return m;
       const prevFlags =
-        (m as unknown as { flags?: { approved?: boolean } }).flags || {};
+        (m as unknown as { flags?: { approved?: boolean; disputed?: boolean } })
+          .flags || {};
       return {
         ...m,
         status: "REJECTED",
         ...(m as Record<string, unknown>),
-        flags: { ...prevFlags, approved: false },
+        flags: { ...prevFlags, approved: false, disputed: true },
       } as Milestone;
     });
 
     try {
+      if (contractId) {
+        const ok = await handleRejectMilestone({
+          contractId,
+          milestoneIndex: String(milestoneIdx),
+          signer: "",
+        });
+        if (!ok) {
+          toast.error("Failed to start dispute");
+          return;
+        }
+      }
+
       await updatePayoutMilestones.mutateAsync({
         id: payoutId,
         milestones: next as unknown as Prisma.JsonValue,
@@ -282,6 +309,52 @@ export const useMilestoneActions = () => {
     } catch (e) {
       console.error("Error rejecting milestone:", e);
       toast.error("Failed to reject milestone. Please try again.");
+    }
+  };
+
+  const releaseMilestone = async (args: ReleaseArgs) => {
+    const {
+      payoutId,
+      milestoneIdx,
+      localMilestones,
+      setLocalMilestones,
+      canModerate,
+      contractId,
+    } = args;
+    if (!canModerate) return;
+
+    const next: Milestone[] = localMilestones.map((m, i) => {
+      if (i !== milestoneIdx) return m;
+      const prevFlags =
+        (m as unknown as { flags?: { released?: boolean } }).flags || {};
+      return {
+        ...m,
+        flags: { ...prevFlags, released: true },
+      } as Milestone;
+    });
+
+    try {
+      if (contractId) {
+        const ok = await handleReleaseMilestone({
+          contractId,
+          milestoneIndex: String(milestoneIdx),
+          releaseSigner: "",
+        });
+        if (!ok) {
+          toast.error("Failed to release funds");
+          return;
+        }
+      }
+
+      await updatePayoutMilestones.mutateAsync({
+        id: payoutId,
+        milestones: next as unknown as Prisma.JsonValue,
+      });
+      setLocalMilestones(next);
+      toast.success("Funds released");
+    } catch (e) {
+      console.error("Error releasing funds:", e);
+      toast.error("Failed to release funds. Please try again.");
     }
   };
 
@@ -341,6 +414,7 @@ export const useMilestoneActions = () => {
     submitFeedback,
     rejectMilestone,
     approveMilestone,
+    releaseMilestone,
     isUpdatingMilestones,
   };
 };

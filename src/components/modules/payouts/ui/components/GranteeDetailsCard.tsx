@@ -12,92 +12,103 @@ interface GranteeDetailsCardProps {
 
 export const GranteeDetailsCard = ({
   selectedGrantee,
-  showLink = true,
   showTitle = true,
   lessInfo = false,
 }: GranteeDetailsCardProps) => {
   const content = (
-    <Card>
-      {showTitle && (
-        <CardHeader className="pb-4">
-          <CardTitle className="text-base text-foreground">
-            Grantee Details
-          </CardTitle>
-        </CardHeader>
-      )}
-      <CardContent className={`${!showTitle && "mt-4"}`}>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-12 w-12">
-              <AvatarImage
-                src={
-                  selectedGrantee?.profile_url?.trim()
-                    ? selectedGrantee.profile_url
-                    : undefined
-                }
-                alt={selectedGrantee?.username || selectedGrantee?.email}
-              />
-              <AvatarFallback className="bg-muted text-muted-foreground">
-                {selectedGrantee?.username?.[0]?.toUpperCase() ||
-                  selectedGrantee?.email?.[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none text-foreground">
-                {selectedGrantee?.username || selectedGrantee?.email}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {selectedGrantee?.email}
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Username</span>
-              <span className="text-sm max-w-[200px] truncate text-foreground">
-                {selectedGrantee?.username || (
-                  <span className="text-muted-foreground italic">Not set</span>
-                )}
-              </span>
+    <Link
+      href={`/dashboard/public-profile/${selectedGrantee?.user_id}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <Card>
+        {showTitle && (
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base text-foreground">
+              Grantee Details
+            </CardTitle>
+          </CardHeader>
+        )}
+        <CardContent className={`${!showTitle && "mt-4"}`}>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-12 w-12">
+                <AvatarImage
+                  src={
+                    selectedGrantee?.profile_url?.trim()
+                      ? selectedGrantee.profile_url
+                      : undefined
+                  }
+                  alt={selectedGrantee?.username || selectedGrantee?.email}
+                />
+                <AvatarFallback className="bg-muted text-muted-foreground">
+                  {selectedGrantee?.username?.[0]?.toUpperCase() ||
+                    selectedGrantee?.email?.[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="space-y-1">
+                <p className="text-sm font-medium leading-none text-foreground">
+                  {selectedGrantee?.username || selectedGrantee?.email}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {selectedGrantee?.email}
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Location</span>
-              <span className="text-sm max-w-[200px] truncate text-foreground">
-                {selectedGrantee?.location || (
-                  <span className="text-muted-foreground italic">Not set</span>
-                )}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Wallet</span>
-              <span className="text-sm font-mono max-w-[200px] truncate text-foreground">
-                {selectedGrantee?.wallet_address ? (
-                  `${selectedGrantee.wallet_address.slice(0, 6)}...${selectedGrantee.wallet_address.slice(-4)}`
-                ) : (
-                  <span className="text-muted-foreground italic">Not set</span>
-                )}
-              </span>
-            </div>
-
-            {!lessInfo && (
-              <div className="flex flex-col justify-start items-start w-full">
-                <span className="text-sm text-muted-foreground">Bio</span>
-                <span className="text-sm line-clamp-4 w-full text-foreground">
-                  {selectedGrantee?.bio || (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Username</span>
+                <span className="text-sm max-w-[200px] truncate text-foreground">
+                  {selectedGrantee?.username || (
                     <span className="text-muted-foreground italic">
                       Not set
                     </span>
                   )}
                 </span>
               </div>
-            )}
+
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Location</span>
+                <span className="text-sm max-w-[200px] truncate text-foreground">
+                  {selectedGrantee?.location || (
+                    <span className="text-muted-foreground italic">
+                      Not set
+                    </span>
+                  )}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Wallet</span>
+                <span className="text-sm font-mono max-w-[200px] truncate text-foreground">
+                  {selectedGrantee?.wallet_address ? (
+                    `${selectedGrantee.wallet_address.slice(0, 6)}...${selectedGrantee.wallet_address.slice(-4)}`
+                  ) : (
+                    <span className="text-muted-foreground italic">
+                      Not set
+                    </span>
+                  )}
+                </span>
+              </div>
+
+              {!lessInfo && (
+                <div className="flex flex-col justify-start items-start w-full">
+                  <span className="text-sm text-muted-foreground">Bio</span>
+                  <span className="text-sm line-clamp-4 w-full text-foreground">
+                    {selectedGrantee?.bio || (
+                      <span className="text-muted-foreground italic">
+                        Not set
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   );
 
   if (!selectedGrantee) {
@@ -119,14 +130,6 @@ export const GranteeDetailsCard = ({
           </div>
         </CardContent>
       </Card>
-    );
-  }
-
-  if (showLink) {
-    return (
-      <Link href={`/profile/${selectedGrantee.user_id}`} target="_blank">
-        {content}
-      </Link>
     );
   }
 
