@@ -105,7 +105,29 @@ export const usePayoutMutations = () => {
         updated_at: new Date(),
       });
     },
-    onSuccess: () => {
+    onSuccess: (updated: Payout, variables: UpdateMilestonesPayload) => {
+      // Keep list in sync
+      queryClient.setQueriesData<{ data: Payout[]; total: number }>(
+        { queryKey: ["payouts"] },
+        (old) => {
+          if (!old) return old as { data: Payout[]; total: number } | undefined;
+          const nextData = old.data.map((p) =>
+            p.payout_id === variables.id
+              ? {
+                  ...p,
+                  milestones: updated.milestones,
+                  updated_at: updated.updated_at,
+                }
+              : p,
+          );
+          return { ...old, data: nextData };
+        },
+      );
+
+      // Keep single payout view in sync
+      queryClient.setQueryData(["payout", variables.id], updated);
+
+      // Also refetch active lists to ensure server truth
       queryClient.invalidateQueries({
         queryKey: ["payouts"],
         refetchType: "active",
