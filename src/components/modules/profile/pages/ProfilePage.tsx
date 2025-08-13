@@ -120,8 +120,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-[90rem] mx-auto">
-      <div className="space-y-6">
+    <div className="w-full mx-auto">
+      <div className="w-full flex gap-10">
         {/* General Information Form */}
         <GeneralInfoForm user={user} onSubmit={handleGeneralInfoSubmit} />
 

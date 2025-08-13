@@ -144,7 +144,8 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
             </div>
           )}
           <Badge
-            className={`absolute top-2 right-2 ${statusColors[payout.status]} hover:${statusColors[payout.status]}`}
+            variant={statusColors[payout.status]}
+            className="absolute top-2 right-2 text-xs"
           >
             {payout.status}
           </Badge>
@@ -182,7 +183,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
           <div className="mt-4 flex justify-between items-center">
             {user?.role === "PAYOUT_PROVIDER" && (
               <div className="flex gap-2">
-                <TooltipInfo content="Edit">
+                {/* <TooltipInfo content="Edit">
                   <Button
                     variant="outline"
                     size="icon"
@@ -196,7 +197,7 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
                       <Pencil className="w-4 h-4" />
                     )}
                   </Button>
-                </TooltipInfo>
+                </TooltipInfo> */}
 
                 <TooltipInfo content="Delete">
                   <Button

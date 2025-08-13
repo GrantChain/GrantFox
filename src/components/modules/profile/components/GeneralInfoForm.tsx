@@ -47,6 +47,8 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
     },
   });
 
+  console.log(user);
+
   const handleSubmit = (data: GeneralInfoFormData) => {
     onSubmit(data);
   };
@@ -55,7 +57,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
   const userName = form.watch("username");
 
   return (
-    <Card>
+    <Card className="w-full md:w-1/2">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Camera className="h-5 w-5" />
@@ -109,7 +111,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
             </div>
 
             {/* Cover Image */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="cover_url"
               render={({ field }) => (
@@ -124,7 +126,7 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

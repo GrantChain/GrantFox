@@ -60,7 +60,7 @@ export function GranteeForm({ grantee, onSubmit }: GranteeFormProps) {
   };
 
   return (
-    <Card>
+    <Card className="w-full md:w-1/2">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <UserCheck className="h-5 w-5" />
