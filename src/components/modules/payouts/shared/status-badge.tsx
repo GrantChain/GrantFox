@@ -7,12 +7,21 @@ export const getStatusBadge = (milestone: Milestone) => {
   const flags =
     (
       milestone as Record<string, unknown> & {
-        flags?: { approved?: boolean; disputed?: boolean; released?: boolean };
+        flags?: {
+          approved?: boolean;
+          disputed?: boolean;
+          released?: boolean;
+          resolved?: boolean;
+        };
       }
     ).flags || {};
 
   if (flags.released) {
     return <Badge variant="success">Released</Badge>;
+  }
+
+  if (flags.resolved) {
+    return <Badge variant="success">Resolved</Badge>;
   }
 
   // Show Pending Release for COMPLETED regardless of approved flag
