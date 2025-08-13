@@ -17,11 +17,11 @@ import type {
   ApproveMilestonePayload,
   ChangeMilestoneStatusPayload,
   FundEscrowPayload,
-  MultiReleaseStartDisputePayload,
-  MultiReleaseResolveDisputePayload,
-  MultiReleaseReleaseFundsPayload,
   InitializeMultiReleaseEscrowPayload,
   InitializeMultiReleaseEscrowResponse,
+  MultiReleaseReleaseFundsPayload,
+  MultiReleaseResolveDisputePayload,
+  MultiReleaseStartDisputePayload,
 } from "@trustless-work/escrow/types";
 import type { AxiosError } from "axios";
 import { useState } from "react";
