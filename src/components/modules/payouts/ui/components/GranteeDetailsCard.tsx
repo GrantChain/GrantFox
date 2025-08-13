@@ -12,7 +12,6 @@ interface GranteeDetailsCardProps {
 
 export const GranteeDetailsCard = ({
   selectedGrantee,
-  showLink = true,
   showTitle = true,
   lessInfo = false,
 }: GranteeDetailsCardProps) => {

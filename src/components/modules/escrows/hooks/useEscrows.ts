@@ -21,7 +21,6 @@ import type {
   GetEscrowsFromIndexerResponse,
   InitializeMultiReleaseEscrowPayload,
   InitializeMultiReleaseEscrowResponse,
-  MultiReleaseEscrow,
   MultiReleaseReleaseFundsPayload,
   MultiReleaseResolveDisputePayload,
   MultiReleaseStartDisputePayload,

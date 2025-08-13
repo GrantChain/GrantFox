@@ -1,4 +1,4 @@
-import { Home, LifeBuoy, Sparkles } from "lucide-react";
+import { Home, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface NavItem {
