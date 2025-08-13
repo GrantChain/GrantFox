@@ -254,47 +254,54 @@ export function PayoutDetailsSheet({
             </Card>
 
             {user?.role === "GRANTEE" && (
-              <Card className="col-span-2">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Created By
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingCreator ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-6 w-32" />
-                      <Skeleton className="h-4 w-full" />
-                    </div>
-                  ) : creator ? (
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          Organization:
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {creator?.organization_name || "No set"}
-                        </span>
+              <Link
+                href={`/dashboard/public-profile/${creator?.user_id}`}
+                className="col-span-2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Created By
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoadingCreator ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-6 w-32" />
+                        <Skeleton className="h-4 w-full" />
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          Network Type:
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {creator?.network_type || "No set"}
-                        </span>
+                    ) : creator ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            Organization:
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {creator?.organization_name || "No set"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            Network Type:
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {creator?.network_type || "No set"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Email:</span>
+                          <span className="text-sm text-muted-foreground">
+                            {creator?.email || "No set"}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">Email:</span>
-                        <span className="text-sm text-muted-foreground">
-                          {creator?.email || "No set"}
-                        </span>
-                      </div>
-                    </div>
-                  ) : null}
-                </CardContent>
-              </Card>
+                    ) : null}
+                  </CardContent>
+                </Card>
+              </Link>
             )}
           </div>
 
