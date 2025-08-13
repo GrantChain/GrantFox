@@ -306,7 +306,7 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                           )}
                           {canSubmitEvidence
                             ? isApproved && !isCompleted
-                              ? "Complete"
+                              ? "Mark as completed"
                               : "Submit Evidence"
                             : "Moderate"}
                         </Button>
@@ -316,7 +316,7 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                           <DialogTitle>
                             {canSubmitEvidence
                               ? isApproved && !isCompleted
-                                ? "Complete"
+                                ? "Mark as completed"
                                 : "Submit Evidence"
                               : "Moderate"}
                           </DialogTitle>
@@ -334,7 +334,7 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                                   disabled={isUpdatingMilestones}
                                   className="w-full"
                                 >
-                                  Complete
+                                  Mark as completed
                                 </Button>
                               </div>
                             ) : (

@@ -164,11 +164,12 @@ export function PayoutCard({ payout }: PayoutsCardProps) {
                 </span>
               )}
               <span>
-                {formatCurrency(undefined, new Decimal(payout.total_funding))}
+                {formatCurrency(undefined, new Decimal(escrowBalance || 0))}
               </span>
+
               <span className="text-muted-foreground mx-1">/</span>
               <span>
-                {formatCurrency(undefined, new Decimal(escrowBalance || 0))}
+                {formatCurrency(undefined, new Decimal(payout.total_funding))}
               </span>
             </div>
           </div>

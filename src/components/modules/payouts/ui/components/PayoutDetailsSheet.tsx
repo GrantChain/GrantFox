@@ -194,8 +194,8 @@ export function PayoutDetailsSheet({
         </div>
 
         <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-4">
-            <Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="col-span-2 md:col-span-1">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
@@ -209,11 +209,11 @@ export function PayoutDetailsSheet({
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="col-span-2 md:col-span-1">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Wallet className="h-4 w-4" />
-                  Escrow Balance
+                  Current Balance
                 </CardTitle>
               </CardHeader>
               <CardContent>
