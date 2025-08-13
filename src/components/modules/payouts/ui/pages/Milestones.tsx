@@ -2,6 +2,7 @@
 
 import type { Evidence, Feedback, Milestone } from "@/@types/milestones.entity";
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
+import { PayoutContext } from "@/components/modules/payouts/context/PayoutContext";
 import { usePayouts } from "@/components/modules/payouts/hooks/usePayouts";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,11 +34,12 @@ import {
   Package,
   ShieldCheck,
   ShieldX,
+  SquareArrowOutUpRight,
   Strikethrough,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useMilestoneActions } from "../../hooks/useMilestoneActions";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import { payoutsService } from "../../services/payouts.service";
@@ -156,6 +158,7 @@ const PageHeader = ({ payout }: { payout: Payout }) => {
 
 const MilestonesList = ({ payout }: { payout: Payout }) => {
   const { user } = useAuth();
+  const payoutCtx = useContext(PayoutContext);
   const canSubmitEvidence = user?.role === "GRANTEE";
   const canModerate =
     user?.role === "PAYOUT_PROVIDER" || user?.role === "ADMIN";
@@ -166,6 +169,7 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
     rejectMilestone,
     approveMilestone,
     completeMilestone,
+    releaseMilestone,
   } = useMilestoneActions();
 
   const [localMilestones, setLocalMilestones] = useState<Milestone[]>(
@@ -190,6 +194,16 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
   const [feedbackFiles, setFeedbackFiles] = useState<Record<number, File[]>>(
     {},
   );
+
+  const escrowId = payout.escrow_id || "";
+  const escrowBalance =
+    escrowId && payoutCtx ? payoutCtx.escrowBalances[escrowId] || 0 : 0;
+  const hasEscrowBalance = (escrowBalance || 0) > 0;
+
+  useEffect(() => {
+    if (!escrowId || !payoutCtx) return;
+    payoutCtx.fetchEscrowBalances([escrowId]).catch(() => {});
+  }, [escrowId, payoutCtx]);
 
   const handleSubmitEvidence = async (milestoneIdx: number) => {
     await submitEvidence({
@@ -245,6 +259,7 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
       localMilestones,
       setLocalMilestones,
       canModerate,
+      contractId: payout.escrow_id || undefined,
     });
   };
 
@@ -260,6 +275,17 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
     });
   };
 
+  const handleRelease = async (milestoneIdx: number) => {
+    await releaseMilestone({
+      payoutId: payout.payout_id,
+      milestoneIdx,
+      localMilestones,
+      setLocalMilestones,
+      canModerate,
+      contractId: payout.escrow_id || undefined,
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {localMilestones.map((m, idx) => {
@@ -272,6 +298,20 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
           ).flags?.approved,
         );
         const isCompleted = m.status === "COMPLETED";
+        const flags =
+          (
+            m as unknown as {
+              flags?: {
+                approved?: boolean;
+                disputed?: boolean;
+                released?: boolean;
+                resolved?: boolean;
+              };
+            }
+          ).flags || {};
+        const isDisputed = Boolean(flags.disputed);
+        const isReleased = Boolean(flags.released);
+        const isResolved = Boolean(flags.resolved);
         const hasEvidence = evidences.length > 0;
         return (
           <Card key={idx} className="border">
@@ -286,226 +326,303 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                 </div>
                 <div className="flex items-center gap-2">
                   {getStatusBadge(m)}
-                  {((canSubmitEvidence && !isCompleted) || canModerate) && (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={
-                            (isApproved && canModerate) ||
-                            (canModerate && !hasEvidence)
-                          }
-                          aria-disabled={
-                            (isApproved && canModerate) ||
-                            (canModerate && !hasEvidence)
-                          }
-                          className={
-                            (isApproved && canModerate) ||
-                            (canModerate && !hasEvidence)
-                              ? "pointer-events-none opacity-60"
-                              : ""
-                          }
-                        >
-                          {canSubmitEvidence ? (
-                            <Package className="h-4 w-4 mr-1" />
-                          ) : (
-                            <ShieldCheck className="h-4 w-4 mr-1" />
-                          )}
-                          {canSubmitEvidence
-                            ? isApproved && !isCompleted
-                              ? "Mark as completed"
-                              : "Submit Evidence"
-                            : "Moderate"}
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>
-                            {canSubmitEvidence
-                              ? isApproved && !isCompleted
-                                ? "Mark as completed"
-                                : "Submit Evidence"
-                              : "Moderate"}
-                          </DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-6">
-                          {canSubmitEvidence &&
-                            (isApproved && !isCompleted ? (
-                              <div className="space-y-3">
-                                <p className="text-sm text-muted-foreground">
-                                  Mark this milestone as completed once your
-                                  work is done.
-                                </p>
-                                <Button
-                                  onClick={() => handleComplete(idx)}
-                                  disabled={isUpdatingMilestones}
-                                  className="w-full"
-                                >
-                                  Mark as completed
-                                </Button>
-                              </div>
+                  {canSubmitEvidence &&
+                  isApproved &&
+                  !isCompleted &&
+                  !isDisputed &&
+                  !isReleased &&
+                  !isResolved ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleComplete(idx)}
+                      disabled={isUpdatingMilestones}
+                    >
+                      <Package className="h-4 w-4 mr-1" />
+                      Mark as completed
+                    </Button>
+                  ) : (
+                    ((canSubmitEvidence && !isCompleted) || canModerate) && (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={
+                              (isApproved && canModerate) ||
+                              (canModerate && !hasEvidence)
+                            }
+                            aria-disabled={
+                              (isApproved && canModerate) ||
+                              (canModerate && !hasEvidence)
+                            }
+                            className={
+                              (isApproved && canModerate) ||
+                              (canModerate && !hasEvidence)
+                                ? "pointer-events-none opacity-60"
+                                : ""
+                            }
+                          >
+                            {canSubmitEvidence ? (
+                              <Package className="h-4 w-4 mr-1" />
                             ) : (
-                              <div className="space-y-3">
-                                <div className="space-y-2">
-                                  <Label htmlFor={`evidence-${idx}`}>
-                                    Evidence
-                                  </Label>
-                                  <Textarea
-                                    id={`evidence-${idx}`}
-                                    placeholder="Paste a URL or write a short evidence description"
-                                    value={evidenceUrl[idx] || ""}
-                                    onChange={(e) =>
-                                      setEvidenceUrl((prev) => ({
-                                        ...prev,
-                                        [idx]: e.target.value,
-                                      }))
-                                    }
-                                    rows={2}
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor={`evidence-notes-${idx}`}>
-                                    Evidence Notes
-                                  </Label>
-                                  <Textarea
-                                    id={`evidence-notes-${idx}`}
-                                    placeholder="Describe your work, provide context, or add any relevant information..."
-                                    value={evidenceNotes[idx] || ""}
-                                    onChange={(e) =>
-                                      setEvidenceNotes((prev) => ({
-                                        ...prev,
-                                        [idx]: e.target.value,
-                                      }))
-                                    }
-                                    rows={3}
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor={`evidence-files-${idx}`}>
-                                    Attach up to 3 files
-                                  </Label>
-                                  <Input
-                                    id={`evidence-files-${idx}`}
-                                    type="file"
-                                    multiple
-                                    onChange={(e) =>
-                                      setEvidenceFiles((prev) => ({
-                                        ...prev,
-                                        [idx]: Array.from(
-                                          e.target.files || [],
-                                        ).slice(0, 3),
-                                      }))
-                                    }
-                                  />
-                                  {(evidenceFiles[idx]?.length || 0) > 0 && (
-                                    <div className="text-xs text-muted-foreground">
-                                      {evidenceFiles[idx]
-                                        ?.map((f) => f.name)
-                                        .join(", ")}
-                                    </div>
-                                  )}
-                                </div>
-                                <Button
-                                  onClick={() => handleSubmitEvidence(idx)}
-                                  disabled={isUpdatingMilestones}
-                                  className="w-full"
-                                >
-                                  Submit Evidence
-                                </Button>
-                              </div>
-                            ))}
-
-                          {canSubmitEvidence && canModerate && hasEvidence && (
-                            <div className="border-t border-muted my-4" />
-                          )}
-
-                          {canModerate && hasEvidence && (
-                            <div className="space-y-4">
-                              <div className="space-y-2">
-                                <Label htmlFor={`feedback-message-${idx}`}>
-                                  Feedback Message
-                                </Label>
-                                <Textarea
-                                  id={`feedback-message-${idx}`}
-                                  placeholder="Provide feedback, suggestions, or comments for the grantee..."
-                                  value={feedbackMessage[idx] || ""}
-                                  onChange={(e) =>
-                                    setFeedbackMessage((prev) => ({
-                                      ...prev,
-                                      [idx]: e.target.value,
-                                    }))
-                                  }
-                                  rows={3}
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor={`feedback-files-${idx}`}>
-                                  Attach up to 3 files
-                                </Label>
-                                <Input
-                                  id={`feedback-files-${idx}`}
-                                  type="file"
-                                  multiple
-                                  onChange={(e) =>
-                                    setFeedbackFiles((prev) => ({
-                                      ...prev,
-                                      [idx]: Array.from(
-                                        e.target.files || [],
-                                      ).slice(0, 3),
-                                    }))
-                                  }
-                                />
-                                {(feedbackFiles[idx]?.length || 0) > 0 && (
-                                  <div className="text-xs text-muted-foreground">
-                                    {feedbackFiles[idx]
-                                      ?.map((f) => f.name)
-                                      .join(", ")}
+                              <ShieldCheck className="h-4 w-4 mr-1" />
+                            )}
+                            {canSubmitEvidence ? "Submit Evidence" : "Moderate"}
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>
+                              {canSubmitEvidence
+                                ? "Submit Evidence"
+                                : "Moderate"}
+                            </DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-6">
+                            {canSubmitEvidence &&
+                              !isDisputed &&
+                              !isReleased &&
+                              !isResolved &&
+                              !isCompleted && (
+                                <div className="space-y-3">
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`evidence-${idx}`}>
+                                      Evidence
+                                    </Label>
+                                    <Textarea
+                                      id={`evidence-${idx}`}
+                                      placeholder="Paste a URL or write a short evidence description"
+                                      value={evidenceUrl[idx] || ""}
+                                      onChange={(e) =>
+                                        setEvidenceUrl((prev) => ({
+                                          ...prev,
+                                          [idx]: e.target.value,
+                                        }))
+                                      }
+                                      rows={2}
+                                    />
                                   </div>
-                                )}
-                              </div>
-                              <div className="space-y-2">
-                                <Button
-                                  variant="outline"
-                                  onClick={() => handleSubmitFeedback(idx)}
-                                  disabled={
-                                    isUpdatingMilestones ||
-                                    !(feedbackMessage[idx] || "").trim() ||
-                                    !hasEvidence
-                                  }
-                                  className="w-full"
-                                >
-                                  Submit Feedback
-                                </Button>
-                                <div className="flex gap-2">
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`evidence-notes-${idx}`}>
+                                      Evidence Notes
+                                    </Label>
+                                    <Textarea
+                                      id={`evidence-notes-${idx}`}
+                                      placeholder="Describe your work, provide context, or add any relevant information..."
+                                      value={evidenceNotes[idx] || ""}
+                                      onChange={(e) =>
+                                        setEvidenceNotes((prev) => ({
+                                          ...prev,
+                                          [idx]: e.target.value,
+                                        }))
+                                      }
+                                      rows={3}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`evidence-files-${idx}`}>
+                                      Attach up to 3 files
+                                    </Label>
+                                    <Input
+                                      id={`evidence-files-${idx}`}
+                                      type="file"
+                                      multiple
+                                      onChange={(e) =>
+                                        setEvidenceFiles((prev) => ({
+                                          ...prev,
+                                          [idx]: Array.from(
+                                            e.target.files || [],
+                                          ).slice(0, 3),
+                                        }))
+                                      }
+                                    />
+                                    {(evidenceFiles[idx]?.length || 0) > 0 && (
+                                      <div className="text-xs text-muted-foreground">
+                                        {evidenceFiles[idx]
+                                          ?.map((f) => f.name)
+                                          .join(", ")}
+                                      </div>
+                                    )}
+                                  </div>
                                   <Button
-                                    variant="destructive"
-                                    onClick={() => handleReject(idx)}
-                                    disabled={
-                                      isUpdatingMilestones || !hasEvidence
-                                    }
-                                    className="flex-1"
+                                    onClick={() => handleSubmitEvidence(idx)}
+                                    disabled={isUpdatingMilestones}
+                                    className="w-full"
                                   >
-                                    <ShieldX className="h-4 w-4 mr-2" /> Reject
-                                  </Button>
-                                  <Button
-                                    variant="success"
-                                    onClick={() => handleApprove(idx)}
-                                    disabled={
-                                      isUpdatingMilestones || !hasEvidence
-                                    }
-                                    className="flex-1"
-                                  >
-                                    <ShieldCheck className="h-4 w-4 mr-2" />{" "}
-                                    Approve
+                                    Submit Evidence
                                   </Button>
                                 </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                              )}
+
+                            {canSubmitEvidence &&
+                              canModerate &&
+                              hasEvidence &&
+                              !isCompleted &&
+                              !isReleased &&
+                              !isResolved && (
+                                <div className="border-t border-muted my-4" />
+                              )}
+
+                            {canModerate &&
+                              hasEvidence &&
+                              !isCompleted &&
+                              !isReleased &&
+                              !isResolved && (
+                                <div className="space-y-4">
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`feedback-message-${idx}`}>
+                                      Feedback Message
+                                    </Label>
+                                    <Textarea
+                                      id={`feedback-message-${idx}`}
+                                      placeholder="Provide feedback, suggestions, or comments for the grantee..."
+                                      value={feedbackMessage[idx] || ""}
+                                      onChange={(e) =>
+                                        setFeedbackMessage((prev) => ({
+                                          ...prev,
+                                          [idx]: e.target.value,
+                                        }))
+                                      }
+                                      rows={3}
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`feedback-files-${idx}`}>
+                                      Attach up to 3 files
+                                    </Label>
+                                    <Input
+                                      id={`feedback-files-${idx}`}
+                                      type="file"
+                                      multiple
+                                      onChange={(e) =>
+                                        setFeedbackFiles((prev) => ({
+                                          ...prev,
+                                          [idx]: Array.from(
+                                            e.target.files || [],
+                                          ).slice(0, 3),
+                                        }))
+                                      }
+                                    />
+                                    {(feedbackFiles[idx]?.length || 0) > 0 && (
+                                      <div className="text-xs text-muted-foreground">
+                                        {feedbackFiles[idx]
+                                          ?.map((f) => f.name)
+                                          .join(", ")}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Button
+                                      variant="outline"
+                                      onClick={() => handleSubmitFeedback(idx)}
+                                      disabled={
+                                        isUpdatingMilestones ||
+                                        !(feedbackMessage[idx] || "").trim() ||
+                                        !hasEvidence
+                                      }
+                                      className="w-full"
+                                    >
+                                      Submit Feedback
+                                    </Button>
+                                    <div className="flex gap-2">
+                                      <Button
+                                        variant="destructive"
+                                        onClick={() => handleReject(idx)}
+                                        disabled={
+                                          isUpdatingMilestones ||
+                                          !hasEvidence ||
+                                          !hasEscrowBalance ||
+                                          isDisputed
+                                        }
+                                        className="flex-1"
+                                      >
+                                        <ShieldX className="h-4 w-4 mr-2" />{" "}
+                                        Reject
+                                      </Button>
+                                      <Button
+                                        variant="success"
+                                        onClick={() => handleApprove(idx)}
+                                        disabled={
+                                          isUpdatingMilestones || !hasEvidence
+                                        }
+                                        className="flex-1"
+                                      >
+                                        <ShieldCheck className="h-4 w-4 mr-2" />{" "}
+                                        Approve
+                                      </Button>
+                                      {(() => {
+                                        const released = Boolean(
+                                          (
+                                            m as unknown as {
+                                              flags?: { released?: boolean };
+                                            }
+                                          ).flags?.released,
+                                        );
+                                        if (!isCompleted || released)
+                                          return null;
+                                        return (
+                                          <Button
+                                            variant="success"
+                                            onClick={() => handleRelease(idx)}
+                                            disabled={
+                                              isUpdatingMilestones ||
+                                              !hasEscrowBalance
+                                            }
+                                            className="flex-1"
+                                          >
+                                            <SquareArrowOutUpRight className="h-4 w-4 mr-2" />
+                                            Release
+                                          </Button>
+                                        );
+                                      })()}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                            {/* Moderation Actions for Completed Milestones */}
+                            {canModerate &&
+                              isCompleted &&
+                              !isReleased &&
+                              !isResolved && (
+                                <div className="space-y-4">
+                                  <div className="flex items-center gap-2">
+                                    <ShieldCheck className="h-4 w-4" />
+                                    <h4 className="font-medium">
+                                      Release Funds
+                                    </h4>
+                                  </div>
+                                  {(() => {
+                                    const released = Boolean(
+                                      (
+                                        m as unknown as {
+                                          flags?: { released?: boolean };
+                                        }
+                                      ).flags?.released,
+                                    );
+                                    if (released) return null;
+                                    return (
+                                      <Button
+                                        variant="success"
+                                        onClick={() => handleRelease(idx)}
+                                        disabled={
+                                          isUpdatingMilestones ||
+                                          !hasEscrowBalance
+                                        }
+                                        className="w-full"
+                                      >
+                                        <SquareArrowOutUpRight className="h-4 w-4 mr-2" />
+                                        Release Funds
+                                      </Button>
+                                    );
+                                  })()}
+                                </div>
+                              )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    )
                   )}
                 </div>
               </div>
