@@ -1,4 +1,5 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
+import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
+import type { Prisma } from "@/generated/prisma";
 import { useIsMobile, useIsTabletOrBelow } from "@/hooks/useMobile";
 import { formatCurrency } from "@/utils/format.utils";
 import Decimal from "decimal.js";
@@ -24,13 +26,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePayout } from "../../context/PayoutContext";
+import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import { usePayoutSheet } from "../../hooks/usePayoutSheet";
 import { statusColors } from "../../utils/card.utils";
 import { GranteeDetailsCard } from "./GranteeDetailsCard";
 import { ManageMilestonesDialog } from "./ManageMilestonesDialog";
-import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
-import { usePayoutMutations } from "../../hooks/usePayoutMutations";
-import type { Prisma } from "@/generated/prisma";
 
 // todo: add from tw
 type Milestone = {
