@@ -2,6 +2,7 @@
 
 import type { Evidence, Feedback, Milestone } from "@/@types/milestones.entity";
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
+import { useEscrowResolutionWatch } from "@/components/modules/escrows/hooks/useEscrowResolutionWatch";
 import { PayoutContext } from "@/components/modules/payouts/context/PayoutContext";
 import { usePayouts } from "@/components/modules/payouts/hooks/usePayouts";
 import { Button } from "@/components/ui/button";
@@ -32,9 +33,9 @@ import {
   ExternalLink,
   FileText,
   Package,
+  PiggyBank,
   ShieldCheck,
   ShieldX,
-  SquareArrowOutUpRight,
   Strikethrough,
 } from "lucide-react";
 import Link from "next/link";
@@ -73,6 +74,18 @@ const Milestones = () => {
   });
 
   const payout: Payout | undefined = payoutFromList ?? oneData ?? undefined;
+
+  const { isChecking: isCheckingEscrowResolution, checkEscrowResolution } =
+    useEscrowResolutionWatch({
+      payout: payout!,
+      enabled: Boolean(payout?.escrow_id),
+    });
+
+  useEffect(() => {
+    if (payout?.escrow_id) {
+      checkEscrowResolution();
+    }
+  }, [payout?.escrow_id, checkEscrowResolution]);
 
   const isLoading =
     isAuthLoading || isListLoading || isListFetching || isOneLoading;
@@ -313,19 +326,67 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
         const isReleased = Boolean(flags.released);
         const isResolved = Boolean(flags.resolved);
         const hasEvidence = evidences.length > 0;
+        const canLeaveFeedback =
+          canModerate &&
+          hasEvidence &&
+          !isCompleted &&
+          !isReleased &&
+          !isResolved &&
+          !isDisputed;
+        const canShowApproveReject = canLeaveFeedback;
+        const canShowRelease =
+          canModerate && isCompleted && !isReleased && !isResolved;
+        const moderateDisabled = canSubmitEvidence
+          ? isDisputed || isReleased || isResolved || isCompleted
+          : !canLeaveFeedback;
         return (
           <Card key={idx} className="border">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <div>
+                <div className="flex flex-col justify-start items-start gap-2">
                   <CardTitle className="text-lg">{m.description}</CardTitle>
                   <CardDescription>
                     <span className="font-bold mr-1">Amount:</span>{" "}
                     {formatCurrency(payout.currency, new Decimal(m.amount))}
                   </CardDescription>
+                  {getStatusBadge(m)}
                 </div>
                 <div className="flex items-center gap-2">
-                  {getStatusBadge(m)}
+                  {canModerate && !isCompleted && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleReject(idx)}
+                        disabled={
+                          isUpdatingMilestones ||
+                          !canShowApproveReject ||
+                          !hasEscrowBalance
+                        }
+                      >
+                        <ShieldX className="h-4 w-4 mr-1" /> Reject
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="success"
+                        onClick={() => handleApprove(idx)}
+                        disabled={isUpdatingMilestones || !canShowApproveReject}
+                      >
+                        <ShieldCheck className="h-4 w-4 mr-1" /> Approve
+                      </Button>
+                    </>
+                  )}
+                  {canModerate && canShowRelease && (
+                    <Button
+                      size="sm"
+                      variant="success"
+                      onClick={() => handleRelease(idx)}
+                      disabled={isUpdatingMilestones || !hasEscrowBalance}
+                    >
+                      <PiggyBank className="h-4 w-4 mr-1" />
+                      Release
+                    </Button>
+                  )}
                   {canSubmitEvidence &&
                   isApproved &&
                   !isCompleted &&
@@ -348,17 +409,10 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                           <Button
                             size="sm"
                             variant="outline"
-                            disabled={
-                              (isApproved && canModerate) ||
-                              (canModerate && !hasEvidence)
-                            }
-                            aria-disabled={
-                              (isApproved && canModerate) ||
-                              (canModerate && !hasEvidence)
-                            }
+                            disabled={moderateDisabled}
+                            aria-disabled={moderateDisabled}
                             className={
-                              (isApproved && canModerate) ||
-                              (canModerate && !hasEvidence)
+                              moderateDisabled
                                 ? "pointer-events-none opacity-60"
                                 : ""
                             }
@@ -525,100 +579,11 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                                     >
                                       Submit Feedback
                                     </Button>
-                                    <div className="flex gap-2">
-                                      <Button
-                                        variant="destructive"
-                                        onClick={() => handleReject(idx)}
-                                        disabled={
-                                          isUpdatingMilestones ||
-                                          !hasEvidence ||
-                                          !hasEscrowBalance ||
-                                          isDisputed
-                                        }
-                                        className="flex-1"
-                                      >
-                                        <ShieldX className="h-4 w-4 mr-2" />{" "}
-                                        Reject
-                                      </Button>
-                                      <Button
-                                        variant="success"
-                                        onClick={() => handleApprove(idx)}
-                                        disabled={
-                                          isUpdatingMilestones || !hasEvidence
-                                        }
-                                        className="flex-1"
-                                      >
-                                        <ShieldCheck className="h-4 w-4 mr-2" />{" "}
-                                        Approve
-                                      </Button>
-                                      {(() => {
-                                        const released = Boolean(
-                                          (
-                                            m as unknown as {
-                                              flags?: { released?: boolean };
-                                            }
-                                          ).flags?.released,
-                                        );
-                                        if (!isCompleted || released)
-                                          return null;
-                                        return (
-                                          <Button
-                                            variant="success"
-                                            onClick={() => handleRelease(idx)}
-                                            disabled={
-                                              isUpdatingMilestones ||
-                                              !hasEscrowBalance
-                                            }
-                                            className="flex-1"
-                                          >
-                                            <SquareArrowOutUpRight className="h-4 w-4 mr-2" />
-                                            Release
-                                          </Button>
-                                        );
-                                      })()}
-                                    </div>
                                   </div>
                                 </div>
                               )}
 
-                            {/* Moderation Actions for Completed Milestones */}
-                            {canModerate &&
-                              isCompleted &&
-                              !isReleased &&
-                              !isResolved && (
-                                <div className="space-y-4">
-                                  <div className="flex items-center gap-2">
-                                    <ShieldCheck className="h-4 w-4" />
-                                    <h4 className="font-medium">
-                                      Release Funds
-                                    </h4>
-                                  </div>
-                                  {(() => {
-                                    const released = Boolean(
-                                      (
-                                        m as unknown as {
-                                          flags?: { released?: boolean };
-                                        }
-                                      ).flags?.released,
-                                    );
-                                    if (released) return null;
-                                    return (
-                                      <Button
-                                        variant="success"
-                                        onClick={() => handleRelease(idx)}
-                                        disabled={
-                                          isUpdatingMilestones ||
-                                          !hasEscrowBalance
-                                        }
-                                        className="w-full"
-                                      >
-                                        <SquareArrowOutUpRight className="h-4 w-4 mr-2" />
-                                        Release Funds
-                                      </Button>
-                                    );
-                                  })()}
-                                </div>
-                              )}
+                            {/* Moderation actions moved out of modal on page view */}
                           </div>
                         </DialogContent>
                       </Dialog>
