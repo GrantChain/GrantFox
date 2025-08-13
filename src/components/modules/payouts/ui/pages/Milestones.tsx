@@ -272,6 +272,7 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
           ).flags?.approved,
         );
         const isCompleted = m.status === "COMPLETED";
+        const hasEvidence = evidences.length > 0;
         return (
           <Card key={idx} className="border">
             <CardHeader>
@@ -291,10 +292,17 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                         <Button
                           size="sm"
                           variant="outline"
-                          disabled={isApproved && canModerate}
-                          aria-disabled={isApproved && canModerate}
+                          disabled={
+                            (isApproved && canModerate) ||
+                            (canModerate && !hasEvidence)
+                          }
+                          aria-disabled={
+                            (isApproved && canModerate) ||
+                            (canModerate && !hasEvidence)
+                          }
                           className={
-                            isApproved && canModerate
+                            (isApproved && canModerate) ||
+                            (canModerate && !hasEvidence)
                               ? "pointer-events-none opacity-60"
                               : ""
                           }
@@ -408,11 +416,11 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                               </div>
                             ))}
 
-                          {canSubmitEvidence && canModerate && (
+                          {canSubmitEvidence && canModerate && hasEvidence && (
                             <div className="border-t border-muted my-4" />
                           )}
 
-                          {canModerate && (
+                          {canModerate && hasEvidence && (
                             <div className="space-y-4">
                               <div className="space-y-2">
                                 <Label htmlFor={`feedback-message-${idx}`}>
@@ -462,7 +470,8 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                                   onClick={() => handleSubmitFeedback(idx)}
                                   disabled={
                                     isUpdatingMilestones ||
-                                    !(feedbackMessage[idx] || "").trim()
+                                    !(feedbackMessage[idx] || "").trim() ||
+                                    !hasEvidence
                                   }
                                   className="w-full"
                                 >
@@ -472,7 +481,9 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                                   <Button
                                     variant="destructive"
                                     onClick={() => handleReject(idx)}
-                                    disabled={isUpdatingMilestones}
+                                    disabled={
+                                      isUpdatingMilestones || !hasEvidence
+                                    }
                                     className="flex-1"
                                   >
                                     <ShieldX className="h-4 w-4 mr-2" /> Reject
@@ -480,7 +491,9 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                                   <Button
                                     variant="success"
                                     onClick={() => handleApprove(idx)}
-                                    disabled={isUpdatingMilestones}
+                                    disabled={
+                                      isUpdatingMilestones || !hasEvidence
+                                    }
                                     className="flex-1"
                                   >
                                     <ShieldCheck className="h-4 w-4 mr-2" />{" "}
