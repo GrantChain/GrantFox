@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGlobalWalletStore } from "@/components/wallet/store/store";
 import type { Payout } from "@/generated/prisma";
-import { useIsMobile } from "@/hooks/useMobile";
+import { useIsMobile, useIsTabletOrBelow } from "@/hooks/useMobile";
 import { formatCurrency } from "@/utils/format.utils";
 import Decimal from "decimal.js";
 import {
@@ -52,6 +52,7 @@ export function PayoutDetailsSheet({
   const { address } = useGlobalWalletStore();
   const { fetchEscrowBalances, escrowBalances } = usePayout();
   const isMobile = useIsMobile();
+  const isTabletOrBelow = useIsTabletOrBelow();
 
   const {
     fetchSelectedGrantee,
@@ -132,11 +133,6 @@ export function PayoutDetailsSheet({
       setCreator(null);
     }
     onOpenChange(newOpen);
-  };
-
-  // open dialog from sheet
-  const handleOpenManageMilestones = () => {
-    setIsManageMilestonesOpen(true);
   };
 
   return (
@@ -344,15 +340,26 @@ export function PayoutDetailsSheet({
           <Card>
             <CardHeader className="flex flex-row justify-between pb-2 items-center">
               <CardTitle className="text-base">Milestones</CardTitle>
-              <Button
-                variant="outline"
-                className="text-sm gap-2"
-                onClick={handleOpenManageMilestones}
-                disabled={payout.status !== "PUBLISHED"}
-              >
-                <List className="h-4 w-4" />
-                Manage Milestones
-              </Button>
+              {isTabletOrBelow ? (
+                <Link
+                  href={`/dashboard/payout-provider/payouts/${payout.payout_id}/milestones`}
+                >
+                  <Button variant="outline" className="text-sm gap-2">
+                    <List className="h-4 w-4" />
+                    Manage Milestones
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="text-sm gap-2"
+                  onClick={() => setIsManageMilestonesOpen(true)}
+                  disabled={payout.status !== "PUBLISHED"}
+                >
+                  <List className="h-4 w-4" />
+                  Manage Milestones
+                </Button>
+              )}
             </CardHeader>
             <CardContent>
               <div className="space-y-3 pr-2 max-h-56 overflow-auto">
