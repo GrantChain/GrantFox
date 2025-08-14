@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 export const HeroSection = () => {
   return (
     <section className="w-full min-h-screen flex justify-center bg-gradient-to-br from-background via-background to-muted/20">
