@@ -59,8 +59,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <Image
               src="/favicon.ico"
               alt="GrantFox Logo"
-              width={32}
-              height={32}
+              width={50}
+              height={50}
               className="rounded-md group-data-[collapsible=icon]:justify-center"
             />
             <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">
