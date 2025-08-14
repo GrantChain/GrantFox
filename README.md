@@ -1,6 +1,6 @@
-<p align="center"> <img src="https://github.com/user-attachments/assets/25cfd5b8-e303-4af6-920e-e42d1ac8d418" alt="CLR-S (2)"> </p>
+<p align="center"> <img width="510" height="462" alt="Captura_de_pantalla_2025-08-13_200029-removebg-preview" src="https://github.com/user-attachments/assets/5feec9ec-32b8-4395-b282-dd6e50ab018c" /> </p>
 
-# GigFox
+# GrantFox
 
 Grants Open Source Platform.
 
