@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin, Twitter } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -14,125 +12,74 @@ export const FooterLanding = () => {
   }, []);
 
   return (
-    <footer className="w-full border-t bg-background">
-      <div className="container py-8 md:py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {/* Branding Section */}
-          <div className="flex flex-col items-center md:items-start">
-            <div className="flex items-center gap-2 mb-4">
+    <footer className="bg-white dark:bg-black border-t ">
+      <div className="container mx-auto px-4 md:px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-between">
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-2">
               <Image
                 src="/favicon.ico"
                 alt="GrantFox Logo"
-                width={100}
-                height={100}
+                width={80}
+                height={80}
                 className="rounded-md"
               />
-              <span className="text-xl font-bold">GrantFox</span>
+              <span className="text-xl font-bold font-titillium">GrantFox</span>
             </div>
-            <p className="text-sm text-muted-foreground text-center md:text-left">
-              Empowering grant management with blockchain technology.
+
+            <p className="text-foreground mb-6">
+              Open-source grants platform using smart escrows for secure
+              milestone-based funding.
             </p>
-          </div>
 
-          {/* Links Section */}
-          <div className="flex flex-col items-center md:items-start">
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <div className="flex flex-col gap-2">
+            <div className="flex space-x-4 mb-4">
               <Link
-                href="#"
-                className="text-sm text-muted-foreground hover:text-primary"
+                href="https://github.com/GrantChain"
+                target="_blank"
+                className="text-foreground hover:text-orange-500 transition-colors"
               >
-                About Us
+                <Github size={20} />
+                <span className="sr-only">GitHub</span>
               </Link>
               <Link
-                href="#"
-                className="text-sm text-muted-foreground hover:text-primary"
+                href="https://x.com/itsgrantfox"
+                target="_blank"
+                className="text-foreground hover:text-orange-500 transition-colors"
               >
-                Documentation
+                <Twitter size={20} />
+                <span className="sr-only">Twitter</span>
               </Link>
               <Link
-                href="#"
-                className="text-sm text-muted-foreground hover:text-primary"
+                href="https://www.linkedin.com/company/grantfox"
+                target="_blank"
+                className="text-foreground hover:text-orange-500 transition-colors"
               >
-                Terms of Service
-              </Link>
-              <Link
-                href="#"
-                className="text-sm text-muted-foreground hover:text-primary"
-              >
-                Privacy Policy
+                <Linkedin size={20} />
+                <span className="sr-only">LinkedIn</span>
               </Link>
             </div>
           </div>
 
-          {/* Social Media Section */}
-          <div className="flex flex-col items-center md:items-start">
-            <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
-            <div className="flex gap-3">
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="#" aria-label="LinkedIn">
-                  <Linkedin className="h-5 w-5" />
+          <div>
+            <h3 className="text-foreground font-semibold mb-4">Resources</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="https://docs.grantfox.xyz"
+                  target="_blank"
+                  className="text-foreground hover:text-orange-500 transition-colors"
+                >
+                  Documentation
                 </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="#" aria-label="X (formerly Twitter)">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-5 w-5"
-                  >
-                    <title>X (formerly Twitter)</title>
-                    <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
-                    <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
-                  </svg>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="#" aria-label="GitHub">
-                  <Github className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="#" aria-label="Email">
-                  <Mail className="h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <Separator className="my-8" />
-
-        {/* Copyright Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {currentYear} GrantFox. All rights reserved.
+        <div className="border-t mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-foreground text-sm">
+            &copy; {currentYear} GrantFox. All rights reserved.
           </p>
-          <div className="flex gap-4">
-            <Link
-              href="#"
-              className="text-xs text-muted-foreground hover:text-primary"
-            >
-              Terms
-            </Link>
-            <Link
-              href="#"
-              className="text-xs text-muted-foreground hover:text-primary"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="#"
-              className="text-xs text-muted-foreground hover:text-primary"
-            >
-              Cookies
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

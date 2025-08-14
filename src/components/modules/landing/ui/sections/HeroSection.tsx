@@ -9,7 +9,7 @@ export const HeroSection = () => {
         <div className="max-w-4xl mx-auto text-center space-y-8 mt-10 md:mt-40">
           {/* Main Heading */}
           <div className="space-y-6">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl text-black/70 dark:text-white">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl text-black dark:text-white">
               Secure{" "}
               <span className="text-primary-500 bg-gradient-to-r from-primary-500 to-primary-500/80 bg-clip-text text-transparent">
                 Milestone-Based
@@ -19,17 +19,8 @@ export const HeroSection = () => {
 
             {/* Subtitle */}
             <p className="max-w-3xl mx-auto text-lg sm:text-xl lg:text-2xl text-muted-foreground leading-relaxed">
-              Open-source grants platform using{" "}
-              <Link
-                href="https://www.trustlesswork.com"
-                className="text-primary font-semibold hover:text-primary/80 transition-colors underline decoration-primary/30 underline-offset-4"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Trustless Work
-              </Link>{" "}
-              smart escrows, ideal for blockchains, DAOs, hackathons, and
-              events.
+              Open-source payouts platform using smart escrows, ideal for
+              blockchains, DAOs, hackathons, bounties, and more ...
             </p>
           </div>
         </div>
