@@ -41,8 +41,8 @@ export const RoleSelectionDialog = ({
             type="button"
             className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all text-left w-full ${
               selectedRole === "GRANTEE"
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50"
+                ? "border-primary-500 bg-primary-500/5"
+                : "border-border hover:border-primary-500/50"
             }`}
             aria-label="Select Grantee role"
             onClick={handleGranteeClick}
@@ -63,8 +63,8 @@ export const RoleSelectionDialog = ({
             type="button"
             className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all text-left w-full ${
               selectedRole === "PAYOUT_PROVIDER"
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50"
+                ? "border-primary-500 bg-primary-500/5"
+                : "border-border hover:border-primary-500/50"
             }`}
             aria-label="Select Payout Provider role"
             onClick={handlePayoutProviderClick}
