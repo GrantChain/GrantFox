@@ -10,7 +10,7 @@ export type ErrorResponse = {
 };
 
 /**
- * Types for TW errors
+ * Types for TW errorss
  */
 export type ApiError = Pick<ErrorResponse, "message" | "code">;
 
