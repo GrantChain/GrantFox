@@ -64,7 +64,7 @@ export const PayoutsSection = () => {
       <div className="flex-1">
         {isLoading && !data ? (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
-            {Array.from({ length: 6 }).map((_, index) => (
+            {Array.from({ length: 12 }).map((_, index) => (
               <PayoutCardSkeleton
                 key={`skeleton-${index}-${pagination.page}`}
               />
