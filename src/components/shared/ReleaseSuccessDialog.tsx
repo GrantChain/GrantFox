@@ -37,7 +37,7 @@ export const ReleaseSuccessDialog = ({
   const twFeePct = new Decimal(0.003);
   const rawPlatformPct = Number(process.env.NEXT_PUBLIC_PLATFORM_FEE);
   const platformFeePct = new Decimal(
-    isNaN(rawPlatformPct) ? 0 : rawPlatformPct,
+    Number.isNaN(rawPlatformPct) ? 0 : rawPlatformPct,
   ).div(100);
 
   const { twFee, platformFee, totalFees, netAmount } = useMemo(() => {

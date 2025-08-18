@@ -27,14 +27,14 @@ export const EntityCard = ({
   const { profileData, isLoading } = usePublicProfile(userId || "");
 
   const displayName = useMemo(() => {
-    if (name && name.trim()) return name;
+    if (name?.trim()) return name;
     const user = profileData?.user;
     const grantee = profileData?.grantee as { name?: string } | undefined;
     return grantee?.name || user?.username || user?.email || "User";
   }, [name, profileData]);
 
   const displayImageUrl = useMemo(() => {
-    if (imageUrl && imageUrl.trim()) return imageUrl;
+    if (imageUrl?.trim()) return imageUrl;
     const user = profileData?.user;
     return user?.profile_url || null;
   }, [imageUrl, profileData]);
