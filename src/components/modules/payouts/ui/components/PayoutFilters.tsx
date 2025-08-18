@@ -28,6 +28,12 @@ export const PayoutsFilters = ({
     createInitialDateRange(filters),
   );
   const [searchValue, setSearchValue] = useState(filters.search || "");
+  const [minFundingValue, setMinFundingValue] = useState(
+    filters.minFunding ?? "",
+  );
+  const [maxFundingValue, setMaxFundingValue] = useState(
+    filters.maxFunding ?? "",
+  );
   // const [payoutProviderNameValue, setPayoutProviderNameValue] = useState(
   //   filters.payoutProviderName || "",
   // );
@@ -53,6 +59,24 @@ export const PayoutsFilters = ({
 
     return () => clearTimeout(timer);
   }, [searchValue, filters.search, handleFilterChange]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (minFundingValue !== filters.minFunding) {
+        handleFilterChange("minFunding", minFundingValue);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [minFundingValue, filters.minFunding, handleFilterChange]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (maxFundingValue !== filters.maxFunding) {
+        handleFilterChange("maxFunding", maxFundingValue);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [maxFundingValue, filters.maxFunding, handleFilterChange]);
 
   // useEffect(() => {
   //   const timer = setTimeout(() => {
@@ -134,10 +158,8 @@ export const PayoutsFilters = ({
               <Input
                 type="number"
                 placeholder="Min amount"
-                value={filters.minFunding}
-                onChange={(e) =>
-                  handleFilterChange("minFunding", e.target.value)
-                }
+                value={minFundingValue}
+                onChange={(e) => setMinFundingValue(e.target.value)}
               />
             </div>
 
@@ -145,10 +167,8 @@ export const PayoutsFilters = ({
               <Input
                 type="number"
                 placeholder="Max amount"
-                value={filters.maxFunding}
-                onChange={(e) =>
-                  handleFilterChange("maxFunding", e.target.value)
-                }
+                value={maxFundingValue}
+                onChange={(e) => setMaxFundingValue(e.target.value)}
               />
             </div>
 

@@ -31,6 +31,7 @@ import {
   Eye,
   FileText,
   FileUp,
+  Loader2,
   MessageCircle,
   MessageSquare,
   Paperclip,
@@ -41,6 +42,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
+import { usePayoutLoaders } from "../../context/PayoutLoadersContext";
 import { useMilestoneActions } from "../../hooks/useMilestoneActions";
 import { getStatusBadge } from "../../shared/status-badge";
 
@@ -137,6 +139,7 @@ export const ManageMilestonesDialog = ({
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
   const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
   const [feedbackFiles, setFeedbackFiles] = useState<File[]>([]);
+  const { getLoading, withLoading } = usePayoutLoaders();
 
   const { user } = useAuth();
   const payoutCtx = useContext(PayoutContext);
@@ -237,88 +240,113 @@ export const ManageMilestonesDialog = ({
 
   const handleSubmitEvidence = async () => {
     if (selectedIndex === null) return;
-    await submitEvidence({
-      payoutId: payout.payout_id,
-      milestoneIdx: selectedIndex,
-      url: evidenceUrl,
-      notes: evidenceNotes,
-      files: evidenceFiles,
-      // Type cast is safe for our internal usage
-      localMilestones: localMilestones as unknown as Milestone[],
-      setLocalMilestones: (next) =>
-        setLocalMilestones(next as unknown as MilestoneItem[]),
-    });
-    setEvidenceFiles([]);
+    await withLoading(
+      payout.payout_id,
+      selectedIndex,
+      "submitEvidence",
+      async () => {
+        await submitEvidence({
+          payoutId: payout.payout_id,
+          milestoneIdx: selectedIndex,
+          url: evidenceUrl,
+          notes: evidenceNotes,
+          files: evidenceFiles,
+          // Type cast is safe for our internal usage
+          localMilestones: localMilestones as unknown as Milestone[],
+          setLocalMilestones: (next) =>
+            setLocalMilestones(next as unknown as MilestoneItem[]),
+        });
+        setEvidenceFiles([]);
+      },
+    );
   };
 
   const handleSubmitFeedback = async () => {
     if (selectedIndex === null || !feedbackMessage.trim()) return;
-    await submitFeedback({
-      payoutId: payout.payout_id,
-      milestoneIdx: selectedIndex,
-      message: feedbackMessage,
-      files: feedbackFiles,
-      localMilestones: localMilestones as unknown as Milestone[],
-      setLocalMilestones: (next) =>
-        setLocalMilestones(next as unknown as MilestoneItem[]),
-      selectedEvidenceIdx,
-      author: user?.email || undefined,
-    });
-    setFeedbackMessage("");
-    setFeedbackFiles([]);
+    await withLoading(
+      payout.payout_id,
+      selectedIndex,
+      "submitFeedback",
+      async () => {
+        await submitFeedback({
+          payoutId: payout.payout_id,
+          milestoneIdx: selectedIndex,
+          message: feedbackMessage,
+          files: feedbackFiles,
+          localMilestones: localMilestones as unknown as Milestone[],
+          setLocalMilestones: (next) =>
+            setLocalMilestones(next as unknown as MilestoneItem[]),
+          selectedEvidenceIdx,
+          author: user?.email || undefined,
+        });
+        setFeedbackMessage("");
+        setFeedbackFiles([]);
+      },
+    );
   };
 
   const handleReject = async () => {
     if (selectedIndex === null) return;
-    await rejectMilestone({
-      payoutId: payout.payout_id,
-      milestoneIdx: selectedIndex,
-      localMilestones: localMilestones as unknown as Milestone[],
-      setLocalMilestones: (next) =>
-        setLocalMilestones(next as unknown as MilestoneItem[]),
-      canModerate,
-      contractId: payout.escrow_id || undefined,
+    await withLoading(payout.payout_id, selectedIndex, "reject", async () => {
+      await rejectMilestone({
+        payoutId: payout.payout_id,
+        milestoneIdx: selectedIndex,
+        localMilestones: localMilestones as unknown as Milestone[],
+        setLocalMilestones: (next) =>
+          setLocalMilestones(next as unknown as MilestoneItem[]),
+        canModerate,
+        contractId: payout.escrow_id || undefined,
+      });
     });
   };
 
   const handleComplete = async () => {
     if (selectedIndex === null) return;
-    await completeMilestone({
-      payoutId: payout.payout_id,
-      milestoneIdx: selectedIndex,
-      localMilestones: localMilestones as unknown as Milestone[],
-      setLocalMilestones: (next) =>
-        setLocalMilestones(next as unknown as MilestoneItem[]),
-      canModerate: true,
-      contractId: payout.escrow_id || undefined,
-      serviceProviderAddress: user?.wallet_address || undefined,
+    await withLoading(payout.payout_id, selectedIndex, "complete", async () => {
+      await completeMilestone({
+        payoutId: payout.payout_id,
+        milestoneIdx: selectedIndex,
+        localMilestones: localMilestones as unknown as Milestone[],
+        setLocalMilestones: (next) =>
+          setLocalMilestones(next as unknown as MilestoneItem[]),
+        canModerate: true,
+        contractId: payout.escrow_id || undefined,
+        serviceProviderAddress: user?.wallet_address || undefined,
+      });
     });
   };
 
   const handleApprove = async () => {
     if (selectedIndex === null) return;
-    await approveMilestone({
-      payoutId: payout.payout_id,
-      milestoneIdx: selectedIndex,
-      localMilestones: localMilestones as unknown as Milestone[],
-      setLocalMilestones: (next) =>
-        setLocalMilestones(next as unknown as MilestoneItem[]),
-      canModerate,
-      contractId: payout.escrow_id || undefined,
-      approverAddress: user?.wallet_address || undefined,
+    await withLoading(payout.payout_id, selectedIndex, "approve", async () => {
+      await approveMilestone({
+        payoutId: payout.payout_id,
+        milestoneIdx: selectedIndex,
+        localMilestones: localMilestones as unknown as Milestone[],
+        setLocalMilestones: (next) =>
+          setLocalMilestones(next as unknown as MilestoneItem[]),
+        canModerate,
+        contractId: payout.escrow_id || undefined,
+        approverAddress: user?.wallet_address || undefined,
+      });
     });
   };
 
   const handleRelease = async () => {
     if (selectedIndex === null) return;
-    await releaseMilestone({
-      payoutId: payout.payout_id,
-      milestoneIdx: selectedIndex,
-      localMilestones: localMilestones as unknown as Milestone[],
-      setLocalMilestones: (next) =>
-        setLocalMilestones(next as unknown as MilestoneItem[]),
-      canModerate,
-      contractId: payout.escrow_id || undefined,
+    await withLoading(payout.payout_id, selectedIndex, "release", async () => {
+      await releaseMilestone({
+        payoutId: payout.payout_id,
+        milestoneIdx: selectedIndex,
+        localMilestones: localMilestones as unknown as Milestone[],
+        setLocalMilestones: (next) =>
+          setLocalMilestones(next as unknown as MilestoneItem[]),
+        canModerate,
+        contractId: payout.escrow_id || undefined,
+      });
+      if (escrowId && payoutCtx) {
+        await payoutCtx.fetchEscrowBalances([escrowId]).catch(() => {});
+      }
     });
   };
 
@@ -392,11 +420,11 @@ export const ManageMilestonesDialog = ({
                     const isCompleted = milestone.status === "COMPLETED";
                     const isSelected = selectedIndex === index;
                     const canSelect =
-                      (!isApproved ||
-                        canSubmitEvidence ||
-                        (canModerate && isCompleted)) &&
                       !isReleased &&
-                      !isResolved;
+                      !isResolved &&
+                      (isCompleted
+                        ? canModerate
+                        : !isApproved || canSubmitEvidence);
                     return (
                       <button
                         type="button"
@@ -547,7 +575,12 @@ export const ManageMilestonesDialog = ({
                             }
                           ).flags?.approved,
                         );
-                        if (canSubmitEvidence && currentApproved) {
+                        const isCompleted = current?.status === "COMPLETED";
+                        if (
+                          canSubmitEvidence &&
+                          currentApproved &&
+                          !isCompleted
+                        ) {
                           return (
                             <div className="space-y-4">
                               <div className="flex items-center gap-2">
@@ -562,10 +595,30 @@ export const ManageMilestonesDialog = ({
                               </p>
                               <Button
                                 onClick={handleComplete}
-                                disabled={isUpdatingMilestones}
+                                disabled={
+                                  isUpdatingMilestones ||
+                                  getLoading(
+                                    payout.payout_id,
+                                    selectedIndex,
+                                    "complete",
+                                  )
+                                }
                                 className="w-full"
                               >
-                                Complete
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "complete",
+                                ) && (
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                )}
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "complete",
+                                )
+                                  ? "Completing..."
+                                  : "Complete"}
                               </Button>
                             </div>
                           );
@@ -667,12 +720,32 @@ export const ManageMilestonesDialog = ({
                               <Button
                                 onClick={handleSubmitEvidence}
                                 disabled={
-                                  isUpdatingMilestones || selectedIndex === null
+                                  isUpdatingMilestones ||
+                                  selectedIndex === null ||
+                                  getLoading(
+                                    payout.payout_id,
+                                    selectedIndex,
+                                    "submitEvidence",
+                                  )
                                 }
                                 className="w-full"
                               >
-                                <FileUp className="h-4 w-4 mr-2" />
-                                Submit Evidence
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "submitEvidence",
+                                ) ? (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                  <FileUp className="h-4 w-4 mr-2" />
+                                )}
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "submitEvidence",
+                                )
+                                  ? "Submitting..."
+                                  : "Submit Evidence"}
                               </Button>
                             </div>
                           );
@@ -752,13 +825,32 @@ export const ManageMilestonesDialog = ({
                                 disabled={
                                   isUpdatingMilestones ||
                                   selectedIndex === null ||
-                                  !feedbackMessage.trim()
+                                  !feedbackMessage.trim() ||
+                                  getLoading(
+                                    payout.payout_id,
+                                    selectedIndex,
+                                    "submitFeedback",
+                                  )
                                 }
                                 variant="outline"
                                 className="w-full"
                               >
-                                <MessageSquare className="h-4 w-4 mr-2" />
-                                Submit Feedback
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "submitFeedback",
+                                ) ? (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                  <MessageSquare className="h-4 w-4 mr-2" />
+                                )}
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "submitFeedback",
+                                )
+                                  ? "Submitting..."
+                                  : "Submit Feedback"}
                               </Button>
                             </div>
                           );
@@ -791,12 +883,45 @@ export const ManageMilestonesDialog = ({
                                   selectedIndex === null ||
                                   (localMilestones[selectedIndex]?.evidences
                                     ?.length || 0) === 0 ||
-                                  !hasEscrowBalance
+                                  !hasEscrowBalance ||
+                                  Boolean(
+                                    (
+                                      (
+                                        localMilestones[
+                                          selectedIndex
+                                        ] as unknown as {
+                                          flags?: { approved?: boolean };
+                                        }
+                                      ).flags || {}
+                                    ).approved,
+                                  ) ||
+                                  getLoading(
+                                    payout.payout_id,
+                                    selectedIndex,
+                                    "reject",
+                                  )
                                 }
                                 className="flex-1"
                               >
-                                <ShieldX className="h-4 w-4 mr-2" />
-                                Reject
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "reject",
+                                ) && (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                )}
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "reject",
+                                ) ? (
+                                  "Rejecting..."
+                                ) : (
+                                  <>
+                                    <ShieldX className="h-4 w-4 mr-2" />
+                                    Reject
+                                  </>
+                                )}
                               </Button>
                               <Button
                                 variant="success"
@@ -805,12 +930,45 @@ export const ManageMilestonesDialog = ({
                                   isUpdatingMilestones ||
                                   selectedIndex === null ||
                                   (localMilestones[selectedIndex]?.evidences
-                                    ?.length || 0) === 0
+                                    ?.length || 0) === 0 ||
+                                  Boolean(
+                                    (
+                                      (
+                                        localMilestones[
+                                          selectedIndex
+                                        ] as unknown as {
+                                          flags?: { approved?: boolean };
+                                        }
+                                      ).flags || {}
+                                    ).approved,
+                                  ) ||
+                                  getLoading(
+                                    payout.payout_id,
+                                    selectedIndex,
+                                    "approve",
+                                  )
                                 }
                                 className="flex-1"
                               >
-                                <ShieldCheck className="h-4 w-4 mr-2" />
-                                Approve
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "approve",
+                                ) && (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                )}
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "approve",
+                                ) ? (
+                                  "Approving..."
+                                ) : (
+                                  <>
+                                    <ShieldCheck className="h-4 w-4 mr-2" />
+                                    Approve
+                                  </>
+                                )}
                               </Button>
                             </div>
                           </div>
@@ -843,12 +1001,35 @@ export const ManageMilestonesDialog = ({
                                 variant="success"
                                 onClick={handleRelease}
                                 disabled={
-                                  isUpdatingMilestones || !hasEscrowBalance
+                                  isUpdatingMilestones ||
+                                  !hasEscrowBalance ||
+                                  getLoading(
+                                    payout.payout_id,
+                                    selectedIndex,
+                                    "release",
+                                  )
                                 }
                                 className="w-full"
                               >
-                                <PiggyBank className="h-4 w-4 mr-2" />
-                                Release
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "release",
+                                ) && (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                )}
+                                {getLoading(
+                                  payout.payout_id,
+                                  selectedIndex,
+                                  "release",
+                                ) ? (
+                                  "Releasing..."
+                                ) : (
+                                  <>
+                                    <PiggyBank className="h-4 w-4 mr-2" />
+                                    Release
+                                  </>
+                                )}
                               </Button>
                             </div>
                           );

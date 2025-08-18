@@ -6,6 +6,7 @@ import { AppSidebar } from "@/components/layout/sidebar/app-sidebar";
 import { AuthProvider } from "@/components/modules/auth/context/AuthContext";
 import { usePrefetchData } from "@/components/modules/auth/hooks/usePrefetchData";
 import { PayoutContextProvider } from "@/components/modules/payouts/context/PayoutContext";
+import { PayoutLoadersProvider } from "@/components/modules/payouts/context/PayoutLoadersContext";
 import { RoleSelectionProvider } from "@/components/providers/role-selection.provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useGlobalWalletStore } from "@/components/wallet/store/store";
@@ -48,9 +49,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <AuthProvider>
       <PayoutContextProvider>
-        <RoleSelectionProvider>
-          <DashboardContent>{children}</DashboardContent>
-        </RoleSelectionProvider>
+        <PayoutLoadersProvider>
+          <RoleSelectionProvider>
+            <DashboardContent>{children}</DashboardContent>
+          </RoleSelectionProvider>
+        </PayoutLoadersProvider>
       </PayoutContextProvider>
     </AuthProvider>
   );

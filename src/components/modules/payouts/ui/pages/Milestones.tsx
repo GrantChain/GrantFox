@@ -32,6 +32,7 @@ import Decimal from "decimal.js";
 import {
   ExternalLink,
   FileText,
+  Loader2,
   Package,
   PiggyBank,
   ShieldCheck,
@@ -41,6 +42,7 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
+import { usePayoutLoaders } from "../../context/PayoutLoadersContext";
 import { useMilestoneActions } from "../../hooks/useMilestoneActions";
 import { usePayoutMutations } from "../../hooks/usePayoutMutations";
 import { payoutsService } from "../../services/payouts.service";
@@ -185,6 +187,7 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
     completeMilestone,
     releaseMilestone,
   } = useMilestoneActions();
+  const { getLoading, withLoading } = usePayoutLoaders();
 
   const [localMilestones, setLocalMilestones] = useState<Milestone[]>(
     (payout.milestones as unknown as Milestone[]) || [],
@@ -220,83 +223,108 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
   }, [escrowId, payoutCtx]);
 
   const handleSubmitEvidence = async (milestoneIdx: number) => {
-    await submitEvidence({
-      payoutId: payout.payout_id,
+    await withLoading(
+      payout.payout_id,
       milestoneIdx,
-      url: evidenceUrl[milestoneIdx] || "",
-      notes: evidenceNotes[milestoneIdx] || "",
-      files: evidenceFiles[milestoneIdx] || [],
-      localMilestones,
-      setLocalMilestones,
-    });
-    setEvidenceFiles((prev) => ({ ...prev, [milestoneIdx]: [] }));
+      "submitEvidence",
+      async () => {
+        await submitEvidence({
+          payoutId: payout.payout_id,
+          milestoneIdx,
+          url: evidenceUrl[milestoneIdx] || "",
+          notes: evidenceNotes[milestoneIdx] || "",
+          files: evidenceFiles[milestoneIdx] || [],
+          localMilestones,
+          setLocalMilestones,
+        });
+        setEvidenceFiles((prev) => ({ ...prev, [milestoneIdx]: [] }));
+      },
+    );
   };
 
   const handleComplete = async (milestoneIdx: number) => {
     if (milestoneIdx === null) return;
-    await completeMilestone({
-      payoutId: payout.payout_id,
-      milestoneIdx: milestoneIdx,
-      localMilestones: localMilestones as unknown as Milestone[],
-      setLocalMilestones: (next) =>
-        setLocalMilestones(next as unknown as Milestone[]),
-      canModerate: true,
-      contractId: payout.escrow_id || undefined,
-      serviceProviderAddress: user?.wallet_address || undefined,
+    await withLoading(payout.payout_id, milestoneIdx, "complete", async () => {
+      await completeMilestone({
+        payoutId: payout.payout_id,
+        milestoneIdx: milestoneIdx,
+        localMilestones: localMilestones as unknown as Milestone[],
+        setLocalMilestones: (next) =>
+          setLocalMilestones(next as unknown as Milestone[]),
+        canModerate: true,
+        contractId: payout.escrow_id || undefined,
+        serviceProviderAddress: user?.wallet_address || undefined,
+      });
     });
   };
 
   const [feedbackTargetIdx] = useState<Record<number, number | null>>({});
 
   const handleSubmitFeedback = async (milestoneIdx: number) => {
-    await submitFeedback({
-      payoutId: payout.payout_id,
+    await withLoading(
+      payout.payout_id,
       milestoneIdx,
-      message: feedbackMessage[milestoneIdx] || "",
-      files: feedbackFiles[milestoneIdx] || [],
-      localMilestones,
-      setLocalMilestones,
-      selectedEvidenceIdx:
-        typeof feedbackTargetIdx[milestoneIdx] === "number"
-          ? (feedbackTargetIdx[milestoneIdx] as number)
-          : undefined,
-      author: user?.email || undefined,
-    });
-    setFeedbackMessage((prev) => ({ ...prev, [milestoneIdx]: "" }));
-    setFeedbackFiles((prev) => ({ ...prev, [milestoneIdx]: [] }));
+      "submitFeedback",
+      async () => {
+        await submitFeedback({
+          payoutId: payout.payout_id,
+          milestoneIdx,
+          message: feedbackMessage[milestoneIdx] || "",
+          files: feedbackFiles[milestoneIdx] || [],
+          localMilestones,
+          setLocalMilestones,
+          selectedEvidenceIdx:
+            typeof feedbackTargetIdx[milestoneIdx] === "number"
+              ? (feedbackTargetIdx[milestoneIdx] as number)
+              : undefined,
+          author: user?.email || undefined,
+        });
+        setFeedbackMessage((prev) => ({ ...prev, [milestoneIdx]: "" }));
+        setFeedbackFiles((prev) => ({ ...prev, [milestoneIdx]: [] }));
+      },
+    );
   };
 
   const handleReject = async (milestoneIdx: number) => {
-    await rejectMilestone({
-      payoutId: payout.payout_id,
-      milestoneIdx,
-      localMilestones,
-      setLocalMilestones,
-      canModerate,
-      contractId: payout.escrow_id || undefined,
+    await withLoading(payout.payout_id, milestoneIdx, "reject", async () => {
+      await rejectMilestone({
+        payoutId: payout.payout_id,
+        milestoneIdx,
+        localMilestones,
+        setLocalMilestones,
+        canModerate,
+        contractId: payout.escrow_id || undefined,
+      });
     });
   };
 
   const handleApprove = async (milestoneIdx: number) => {
-    await approveMilestone({
-      payoutId: payout.payout_id,
-      milestoneIdx,
-      localMilestones,
-      setLocalMilestones,
-      canModerate,
-      contractId: payout.escrow_id || undefined,
-      approverAddress: user?.wallet_address || undefined,
+    await withLoading(payout.payout_id, milestoneIdx, "approve", async () => {
+      await approveMilestone({
+        payoutId: payout.payout_id,
+        milestoneIdx,
+        localMilestones,
+        setLocalMilestones,
+        canModerate,
+        contractId: payout.escrow_id || undefined,
+        approverAddress: user?.wallet_address || undefined,
+      });
     });
   };
 
   const handleRelease = async (milestoneIdx: number) => {
-    await releaseMilestone({
-      payoutId: payout.payout_id,
-      milestoneIdx,
-      localMilestones,
-      setLocalMilestones,
-      canModerate,
-      contractId: payout.escrow_id || undefined,
+    await withLoading(payout.payout_id, milestoneIdx, "release", async () => {
+      await releaseMilestone({
+        payoutId: payout.payout_id,
+        milestoneIdx,
+        localMilestones,
+        setLocalMilestones,
+        canModerate,
+        contractId: payout.escrow_id || undefined,
+      });
+      if (payout.escrow_id && payoutCtx) {
+        await payoutCtx.fetchEscrowBalances([payout.escrow_id]).catch(() => {});
+      }
     });
   };
 
@@ -334,12 +362,12 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
           !isReleased &&
           !isResolved &&
           !isDisputed;
-        const canShowApproveReject = canLeaveFeedback;
+        const canShowApproveReject = canLeaveFeedback && !isApproved;
         const canShowRelease =
           canModerate && isCompleted && !isReleased && !isResolved;
         const moderateDisabled = canSubmitEvidence
           ? isDisputed || isReleased || isResolved || isCompleted
-          : !canLeaveFeedback;
+          : !canLeaveFeedback || isApproved;
         return (
           <Card key={idx} className="border">
             <CardHeader>
@@ -362,18 +390,37 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                         disabled={
                           isUpdatingMilestones ||
                           !canShowApproveReject ||
-                          !hasEscrowBalance
+                          !hasEscrowBalance ||
+                          getLoading(payout.payout_id, idx, "reject")
                         }
                       >
-                        <ShieldX className="h-4 w-4 mr-1" /> Reject
+                        {getLoading(payout.payout_id, idx, "reject") ? (
+                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                        ) : (
+                          <ShieldX className="h-4 w-4 mr-1" />
+                        )}
+                        {getLoading(payout.payout_id, idx, "reject")
+                          ? "Rejecting..."
+                          : "Reject"}
                       </Button>
                       <Button
                         size="sm"
                         variant="success"
                         onClick={() => handleApprove(idx)}
-                        disabled={isUpdatingMilestones || !canShowApproveReject}
+                        disabled={
+                          isUpdatingMilestones ||
+                          !canShowApproveReject ||
+                          getLoading(payout.payout_id, idx, "approve")
+                        }
                       >
-                        <ShieldCheck className="h-4 w-4 mr-1" /> Approve
+                        {getLoading(payout.payout_id, idx, "approve") ? (
+                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                        ) : (
+                          <ShieldCheck className="h-4 w-4 mr-1" />
+                        )}
+                        {getLoading(payout.payout_id, idx, "approve")
+                          ? "Approving..."
+                          : "Approve"}
                       </Button>
                     </>
                   )}
@@ -382,10 +429,20 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                       size="sm"
                       variant="success"
                       onClick={() => handleRelease(idx)}
-                      disabled={isUpdatingMilestones || !hasEscrowBalance}
+                      disabled={
+                        isUpdatingMilestones ||
+                        !hasEscrowBalance ||
+                        getLoading(payout.payout_id, idx, "release")
+                      }
                     >
-                      <PiggyBank className="h-4 w-4 mr-1" />
-                      Release
+                      {getLoading(payout.payout_id, idx, "release") ? (
+                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                      ) : (
+                        <PiggyBank className="h-4 w-4 mr-1" />
+                      )}
+                      {getLoading(payout.payout_id, idx, "release")
+                        ? "Releasing..."
+                        : "Release"}
                     </Button>
                   )}
                   {canSubmitEvidence &&
@@ -398,10 +455,19 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                       size="sm"
                       variant="outline"
                       onClick={() => handleComplete(idx)}
-                      disabled={isUpdatingMilestones}
+                      disabled={
+                        isUpdatingMilestones ||
+                        getLoading(payout.payout_id, idx, "complete")
+                      }
                     >
-                      <Package className="h-4 w-4 mr-1" />
-                      Mark as completed
+                      {getLoading(payout.payout_id, idx, "complete") ? (
+                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                      ) : (
+                        <Package className="h-4 w-4 mr-1" />
+                      )}
+                      {getLoading(payout.payout_id, idx, "complete")
+                        ? "Completing..."
+                        : "Mark as completed"}
                     </Button>
                   ) : (
                     ((canSubmitEvidence && !isCompleted) || canModerate) && (
@@ -502,10 +568,30 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                                   </div>
                                   <Button
                                     onClick={() => handleSubmitEvidence(idx)}
-                                    disabled={isUpdatingMilestones}
+                                    disabled={
+                                      isUpdatingMilestones ||
+                                      getLoading(
+                                        payout.payout_id,
+                                        idx,
+                                        "submitEvidence",
+                                      )
+                                    }
                                     className="w-full"
                                   >
-                                    Submit Evidence
+                                    {getLoading(
+                                      payout.payout_id,
+                                      idx,
+                                      "submitEvidence",
+                                    ) && (
+                                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    )}
+                                    {getLoading(
+                                      payout.payout_id,
+                                      idx,
+                                      "submitEvidence",
+                                    )
+                                      ? "Submitting..."
+                                      : "Submit Evidence"}
                                   </Button>
                                 </div>
                               )}
@@ -574,11 +660,29 @@ const MilestonesList = ({ payout }: { payout: Payout }) => {
                                       disabled={
                                         isUpdatingMilestones ||
                                         !(feedbackMessage[idx] || "").trim() ||
-                                        !hasEvidence
+                                        !hasEvidence ||
+                                        getLoading(
+                                          payout.payout_id,
+                                          idx,
+                                          "submitFeedback",
+                                        )
                                       }
                                       className="w-full"
                                     >
-                                      Submit Feedback
+                                      {getLoading(
+                                        payout.payout_id,
+                                        idx,
+                                        "submitFeedback",
+                                      ) && (
+                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                      )}
+                                      {getLoading(
+                                        payout.payout_id,
+                                        idx,
+                                        "submitFeedback",
+                                      )
+                                        ? "Submitting..."
+                                        : "Submit Feedback"}
                                     </Button>
                                   </div>
                                 </div>
