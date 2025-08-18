@@ -55,15 +55,7 @@ export function GrantProviderForm({
   const { getLoading } = useProfileLoaders();
   const isSaving = getLoading("updateGrantProvider");
 
-  const networkTypes = [
-    "Ethereum",
-    "Stellar",
-    "Starknet",
-    "Optimism",
-    "Worldcoin",
-    "Solana",
-    "Other",
-  ];
+  const networkTypes = ["Stellar"];
 
   return (
     <Card className="w-full">
