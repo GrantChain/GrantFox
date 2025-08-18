@@ -20,12 +20,13 @@ export const usePayouts = (options?: UsePayoutsOptions) => {
       options?.role,
       options?.userId,
     ],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       payoutsService.findAll(
         options?.filters,
         options?.pagination,
         options?.role,
         options?.userId,
+        signal,
       ),
     enabled: !!options?.userId,
     refetchOnMount: false,
@@ -38,5 +39,6 @@ export const usePayouts = (options?: UsePayoutsOptions) => {
     },
     staleTime: 30 * 1000,
     gcTime: 5 * 60 * 1000,
+    placeholderData: (prev) => prev,
   });
 };
