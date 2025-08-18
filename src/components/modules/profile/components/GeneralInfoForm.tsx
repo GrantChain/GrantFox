@@ -16,11 +16,11 @@ import type { User } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useProfileLoaders } from "../context/ProfileLoadersContext";
 import {
   type GeneralInfoFormData,
   generalInfoSchema,
 } from "../schemas/profile.schema";
-import { useProfileLoaders } from "../context/ProfileLoadersContext";
 
 interface GeneralInfoFormProps {
   user: User;

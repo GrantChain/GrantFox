@@ -13,11 +13,11 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import type { ProfileUpdateData } from "../../../../@types/profile";
-import { useProfileLoaders } from "../context/ProfileLoadersContext";
 import { useAuth } from "../../auth/context/AuthContext";
 import { GeneralInfoForm } from "../components/GeneralInfoForm";
 import { GrantProviderForm } from "../components/GrantProviderForm";
 import { GranteeForm } from "../components/GranteeForm";
+import { useProfileLoaders } from "../context/ProfileLoadersContext";
 import type {
   GeneralInfoFormData,
   GrantProviderFormData,

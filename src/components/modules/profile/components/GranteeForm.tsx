@@ -15,8 +15,8 @@ import type { Grantee } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { type GranteeFormData, granteeSchema } from "../schemas/profile.schema";
 import { useProfileLoaders } from "../context/ProfileLoadersContext";
+import { type GranteeFormData, granteeSchema } from "../schemas/profile.schema";
 
 interface GranteeFormProps {
   grantee?: Grantee & {
