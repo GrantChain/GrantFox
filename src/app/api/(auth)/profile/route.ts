@@ -23,8 +23,14 @@ export async function PATCH(request: Request) {
           wallet_address: user.wallet_address || null,
           location: user.location ?? undefined,
           bio: user.bio ?? undefined,
-          profile_url: user.profile_url ?? undefined,
-          cover_url: user.cover_url ?? undefined,
+          profile_url:
+            typeof user.profile_url === "string" && user.profile_url.length > 0
+              ? user.profile_url
+              : undefined,
+          cover_url:
+            typeof user.cover_url === "string" && user.cover_url.length > 0
+              ? user.cover_url
+              : undefined,
         },
       });
     }

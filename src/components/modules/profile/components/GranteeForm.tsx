@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { type GranteeFormData, granteeSchema } from "../schemas/profile.schema";
+import { useProfileLoaders } from "../context/ProfileLoadersContext";
 
 interface GranteeFormProps {
   grantee?: Grantee & {
@@ -58,6 +59,9 @@ export function GranteeForm({ grantee, onSubmit }: GranteeFormProps) {
 
     onSubmit(finalData);
   };
+
+  const { getLoading } = useProfileLoaders();
+  const isSaving = getLoading("updateGrantee");
 
   return (
     <Card className="w-full">
@@ -153,9 +157,9 @@ export function GranteeForm({ grantee, onSubmit }: GranteeFormProps) {
             <Button
               type="submit"
               className="w-full"
-              disabled={form.formState.isSubmitting}
+              disabled={isSaving || form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? (
+              {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...

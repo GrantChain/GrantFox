@@ -26,6 +26,7 @@ import {
   type GrantProviderFormData,
   grantProviderSchema,
 } from "../schemas/profile.schema";
+import { useProfileLoaders } from "../context/ProfileLoadersContext";
 
 interface GrantProviderFormProps {
   grantProvider?: PayoutProvider;
@@ -50,6 +51,9 @@ export function GrantProviderForm({
   const handleSubmit = async (data: GrantProviderFormData) => {
     onSubmit(data);
   };
+
+  const { getLoading } = useProfileLoaders();
+  const isSaving = getLoading("updateGrantProvider");
 
   const networkTypes = [
     "Ethereum",
@@ -136,9 +140,9 @@ export function GrantProviderForm({
             <Button
               type="submit"
               className="w-full"
-              disabled={form.formState.isSubmitting}
+              disabled={isSaving || form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? (
+              {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...
