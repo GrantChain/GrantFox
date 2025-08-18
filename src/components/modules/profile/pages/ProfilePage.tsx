@@ -17,6 +17,7 @@ import { useAuth } from "../../auth/context/AuthContext";
 import { GeneralInfoForm } from "../components/GeneralInfoForm";
 import { GrantProviderForm } from "../components/GrantProviderForm";
 import { GranteeForm } from "../components/GranteeForm";
+import { useProfileLoaders } from "../context/ProfileLoadersContext";
 import type {
   GeneralInfoFormData,
   GrantProviderFormData,
@@ -26,6 +27,7 @@ import { profileService } from "../services/profile.service";
 export default function ProfilePage() {
   const { user, grantee, payoutProvider, isLoading } = useAuth();
   const queryClient = useQueryClient();
+  const { withLoading } = useProfileLoaders();
 
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -56,10 +58,10 @@ export default function ProfilePage() {
         wallet_address: data.wallet_address || null,
         location: data.location || "",
         bio: data.bio || "",
-        profile_url: data.profile_url || "",
-        cover_url: data.cover_url || "",
       };
-      await updateProfile({ user: userPayload });
+      await withLoading("updateGeneralInfo", async () => {
+        await updateProfile({ user: userPayload });
+      });
       toast.success("General information updated successfully");
     } catch (err) {
       console.error(err);
@@ -74,7 +76,9 @@ export default function ProfilePage() {
         network_type: data.network_type || "",
         email: data.email || "",
       };
-      await updateProfile({ user: {}, grantProvider: providerPayload });
+      await withLoading("updateGrantProvider", async () => {
+        await updateProfile({ user: {}, grantProvider: providerPayload });
+      });
       toast.success("Grant provider information updated successfully");
     } catch (err) {
       console.error(err);
@@ -91,7 +95,9 @@ export default function ProfilePage() {
         position_title: data.position_title || "",
         social_media: data.social_media ?? null,
       };
-      await updateProfile({ user: {}, grantee: granteePayload });
+      await withLoading("updateGrantee", async () => {
+        await updateProfile({ user: {}, grantee: granteePayload });
+      });
       toast.success("Grantee information updated successfully");
     } catch (err) {
       console.error(err);

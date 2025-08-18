@@ -16,6 +16,7 @@ import type { User } from "@/generated/prisma";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useProfileLoaders } from "../context/ProfileLoadersContext";
 import {
   type GeneralInfoFormData,
   generalInfoSchema,
@@ -45,6 +46,9 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
   const handleSubmit = (data: GeneralInfoFormData) => {
     onSubmit(data);
   };
+
+  const { getLoading } = useProfileLoaders();
+  const isSaving = getLoading("updateGeneralInfo");
 
   return (
     <Card className="w-full">
@@ -169,9 +173,9 @@ export function GeneralInfoForm({ user, onSubmit }: GeneralInfoFormProps) {
             <Button
               type="submit"
               className="w-full"
-              disabled={form.formState.isSubmitting}
+              disabled={isSaving || form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? (
+              {isSaving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...

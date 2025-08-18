@@ -312,7 +312,7 @@ export const useMilestoneActions = () => {
     }
   };
 
-  const releaseMilestone = async (args: ReleaseArgs) => {
+  const releaseMilestone = async (args: ReleaseArgs): Promise<boolean> => {
     const {
       payoutId,
       milestoneIdx,
@@ -321,7 +321,7 @@ export const useMilestoneActions = () => {
       canModerate,
       contractId,
     } = args;
-    if (!canModerate) return;
+    if (!canModerate) return false;
 
     const next: Milestone[] = localMilestones.map((m, i) => {
       if (i !== milestoneIdx) return m;
@@ -342,7 +342,7 @@ export const useMilestoneActions = () => {
         });
         if (!ok) {
           toast.error("Failed to release funds");
-          return;
+          return false;
         }
       }
 
@@ -352,9 +352,11 @@ export const useMilestoneActions = () => {
       });
       setLocalMilestones(next);
       toast.success("Funds released");
+      return true;
     } catch (e) {
       console.error("Error releasing funds:", e);
       toast.error("Failed to release funds. Please try again.");
+      return false;
     }
   };
 

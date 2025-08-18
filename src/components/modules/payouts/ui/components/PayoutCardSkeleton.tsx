@@ -3,30 +3,48 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function PayoutCardSkeleton() {
   return (
-    <Card className="overflow-hidden shadow-sm">
-      <div className="relative">
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="absolute top-2 right-2 h-5 w-16 rounded-full" />
+    <Card className="w-full max-w-sm shadow-sm overflow-hidden">
+      <div className="relative w-full h-40 overflow-hidden">
+        <Skeleton className="h-full w-full" />
       </div>
 
-      <CardContent className="p-5">
-        <div className="flex justify-between items-center">
-          <div className="flex flex-col flex-1 pr-4">
-            <Skeleton className="h-6 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-full mb-1" />
-            <Skeleton className="h-4 w-5/6" />
+      <CardContent className="p-4 space-y-3">
+        <div className="space-y-2">
+          <Skeleton className="h-5 w-3/4" />
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-5 w-16 rounded-md" />
+              <Skeleton className="h-4 w-14" />
+            </div>
+
+            <div className="text-right space-y-1">
+              <Skeleton className="h-6 w-24 ml-auto" />
+              <Skeleton className="h-4 w-20 ml-auto" />
+            </div>
           </div>
-          <Skeleton className="h-6 w-20" />
         </div>
 
-        <div className="mt-4 flex justify-between items-center">
-          <div className="flex gap-2">
-            <Skeleton className="h-8 w-8 rounded-md" />
-            <Skeleton className="h-8 w-8 rounded-md" />
+        <Skeleton className="h-4 w-full" />
+
+        <div className="space-y-1">
+          <Skeleton className="h-4 w-24" />
+          <div className="text-xs">
+            <Skeleton className="h-4 w-3/5" />
+            <Skeleton className="h-4 w-16 mt-1" />
           </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-2 border-t">
           <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-4" />
-            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-3 w-3 rounded-full" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-7 w-7 rounded-md" />
+            <Skeleton className="h-7 w-7 rounded-md" />
+            <Skeleton className="h-8 w-28 md:w-32 rounded-md" />
           </div>
         </div>
       </CardContent>

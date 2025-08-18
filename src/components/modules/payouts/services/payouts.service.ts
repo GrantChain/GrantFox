@@ -26,6 +26,7 @@ class PayoutsService {
     pagination?: Pagination,
     role?: UserRole,
     userId?: string,
+    signal?: AbortSignal,
   ): Promise<{ data: Payout[]; total: number }> {
     try {
       const response = await http.post<{ data: Payout[]; total: number }>(
@@ -36,6 +37,7 @@ class PayoutsService {
           role,
           userId,
         },
+        { signal },
       );
 
       return {

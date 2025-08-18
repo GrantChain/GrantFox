@@ -63,8 +63,8 @@ export const PayoutsSection = () => {
 
       <div className="flex-1">
         {isLoading && !data ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-10">
-            {Array.from({ length: 6 }).map((_, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
+            {Array.from({ length: 12 }).map((_, index) => (
               <PayoutCardSkeleton
                 key={`skeleton-${index}-${pagination.page}`}
               />
@@ -75,7 +75,7 @@ export const PayoutsSection = () => {
             <NoData />
           </div>
         ) : data?.data ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
             {data.data.map((payout) => (
               <PayoutCard key={payout.payout_id} payout={payout} />
             ))}

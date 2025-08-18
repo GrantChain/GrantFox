@@ -28,10 +28,13 @@ export async function POST(request: Request) {
 
     if (filters) {
       if (filters.search) {
-        where.title = {
-          contains: filters.search,
-          mode: "insensitive",
-        };
+        const term = String(filters.search).trim();
+        if (term.length >= 2) {
+          where.title = {
+            contains: term,
+            mode: "insensitive",
+          };
+        }
       }
       if (filters.minFunding || filters.maxFunding) {
         where.total_funding = {
@@ -67,11 +70,12 @@ export async function POST(request: Request) {
     }
 
     const page = pagination?.page || 1;
-    const pageSize = pagination?.pageSize || 10;
+    const pageSize = Math.min(pagination?.pageSize || 10, 50);
     const skip = (page - 1) * pageSize;
 
     // Use a single DB connection for both queries to reduce pool pressure
-    const [total, data] = await prisma.$transaction([
+    // Run count and list concurrently; no transaction needed for read-only queries
+    const [total, data] = await Promise.all([
       prisma.payout.count({ where }),
       prisma.payout.findMany({
         where,

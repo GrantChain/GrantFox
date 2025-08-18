@@ -164,6 +164,11 @@ export const usePayoutForm = ({
           clearErrors("grantee_id");
           setIsSuccess(true);
         } else {
+          form.setError("grantee_id", {
+            type: "manual",
+            message: "Grantee not found, please check the email address",
+          });
+
           if (mode === "edit") {
             setLocalSelectedGrantee(null);
           } else {
