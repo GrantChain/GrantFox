@@ -89,19 +89,6 @@ export default function Dashboard() {
     }).format(value);
   };
 
-  const getRoleBadgeVariant = (role: string) => {
-    switch (role) {
-      case "ADMIN":
-        return "destructive";
-      case "PAYOUT_PROVIDER":
-        return "default";
-      case "GRANTEE":
-        return "secondary";
-      default:
-        return "outline";
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="w-full mx-auto space-y-6">

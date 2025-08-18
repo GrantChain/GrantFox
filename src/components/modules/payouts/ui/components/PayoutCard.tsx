@@ -1,7 +1,7 @@
+import type { Milestone } from "@/@types/milestones.entity";
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
 import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
-import TooltipInfo from "@/components/shared/TooltipInfo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -238,12 +238,12 @@ export function PayoutCard({
                   {Array.isArray(payout.milestones) &&
                     payout.milestones
                       .slice(0, 1)
-                      .map((milestone: any, index: number) => (
+                      .map((milestone, index: number) => (
                         <div key={index} className="truncate">
-                          {milestone.description} -{" "}
+                          {(milestone as Milestone).description} -{" "}
                           {formatCurrency(
                             payout.currency,
-                            new Decimal(milestone.amount || 0),
+                            new Decimal((milestone as Milestone).amount || 0),
                           )}
                         </div>
                       ))}
