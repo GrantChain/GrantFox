@@ -886,14 +886,12 @@ export const ManageMilestonesDialog = ({
                                   !hasEscrowBalance ||
                                   Boolean(
                                     (
-                                      (
-                                        localMilestones[
-                                          selectedIndex
-                                        ] as unknown as {
-                                          flags?: { approved?: boolean };
-                                        }
-                                      ).flags || {}
-                                    ).approved,
+                                      localMilestones[
+                                        selectedIndex
+                                      ] as unknown as {
+                                        flags?: { approved?: boolean };
+                                      }
+                                    ).flags?.approved,
                                   ) ||
                                   getLoading(
                                     payout.payout_id,
@@ -933,14 +931,12 @@ export const ManageMilestonesDialog = ({
                                     ?.length || 0) === 0 ||
                                   Boolean(
                                     (
-                                      (
-                                        localMilestones[
-                                          selectedIndex
-                                        ] as unknown as {
-                                          flags?: { approved?: boolean };
-                                        }
-                                      ).flags || {}
-                                    ).approved,
+                                      localMilestones[
+                                        selectedIndex
+                                      ] as unknown as {
+                                        flags?: { approved?: boolean };
+                                      }
+                                    ).flags?.approved,
                                   ) ||
                                   getLoading(
                                     payout.payout_id,
