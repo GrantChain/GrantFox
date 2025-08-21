@@ -90,10 +90,7 @@ export const PayoutForm = ({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center gap-1">
-                      <FormLabel>Title</FormLabel>
-                      <TooltipInfo content="Enter a descriptive title for this payout that clearly identifies its purpose" />
-                    </div>
+                    <FormLabel>Title</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -254,10 +251,7 @@ export const PayoutForm = ({
                 name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center gap-1">
-                      <FormLabel>Currency</FormLabel>
-                      <TooltipInfo content="Select the currency in which the payout will be made" />
-                    </div>
+                    <FormLabel>Currency</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -445,10 +439,7 @@ export const PayoutForm = ({
               name="image_url"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center gap-1">
-                    <FormLabel>Image</FormLabel>
-                    <TooltipInfo content="Upload an image that represents or is related to this payout" />
-                  </div>
+                  <FormLabel>Image</FormLabel>
                   <FormControl>
                     <div className="flex flex-col gap-4">
                       <div className="relative w-full aspect-square rounded-lg overflow-hidden border-2 border-dashed border-muted-foreground/25 bg-muted/5">
