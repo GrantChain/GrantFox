@@ -19,7 +19,7 @@ const TooltipInfo = ({ content, children }: TooltipInfoProps) => {
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
           {children ? (
             children
