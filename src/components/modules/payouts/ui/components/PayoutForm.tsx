@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -62,8 +63,10 @@ export const PayoutForm = ({
 
   const milestones = watch("milestones");
   useEffect(() => {
+    // Ensure numeric summation even if amount is temporarily a string/empty
     const total = milestones.reduce((sum, milestone) => {
-      return sum + (milestone.amount || 0);
+      const amount = Number(milestone.amount ?? 0);
+      return sum + (Number.isNaN(amount) ? 0 : amount);
     }, 0);
     setValue("total_funding", total);
   }, [milestones, setValue]);
@@ -208,7 +211,7 @@ export const PayoutForm = ({
               )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={control}
                 name="status"
@@ -290,39 +293,13 @@ export const PayoutForm = ({
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={control}
-                name="total_funding"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center gap-1">
-                      <FormLabel>Total Funding</FormLabel>
-                      <TooltipInfo content="Total amount of funding for this payout. This is automatically calculated from milestone amounts" />
-                    </div>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number"
-                        step="any"
-                        disabled
-                        placeholder="Total funding amount"
-                        aria-label="Total Funding"
-                        tabIndex={0}
-                        className="bg-muted"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
             <FormField
               control={control}
               name="milestones"
               render={() => (
-                <FormItem>
+                <FormItem data-testid="milestones-section">
                   <div className="flex items-center gap-1">
                     <FormLabel>Milestones</FormLabel>
                     <TooltipInfo content="Add milestones to break down the payout into smaller, trackable deliverables" />
@@ -433,6 +410,38 @@ export const PayoutForm = ({
                         </FormMessage>
                       )}
                   </div>
+                </FormItem>
+              )}
+            />
+
+            {/* Total Funding moved below milestones */}
+            <FormField
+              control={control}
+              name="total_funding"
+              render={({ field }) => (
+                <FormItem data-testid="total-funding-field">
+                  <div className="flex items-center gap-1">
+                    <FormLabel>Total Funding</FormLabel>
+                    <TooltipInfo content="Total amount of funding for this payout. This is automatically calculated from milestone amounts" />
+                  </div>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      step="any"
+                      disabled
+                      readOnly
+                      placeholder="Total funding amount"
+                      aria-label="Total Funding"
+                      tabIndex={0}
+                      className="bg-muted"
+                    />
+                  </FormControl>
+                  {/* Helper text explaining auto-calculation */}
+                  <FormDescription>
+                    This value is auto-calculated from the sum of all milestone amounts.
+                  </FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />
