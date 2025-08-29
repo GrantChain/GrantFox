@@ -439,7 +439,8 @@ export const PayoutForm = ({
                   </FormControl>
                   {/* Helper text explaining auto-calculation */}
                   <FormDescription>
-                    This value is auto-calculated from the sum of all milestone amounts.
+                    This value is auto-calculated from the sum of all milestone
+                    amounts.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
