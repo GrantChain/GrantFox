@@ -20,4 +20,3 @@ export interface EmailResponse {
   data?: string;
   error?: string;
 }
-

@@ -81,7 +81,7 @@ model Payout {
   milestones    Json?
   escrow_id     String?
   rewards       Json?
-  skills        String?
+  skills        String[]
   social_media  Json?
   application_deadline DateTime?
   announcement_deadline DateTime?
