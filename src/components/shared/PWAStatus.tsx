@@ -1,8 +1,8 @@
 "use client";
 
-import { usePWA } from "@/hooks/usePWA";
 import { Badge } from "@/components/ui/badge";
-import { Wifi, WifiOff, Download, CheckCircle } from "lucide-react";
+import { usePWA } from "@/hooks/usePWA";
+import { CheckCircle, Download, Wifi, WifiOff } from "lucide-react";
 
 export const PWAStatus = () => {
   const { isSupported, isInstalled, isOnline, hasUpdate } = usePWA();

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, X, Share, Plus } from "lucide-react";
 import { usePWA } from "@/hooks/usePWA";
+import { Download, Plus, Share, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -15,7 +15,8 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const PWAInstallPrompt = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
   const { isInstalled, hasUpdate, updateServiceWorker } = usePWA();
 
@@ -33,14 +34,18 @@ export const PWAInstallPrompt = () => {
 
     // Check if iOS
     setIsIOS(
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream?: unknown }).MSStream
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        !(window as unknown as { MSStream?: unknown }).MSStream,
     );
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
@@ -80,7 +85,8 @@ export const PWAInstallPrompt = () => {
             <div className="flex-1">
               <h3 className="text-sm font-semibold">Update Available</h3>
               <p className="mt-1 text-xs text-muted-foreground">
-                A new version of GrantFox is available. Update now for the latest features.
+                A new version of GrantFox is available. Update now for the
+                latest features.
               </p>
             </div>
             <Button
@@ -127,7 +133,8 @@ export const PWAInstallPrompt = () => {
     // Check if user dismissed recently (within 7 days)
     const dismissedTime = localStorage.getItem("pwa-install-dismissed");
     if (dismissedTime) {
-      const daysSinceDismissed = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
+      const daysSinceDismissed =
+        (Date.now() - Number.parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
       if (daysSinceDismissed < 7) {
         return null;
       }
@@ -141,8 +148,8 @@ export const PWAInstallPrompt = () => {
               <h3 className="text-sm font-semibold">Install GrantFox</h3>
               <p className="mt-1 text-xs text-muted-foreground">
                 To install this app on your iOS device, tap the share button{" "}
-                <Share className="inline h-3 w-3" /> and then &quot;Add to Home Screen&quot;{" "}
-                <Plus className="inline h-3 w-3" />.
+                <Share className="inline h-3 w-3" /> and then &quot;Add to Home
+                Screen&quot; <Plus className="inline h-3 w-3" />.
               </p>
             </div>
             <Button
@@ -168,7 +175,8 @@ export const PWAInstallPrompt = () => {
   // Check if user dismissed recently (within 7 days)
   const dismissedTime = localStorage.getItem("pwa-install-dismissed");
   if (dismissedTime) {
-    const daysSinceDismissed = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
+    const daysSinceDismissed =
+      (Date.now() - Number.parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
     if (daysSinceDismissed < 7) {
       return null;
     }
@@ -181,7 +189,8 @@ export const PWAInstallPrompt = () => {
           <div className="flex-1">
             <h3 className="text-sm font-semibold">Install GrantFox</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Install our app for a better experience with offline access and faster loading.
+              Install our app for a better experience with offline access and
+              faster loading.
             </p>
           </div>
           <Button

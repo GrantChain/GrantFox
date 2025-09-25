@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Titillium_Web } from "next/font/google";
 import "./globals.css";
 import { GlobalProvider } from "@/components/providers/global.provider";
-import { Toaster } from "sonner";
 import { PWAInstallPrompt } from "@/components/shared/PWAInstallPrompt";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,9 +23,11 @@ const titilliumWeb = Titillium_Web({
 
 export const metadata: Metadata = {
   title: "GrantFox",
-  description: "A comprehensive platform for managing grants and funding opportunities",
+  description:
+    "A comprehensive platform for managing grants and funding opportunities",
   themeColor: "#000000",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+  viewport:
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -38,7 +40,8 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "GrantFox",
     title: "GrantFox",
-    description: "A comprehensive platform for managing grants and funding opportunities",
+    description:
+      "A comprehensive platform for managing grants and funding opportunities",
   },
   icons: {
     icon: [
