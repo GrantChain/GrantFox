@@ -19,10 +19,10 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         user: existingUser,
-        message: "User already exists" 
+        message: "User already exists",
       });
     }
 
@@ -45,39 +45,45 @@ export async function POST(req: Request) {
         },
       });
 
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         user,
-        message: "OAuth user created successfully" 
+        message: "OAuth user created successfully",
       });
     } catch (createError: unknown) {
       // Si hay un error de duplicado, intentar obtener el usuario existente
-      const errorMessage = createError instanceof Error ? createError.message : String(createError);
+      const errorMessage =
+        createError instanceof Error
+          ? createError.message
+          : String(createError);
       const errorCode = (createError as { code?: string })?.code;
-      
-      if (errorCode === 'P2002' || errorMessage.includes('Unique constraint')) {
+
+      if (errorCode === "P2002" || errorMessage.includes("Unique constraint")) {
         const user = await prisma.user.findUnique({
           where: { user_id },
         });
-        
+
         if (user) {
-          return NextResponse.json({ 
-            success: true, 
+          return NextResponse.json({
+            success: true,
             user,
-            message: "User already exists (recovered from conflict)" 
+            message: "User already exists (recovered from conflict)",
           });
         }
       }
-      
+
       // Si no es un error de duplicado, re-lanzar el error
       throw createError;
     }
   } catch (error) {
     console.error("Error in verify-oauth-user:", error);
     const { message, status } = handleDatabaseError(error);
-    return NextResponse.json({ 
-      success: false, 
-      error: message 
-    }, { status });
+    return NextResponse.json(
+      {
+        success: false,
+        error: message,
+      },
+      { status },
+    );
   }
-} 
+}
