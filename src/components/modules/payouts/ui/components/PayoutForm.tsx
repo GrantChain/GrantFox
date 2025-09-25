@@ -112,10 +112,7 @@ export const PayoutForm = ({
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center gap-1">
-                      <FormLabel>Type</FormLabel>
-                      <TooltipInfo content="Select the type of payout. This determines how the funds will be distributed" />
-                    </div>
+                    <FormLabel>Type</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
