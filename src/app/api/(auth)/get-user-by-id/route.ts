@@ -1,6 +1,6 @@
 import { handleDatabaseError, prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { logger } from "@/lib/services/logger";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {

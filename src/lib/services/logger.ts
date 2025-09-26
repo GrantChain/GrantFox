@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma";
+import { prisma } from "@/lib/prisma";
 
 export type LogParams = {
   action: string;
@@ -9,13 +9,15 @@ export type LogParams = {
   metadata?: Record<string, unknown> | null;
 };
 
-export type LogResponse = {
-  success: true;
-  logId: string;
-} | {
-  success: false;
-  error: string;
-};
+export type LogResponse =
+  | {
+      success: true;
+      logId: string;
+    }
+  | {
+      success: false;
+      error: string;
+    };
 
 // Internal: actually writes the log entry and returns a structured response
 export async function writeSystemLog(params: LogParams): Promise<LogResponse> {
@@ -39,7 +41,8 @@ export async function writeSystemLog(params: LogParams): Promise<LogResponse> {
     return { success: true, logId: result.log_id };
   } catch (err) {
     // Never throw: logging must never break app flow
-    const message = err instanceof Error ? err.message : "Unknown logging error";
+    const message =
+      err instanceof Error ? err.message : "Unknown logging error";
     // Also mirror to console to aid local debugging
     // eslint-disable-next-line no-console
     console.error("[logger] Failed to write system log:", err);
@@ -55,7 +58,10 @@ export function logSystemEvent(params: LogParams): void {
 
 // Convenience helpers for common severities
 export const logger = {
-  info: (description: string, ctx?: Omit<LogParams, "description" | "action"> & { action?: string }) => {
+  info: (
+    description: string,
+    ctx?: Omit<LogParams, "description" | "action"> & { action?: string },
+  ) => {
     const action = ctx?.action ?? "INFO";
     // Console output for developer visibility (optional)
     // eslint-disable-next-line no-console
@@ -68,7 +74,11 @@ export const logger = {
       metadata: ctx?.metadata ?? null,
     });
   },
-  error: (description: string, error?: unknown, ctx?: Omit<LogParams, "description" | "action"> & { action?: string }) => {
+  error: (
+    description: string,
+    error?: unknown,
+    ctx?: Omit<LogParams, "description" | "action"> & { action?: string },
+  ) => {
     const action = ctx?.action ?? "ERROR";
     const metadata = {
       ...(ctx?.metadata ?? {}),

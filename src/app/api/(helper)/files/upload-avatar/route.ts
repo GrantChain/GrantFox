@@ -1,6 +1,6 @@
+import { logger } from "@/lib/services/logger";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { logger } from "@/lib/services/logger";
 
 export const dynamic = "force-dynamic";
 

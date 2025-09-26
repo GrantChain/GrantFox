@@ -1,7 +1,7 @@
 import { UserPayloadSchema } from "@/components/modules/auth/schema/register-user.schema";
 import { handleDatabaseError, prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { logger } from "@/lib/services/logger";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
@@ -25,10 +25,10 @@ export async function POST(req: Request) {
         userId: user_id,
         entityType: "USER",
       });
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         user: existingUser,
-        message: "User already exists" 
+        message: "User already exists",
       });
     }
 
@@ -55,38 +55,41 @@ export async function POST(req: Request) {
         action: "AUTH_VERIFY_OAUTH_USER",
         userId: user_id,
         entityType: "USER",
-        metadata: { email },
+        metadata: { email_masked: email.replace(/^(.).+(@.+)$/, "$1***$2") },
       });
 
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         user,
-        message: "OAuth user created successfully" 
+        message: "OAuth user created successfully",
       });
     } catch (createError: unknown) {
       // Si hay un error de duplicado, intentar obtener el usuario existente
-      const errorMessage = createError instanceof Error ? createError.message : String(createError);
+      const errorMessage =
+        createError instanceof Error
+          ? createError.message
+          : String(createError);
       const errorCode = (createError as { code?: string })?.code;
-      
-      if (errorCode === 'P2002' || errorMessage.includes('Unique constraint')) {
+
+      if (errorCode === "P2002" || errorMessage.includes("Unique constraint")) {
         const user = await prisma.user.findUnique({
           where: { user_id },
         });
-        
+
         if (user) {
           logger.info("OAuth verify: user already exists (recovered)", {
             action: "AUTH_VERIFY_OAUTH_USER",
             userId: user_id,
             entityType: "USER",
           });
-          return NextResponse.json({ 
-            success: true, 
+          return NextResponse.json({
+            success: true,
             user,
-            message: "User already exists (recovered from conflict)" 
+            message: "User already exists (recovered from conflict)",
           });
         }
       }
-      
+
       // Si no es un error de duplicado, re-lanzar el error
       throw createError;
     }
@@ -96,9 +99,12 @@ export async function POST(req: Request) {
       entityType: "USER",
     });
     const { message, status } = handleDatabaseError(error);
-    return NextResponse.json({ 
-      success: false, 
-      error: message 
-    }, { status });
+    return NextResponse.json(
+      {
+        success: false,
+        error: message,
+      },
+      { status },
+    );
   }
 }

@@ -1,6 +1,6 @@
+import { logger } from "@/lib/services/logger";
 import { supabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
-import { logger } from "@/lib/services/logger";
 
 export async function DELETE(
   request: Request,

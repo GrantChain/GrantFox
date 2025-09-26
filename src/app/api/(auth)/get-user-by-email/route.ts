@@ -1,6 +1,6 @@
 import { handleDatabaseError, prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { logger } from "@/lib/services/logger";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
       logger.error("User not found by email", null, {
         action: "AUTH_GET_USER_BY_EMAIL",
         entityType: "USER",
-        metadata: { email },
+        metadata: { email_masked: email.replace(/^(.).+(@.+)$/, "$1***$2") },
       });
       return NextResponse.json(
         { exists: false, message: "User not found" },
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     logger.info("Fetched user by email", {
       action: "AUTH_GET_USER_BY_EMAIL",
       entityType: "USER",
-      metadata: { email },
+      metadata: { email_masked: email.replace(/^(.).+(@.+)$/, "$1***$2") },
     });
 
     return NextResponse.json({ exists: true, user });

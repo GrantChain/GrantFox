@@ -1,7 +1,7 @@
+import { logger } from "@/lib/services/logger";
 import { supabase } from "@/lib/supabase";
 import { createId } from "@paralleldrive/cuid2";
 import { NextResponse } from "next/server";
-import { logger } from "@/lib/services/logger";
 
 export async function POST(request: Request) {
   try {
@@ -35,11 +35,15 @@ export async function POST(request: Request) {
     }
 
     if (!data) {
-      logger.error("No data returned from Supabase after payout creation", null, {
-        action: "PAYOUT_CREATE",
-        userId: payoutWithId.created_by ?? null,
-        entityType: "PAYOUT",
-      });
+      logger.error(
+        "No data returned from Supabase after payout creation",
+        null,
+        {
+          action: "PAYOUT_CREATE",
+          userId: payoutWithId.created_by ?? null,
+          entityType: "PAYOUT",
+        },
+      );
       return NextResponse.json(
         { error: "Failed to create payout" },
         { status: 500 },

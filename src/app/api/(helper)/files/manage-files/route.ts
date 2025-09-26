@@ -1,6 +1,6 @@
+import { logger } from "@/lib/services/logger";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { logger } from "@/lib/services/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +71,13 @@ export async function POST(request: Request) {
         logger.error("File upload error", error, {
           action: "FILE_UPLOAD",
           entityType: "FILE",
-          metadata: { path, payoutId, milestoneIdx, folder, fileName: file.name },
+          metadata: {
+            path,
+            payoutId,
+            milestoneIdx,
+            folder,
+            fileName: file.name,
+          },
         });
         continue;
       }
@@ -81,7 +87,11 @@ export async function POST(request: Request) {
     logger.info("Files upload completed", {
       action: "FILE_UPLOAD",
       entityType: "FILE",
-      metadata: { uploadedCount: uploadedPaths.length, errorCount: errors.length, payoutId },
+      metadata: {
+        uploadedCount: uploadedPaths.length,
+        errorCount: errors.length,
+        payoutId,
+      },
     });
 
     return NextResponse.json(

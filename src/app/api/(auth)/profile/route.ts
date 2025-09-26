@@ -1,8 +1,8 @@
 import { profileUpdatePayloadSchema } from "@/components/modules/profile/schemas/profile.schema";
 import { Prisma } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { logger } from "@/lib/services/logger";
+import { NextResponse } from "next/server";
 
 export async function PATCH(request: Request) {
   try {

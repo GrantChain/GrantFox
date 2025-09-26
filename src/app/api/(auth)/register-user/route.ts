@@ -2,8 +2,8 @@
 
 import { UserPayloadSchema } from "@/components/modules/auth/schema/register-user.schema";
 import { handleDatabaseError, prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { logger } from "@/lib/services/logger";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
         action: "AUTH_REGISTER",
         userId: user_id,
         entityType: "USER",
+        // no PII metadata here
       });
       return NextResponse.json(
         { error: "User already exists" },
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
       action: "AUTH_REGISTER",
       userId: user_id,
       entityType: "USER",
-      metadata: { email },
+      metadata: { email_masked: email.replace(/^(.).+(@.+)$/, "$1***$2") },
     });
 
     return NextResponse.json({ user }, { status: 201 });
