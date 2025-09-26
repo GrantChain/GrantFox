@@ -19,3 +19,6 @@ export const commentUpdateSchema = z.object({
     .min(10, "Message must be at least 10 characters")
     .max(500, "Message must be at most 500 characters"),
 });
+
+export type CommentCreateInput = z.infer<typeof commentCreateSchema>;
+export type CommentUpdateInput = z.infer<typeof commentUpdateSchema>;

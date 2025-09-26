@@ -15,3 +15,11 @@ export const bountyApplicationCreateSchema = z.object({
 export const bountyApplicationUpdateSchema = z.object({
   application_status: ApplicationStatus,
 });
+
+export type bountyApplicationCreateInput = z.infer<
+  typeof bountyApplicationCreateSchema
+>;
+
+export type bountyApplicationUpdateInput = z.infer<
+  typeof bountyApplicationUpdateSchema
+>;
