@@ -1,5 +1,6 @@
 import { handleDatabaseError, prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/services/logger";
 
 export async function GET(request: Request) {
   try {
@@ -8,6 +9,10 @@ export async function GET(request: Request) {
     const role = searchParams.get("role");
 
     if (!user_id) {
+      logger.error("Missing user_id parameter", null, {
+        action: "AUTH_GET_USER_ROLE_BY_ID",
+        entityType: "USER",
+      });
       return NextResponse.json(
         { exists: false, message: "User ID parameter is required" },
         { status: 400 },
@@ -38,11 +43,22 @@ export async function GET(request: Request) {
       }
 
       if (!user) {
+        logger.error("User not found by id", null, {
+          action: "AUTH_GET_USER_ROLE_BY_ID",
+          userId: user_id,
+          entityType: "USER",
+        });
         return NextResponse.json(
           { success: false, message: "User not found" },
           { status: 404 },
         );
       }
+
+      logger.info("Fetched user details for EMPTY role", {
+        action: "AUTH_GET_USER_ROLE_BY_ID",
+        userId: user_id,
+        entityType: "USER",
+      });
 
       return NextResponse.json({ success: true, user });
     }
@@ -91,14 +107,31 @@ export async function GET(request: Request) {
     }
 
     if (!userData) {
+      logger.error("User role data not found", null, {
+        action: "AUTH_GET_USER_ROLE_BY_ID",
+        userId: user_id,
+        entityType: "USER",
+        metadata: { role },
+      });
       return NextResponse.json(
         { exists: false, message: "User not found" },
         { status: 404 },
       );
     }
 
+    logger.info("Fetched user role data successfully", {
+      action: "AUTH_GET_USER_ROLE_BY_ID",
+      userId: user_id,
+      entityType: "USER",
+      metadata: { role },
+    });
+
     return NextResponse.json({ exists: true, user: userData });
   } catch (error) {
+    logger.error("Error getting user role by id", error, {
+      action: "AUTH_GET_USER_ROLE_BY_ID",
+      entityType: "USER",
+    });
     const { message, status } = handleDatabaseError(error);
     return NextResponse.json({ exists: false, message }, { status });
   }

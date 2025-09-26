@@ -1,6 +1,7 @@
 import { RolePayloadSchema } from "@/components/modules/auth/schema/role-selection.schema";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/services/logger";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -34,9 +35,21 @@ export async function POST(req: Request) {
       });
     }
 
+    logger.info("User role registered successfully", {
+      action: "AUTH_REGISTER_ROLE",
+      userId: user_id,
+      entityType: "USER",
+      metadata: { role },
+    });
+
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    console.error("Error registering role:", error);
+    logger.error("Error registering role", error, {
+      action: "AUTH_REGISTER_ROLE",
+      userId: user_id,
+      entityType: "USER",
+      metadata: { role },
+    });
     return NextResponse.json(
       { error: "Failed to register role" },
       { status: 500 },

@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/services/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,10 @@ export async function POST(request: Request) {
     const serviceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !serviceKey) {
+      logger.error("Missing Supabase server credentials", null, {
+        action: "FILE_UPLOAD",
+        entityType: "FILE",
+      });
       return NextResponse.json(
         { success: false, message: "Missing Supabase server credentials" },
         { status: 500 },
@@ -25,6 +30,10 @@ export async function POST(request: Request) {
     const supabase = createClient(supabaseUrl, serviceKey);
 
     if (!bucket) {
+      logger.error("Missing Supabase storage bucket", null, {
+        action: "FILE_UPLOAD",
+        entityType: "FILE",
+      });
       return NextResponse.json(
         { success: false, message: "Missing Supabase storage bucket" },
         { status: 500 },
@@ -59,17 +68,31 @@ export async function POST(request: Request) {
 
       if (error) {
         errors.push(`${file.name}: ${error.message}`);
+        logger.error("File upload error", error, {
+          action: "FILE_UPLOAD",
+          entityType: "FILE",
+          metadata: { path, payoutId, milestoneIdx, folder, fileName: file.name },
+        });
         continue;
       }
       uploadedPaths.push(path);
     }
+
+    logger.info("Files upload completed", {
+      action: "FILE_UPLOAD",
+      entityType: "FILE",
+      metadata: { uploadedCount: uploadedPaths.length, errorCount: errors.length, payoutId },
+    });
 
     return NextResponse.json(
       { success: true, paths: uploadedPaths, errors },
       { status: 200 },
     );
   } catch (error) {
-    console.error("/api/files/manage-files error:", error);
+    logger.error("/api/files/manage-files error", error, {
+      action: "FILE_UPLOAD",
+      entityType: "FILE",
+    });
     return NextResponse.json(
       { success: false, message: "Unexpected error" },
       { status: 500 },

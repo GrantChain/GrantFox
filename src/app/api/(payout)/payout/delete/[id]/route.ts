@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/services/logger";
 
 export async function DELETE(
   request: Request,
@@ -14,15 +15,29 @@ export async function DELETE(
       .eq("payout_id", id);
 
     if (error) {
+      logger.error("Supabase error deleting payout", error, {
+        action: "PAYOUT_DELETE",
+        entityType: "PAYOUT",
+        metadata: { payout_id: id },
+      });
       return NextResponse.json(
         { error: `Error deleting payout: ${error.message}` },
         { status: 500 },
       );
     }
 
+    logger.info("Payout deleted", {
+      action: "PAYOUT_DELETE",
+      entityType: "PAYOUT",
+      metadata: { payout_id: id },
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error in delete payout route:", error);
+    logger.error("Error in delete payout route", error, {
+      action: "PAYOUT_DELETE",
+      entityType: "PAYOUT",
+    });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

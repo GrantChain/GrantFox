@@ -1,6 +1,7 @@
 import { UserPayloadSchema } from "@/components/modules/auth/schema/register-user.schema";
 import { handleDatabaseError, prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/services/logger";
 
 export async function POST(req: Request) {
   try {
@@ -19,6 +20,11 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
+      logger.info("OAuth verify: user already exists", {
+        action: "AUTH_VERIFY_OAUTH_USER",
+        userId: user_id,
+        entityType: "USER",
+      });
       return NextResponse.json({ 
         success: true, 
         user: existingUser,
@@ -45,6 +51,13 @@ export async function POST(req: Request) {
         },
       });
 
+      logger.info("OAuth user created successfully", {
+        action: "AUTH_VERIFY_OAUTH_USER",
+        userId: user_id,
+        entityType: "USER",
+        metadata: { email },
+      });
+
       return NextResponse.json({ 
         success: true, 
         user,
@@ -61,6 +74,11 @@ export async function POST(req: Request) {
         });
         
         if (user) {
+          logger.info("OAuth verify: user already exists (recovered)", {
+            action: "AUTH_VERIFY_OAUTH_USER",
+            userId: user_id,
+            entityType: "USER",
+          });
           return NextResponse.json({ 
             success: true, 
             user,
@@ -73,11 +91,14 @@ export async function POST(req: Request) {
       throw createError;
     }
   } catch (error) {
-    console.error("Error in verify-oauth-user:", error);
+    logger.error("Error in verify-oauth-user", error, {
+      action: "AUTH_VERIFY_OAUTH_USER",
+      entityType: "USER",
+    });
     const { message, status } = handleDatabaseError(error);
     return NextResponse.json({ 
       success: false, 
       error: message 
     }, { status });
   }
-} 
+}

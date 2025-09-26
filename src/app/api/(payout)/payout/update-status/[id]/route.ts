@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/services/logger";
 
 export async function PATCH(
   request: Request,
@@ -21,15 +22,29 @@ export async function PATCH(
       .single();
 
     if (error) {
+      logger.error("Supabase error updating payout status", error, {
+        action: "PAYOUT_UPDATE_STATUS",
+        entityType: "PAYOUT",
+        metadata: { payout_id: id, status },
+      });
       return NextResponse.json(
         { error: `Error updating status: ${error.message}` },
         { status: 500 },
       );
     }
 
+    logger.info("Payout status updated", {
+      action: "PAYOUT_UPDATE_STATUS",
+      entityType: "PAYOUT",
+      metadata: { payout_id: id, status: data?.status },
+    });
+
     return NextResponse.json(data);
   } catch (error) {
-    console.error("/payout/update-status error:", error);
+    logger.error("/payout/update-status error", error, {
+      action: "PAYOUT_UPDATE_STATUS",
+      entityType: "PAYOUT",
+    });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },
