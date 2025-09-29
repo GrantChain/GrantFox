@@ -1,8 +1,8 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
-import { I18nextProvider } from "react-i18next";
 import i18n from "@/i18n/config";
+import { type ReactNode, useEffect, useState } from "react";
+import { I18nextProvider } from "react-i18next";
 
 const LANG_STORAGE_KEY = "app_language";
 
@@ -15,7 +15,9 @@ export const I18nProvider = ({ children }: I18nProviderProps) => {
 
   useEffect(() => {
     const persisted =
-      typeof window !== "undefined" ? localStorage.getItem(LANG_STORAGE_KEY) : null;
+      typeof window !== "undefined"
+        ? localStorage.getItem(LANG_STORAGE_KEY)
+        : null;
     if (persisted && i18n.language !== persisted) {
       i18n.changeLanguage(persisted).finally(() => setReady(true));
     } else {
