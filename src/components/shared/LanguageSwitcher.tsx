@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { persistLanguage } from "@/components/providers/i18n.provider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
-import { persistLanguage } from "@/components/providers/i18n.provider";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type LanguageOption = {
   code: string;

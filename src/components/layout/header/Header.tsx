@@ -1,13 +1,13 @@
 "use client";
 
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/components/wallet/hooks/useWallet";
 import useLayoutDashboard from "@/hooks/useLayoutDashboard";
 import { Wallet as WalletIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { MobileTrigger } from "../sidebar/mobile-trigger";
 import { ThemeToggle } from "../sidebar/theme-toggler";
-import { useTranslation } from "react-i18next";
-import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 
 export const Header = () => {
   const { handleConnect, handleDisconnect, account } = useWallet();
