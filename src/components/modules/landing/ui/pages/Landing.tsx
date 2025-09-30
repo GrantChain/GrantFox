@@ -5,6 +5,7 @@ import { HeaderLanding } from "@/components/layout/header/HeaderLanding";
 import { AnimatePresence, motion } from "framer-motion";
 import { useScrollToHash } from "../../hooks/scroll-to-hash.hook";
 import { HeroSection } from "../sections/HeroSection";
+import { Calendar } from "@/components/ui/calendar";
 
 export const Landing = () => {
   useScrollToHash();
@@ -19,6 +20,8 @@ export const Landing = () => {
         transition={{ duration: 0.5 }}
       >
         <HeaderLanding />
+
+        <Calendar />
 
         <main className="flex-1 min-h-screen">
           <HeroSection />
