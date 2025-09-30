@@ -67,10 +67,14 @@ export async function sendSupportTicketNotifications(opts: {
       body: `Your ticket (${ticket.ticket_id}) in category ${ticket.category} has been received. Our team will respond shortly.`,
     }),
     adminEmail
-      ? sendTemplatedEmail(adminEmail, `New Support Ticket: ${ticket.subject}`, {
-          title: "New Support Ticket Submitted",
-          body: `Ticket ID: ${ticket.ticket_id}\nCategory: ${ticket.category}\nSubject: ${ticket.subject}`,
-        })
+      ? sendTemplatedEmail(
+          adminEmail,
+          `New Support Ticket: ${ticket.subject}`,
+          {
+            title: "New Support Ticket Submitted",
+            body: `Ticket ID: ${ticket.ticket_id}\nCategory: ${ticket.category}\nSubject: ${ticket.subject}`,
+          },
+        )
       : Promise.resolve(),
   ]);
 }
