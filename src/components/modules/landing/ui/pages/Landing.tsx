@@ -2,10 +2,10 @@
 
 import { FooterLanding } from "@/components/layout/footer/FooterLanding";
 import { HeaderLanding } from "@/components/layout/header/HeaderLanding";
+import { Calendar } from "@/components/ui/calendar";
 import { AnimatePresence, motion } from "framer-motion";
 import { useScrollToHash } from "../../hooks/scroll-to-hash.hook";
 import { HeroSection } from "../sections/HeroSection";
-import { Calendar } from "@/components/ui/calendar";
 
 export const Landing = () => {
   useScrollToHash();
