@@ -17,7 +17,9 @@ export const isThereAnyFilter = (filters: PayoutFilters): boolean => {
     filters.minFunding !== "" ||
     filters.maxFunding !== "" ||
     filters.payoutProviderName !== "" ||
-    filters.granteeName !== ""
+    filters.granteeName !== "" ||
+    filters.startDate !== "" ||
+    filters.endDate !== ""
   );
 };
 
@@ -32,7 +34,10 @@ export const formatDateRangeToFilters = (
 
 export const createInitialDateRange = (
   filters: PayoutFilters,
-): DateRange | undefined => ({
-  from: filters.startDate ? new Date(filters.startDate) : undefined,
-  to: filters.endDate ? new Date(filters.endDate) : undefined,
-});
+): DateRange | undefined => {
+  if (!filters.startDate && !filters.endDate) return undefined;
+  return {
+    from: filters.startDate ? new Date(filters.startDate) : undefined,
+    to: filters.endDate ? new Date(filters.endDate) : undefined,
+  };
+};

@@ -34,12 +34,6 @@ export const PayoutsFilters = ({
   const [maxFundingValue, setMaxFundingValue] = useState(
     filters.maxFunding ?? "",
   );
-  // const [payoutProviderNameValue, setPayoutProviderNameValue] = useState(
-  //   filters.payoutProviderName || "",
-  // );
-  // const [granteeNameValue, setGranteeNameValue] = useState(
-  //   filters.granteeName || "",
-  // );
   const { showCreateModal, setShowCreateModal } = usePayout();
   const { user } = useAuth();
 
@@ -56,7 +50,6 @@ export const PayoutsFilters = ({
         handleFilterChange("search", searchValue);
       }
     }, 500);
-
     return () => clearTimeout(timer);
   }, [searchValue, filters.search, handleFilterChange]);
 
@@ -78,26 +71,6 @@ export const PayoutsFilters = ({
     return () => clearTimeout(timer);
   }, [maxFundingValue, filters.maxFunding, handleFilterChange]);
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     if (payoutProviderNameValue !== filters.payoutProviderName) {
-  //       handleFilterChange("payoutProviderName", payoutProviderNameValue);
-  //     }
-  //   }, 500);
-
-  //   return () => clearTimeout(timer);
-  // }, [payoutProviderNameValue, filters.payoutProviderName, handleFilterChange]);
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     if (granteeNameValue !== filters.granteeName) {
-  //       handleFilterChange("granteeName", granteeNameValue);
-  //     }
-  //   }, 500);
-
-  //   return () => clearTimeout(timer);
-  // }, [granteeNameValue, filters.granteeName, handleFilterChange]);
-
   const handleDateRangeChange = (range: DateRange | undefined) => {
     setDateRange(range);
     onFilterChange(formatDateRangeToFilters(range, filters));
@@ -106,8 +79,8 @@ export const PayoutsFilters = ({
   const handleReset = () => {
     setDateRange(undefined);
     setSearchValue("");
-    // setPayoutProviderNameValue("");
-    // setGranteeNameValue("");
+    setMinFundingValue("");
+    setMaxFundingValue("");
     onFilterChange(createEmptyFilters());
   };
 
@@ -123,7 +96,6 @@ export const PayoutsFilters = ({
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
               />
-
               <Button
                 variant="outline"
                 className="text-muted-foreground"
@@ -133,24 +105,6 @@ export const PayoutsFilters = ({
                 <Trash2 className="w-4 h-4 text-destructive/70" /> Reset Filters
               </Button>
             </div>
-
-            {/* {user?.role === "GRANTEE" && (
-              <Input
-                type="text"
-                placeholder="Search by Payout Provider..."
-                value={payoutProviderNameValue}
-                onChange={(e) => setPayoutProviderNameValue(e.target.value)}
-              />
-            )}
-
-            {user?.role === "PAYOUT_PROVIDER" && (
-              <Input
-                type="text"
-                placeholder="Search by Grantee Name..."
-                value={granteeNameValue}
-                onChange={(e) => setGranteeNameValue(e.target.value)}
-              />
-            )} */}
           </div>
 
           <div className="w-full md:w-2/3 flex flex-col md:flex-row gap-4 justify-end">
