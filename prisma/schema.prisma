@@ -201,3 +201,37 @@ enum MilestoneStatus {
   APPROVED
   REJECTED
 }
+
+// ---------------------------------------------
+// Support Ticket System
+// ---------------------------------------------
+model SupportTicket {
+  ticket_id   String         @id @default(cuid())
+  user_id     String
+  category    SupportCategory
+  status      SupportStatus  @default(OPEN)
+  subject     String
+  message     String
+  attachments Json?
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  user        User           @relation(fields: [user_id], references: [user_id])
+
+  @@index([user_id])
+  @@index([status])
+  @@index([created_at])
+  @@map("support_ticket")
+}
+
+enum SupportCategory {
+  BUG
+  FEATURE
+  QUESTION
+}
+
+enum SupportStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
