@@ -41,9 +41,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
-import { http } from "@/lib/axios";
 import { useWallet } from "@/components/wallet/hooks/useWallet";
+import { http } from "@/lib/axios";
+import { toast } from "sonner";
 
 // Form validation rules
 const ticketFormSchema = z.object({
@@ -122,7 +122,12 @@ export function TicketForm({ className }: TicketFormProps) {
     try {
       const payload = {
         user_id: account || undefined,
-        category: data.category === "bug" ? "BUG" : data.category === "feature" ? "FEATURE" : "QUESTION",
+        category:
+          data.category === "bug"
+            ? "BUG"
+            : data.category === "feature"
+              ? "FEATURE"
+              : "QUESTION",
         subject: data.subject,
         message: data.message,
       };
