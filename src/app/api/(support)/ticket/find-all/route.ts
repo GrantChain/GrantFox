@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     if (status) where.status = status;
     if (category) where.category = category;
 
-  const ticketRepo = prisma.supportTicket;
+    const ticketRepo = prisma.supportTicket;
     const [total, data] = await Promise.all([
       ticketRepo.count({ where }),
       ticketRepo.findMany({

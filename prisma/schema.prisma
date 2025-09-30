@@ -27,6 +27,7 @@ model User {
   payout_provider PayoutProvider?
   system_logs     SystemLog[]
   comments        Comment[]
+  supportTicket   SupportTicket[]
 
   @@index([role])
   @@index([is_active])
