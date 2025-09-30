@@ -41,6 +41,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useWallet } from "@/components/wallet/hooks/useWallet";
+import { http } from "@/lib/axios";
 import { toast } from "sonner";
 
 // Form validation rules
@@ -113,29 +115,38 @@ export function TicketForm({ className }: TicketFormProps) {
   const watchedCategory = form.watch("category");
   const watchedMessage = form.watch("message");
 
+  const { account } = useWallet();
+
   async function onSubmit(data: TicketFormValues) {
     setIsSubmitting(true);
-
     try {
-      // TODO: Replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log(data);
-      setShowSuccess(true);
-
-      toast.success("Ticket submitted successfully!", {
-        description: "We'll get back to you within 24 hours.",
-      });
-
-      form.reset();
-
-      // Auto-hide success message
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 5000);
-    } catch (error) {
-      console.log(error);
+      const payload = {
+        user_id: account || undefined,
+        category:
+          data.category === "bug"
+            ? "BUG"
+            : data.category === "feature"
+              ? "FEATURE"
+              : "QUESTION",
+        subject: data.subject,
+        message: data.message,
+      };
+      const res = await http.post("/support/ticket/create", payload);
+      if (res.data?.data) {
+        setShowSuccess(true);
+        toast.success("Ticket submitted successfully!", {
+          description: "We'll get back to you within 24 hours.",
+        });
+        form.reset();
+        setTimeout(() => setShowSuccess(false), 5000);
+      } else {
+        throw new Error("Unexpected response");
+      }
+    } catch (error: any) {
       toast.error("Failed to submit ticket", {
-        description: "Please try again or contact support directly.",
+        description:
+          error?.response?.data?.error ||
+          "Please try again or contact support directly.",
       });
     } finally {
       setIsSubmitting(false);
@@ -175,12 +186,16 @@ export function TicketForm({ className }: TicketFormProps) {
 
         <CardContent className="space-y-8">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-8"
+              data-testid="support-ticket-form"
+            >
               <FormField
                 control={form.control}
                 name="category"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem data-testid="field-category">
                     <FormLabel className="text-base font-semibold">
                       Category
                     </FormLabel>
@@ -246,7 +261,7 @@ export function TicketForm({ className }: TicketFormProps) {
                 control={form.control}
                 name="subject"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem data-testid="field-subject">
                     <FormLabel className="text-base font-semibold">
                       Subject
                     </FormLabel>
@@ -269,7 +284,7 @@ export function TicketForm({ className }: TicketFormProps) {
                 control={form.control}
                 name="message"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem data-testid="field-message">
                     <FormLabel className="text-base font-semibold">
                       Message
                     </FormLabel>
@@ -299,6 +314,7 @@ export function TicketForm({ className }: TicketFormProps) {
                   disabled={isSubmitting}
                   className="min-w-[140px] h-12 text-base"
                   size="lg"
+                  data-testid="submit-ticket"
                 >
                   {isSubmitting ? (
                     <>
