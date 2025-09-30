@@ -52,3 +52,25 @@ export async function sendTemplatedEmail(
     html,
   });
 }
+
+// Support ticket notification helper (user + admin). Admin email could be env-based.
+export async function sendSupportTicketNotifications(opts: {
+  userEmail: string;
+  ticket: { ticket_id: string; subject: string; category: string };
+}) {
+  const adminEmail = process.env.SUPPORT_ADMIN_EMAIL;
+  const { userEmail, ticket } = opts;
+
+  await Promise.allSettled([
+    sendTemplatedEmail(userEmail, `Ticket Received: ${ticket.subject}`, {
+      title: "We have received your support ticket",
+      body: `Your ticket (${ticket.ticket_id}) in category ${ticket.category} has been received. Our team will respond shortly.`,
+    }),
+    adminEmail
+      ? sendTemplatedEmail(adminEmail, `New Support Ticket: ${ticket.subject}`, {
+          title: "New Support Ticket Submitted",
+          body: `Ticket ID: ${ticket.ticket_id}\nCategory: ${ticket.category}\nSubject: ${ticket.subject}`,
+        })
+      : Promise.resolve(),
+  ]);
+}
