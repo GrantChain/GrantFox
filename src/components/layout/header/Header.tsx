@@ -1,14 +1,17 @@
 "use client";
 
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/components/wallet/hooks/useWallet";
 import useLayoutDashboard from "@/hooks/useLayoutDashboard";
 import { Wallet as WalletIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { MobileTrigger } from "../sidebar/mobile-trigger";
 import { ThemeToggle } from "../sidebar/theme-toggler";
 
 export const Header = () => {
   const { handleConnect, handleDisconnect, account } = useWallet();
+  const { t } = useTranslation();
   const isConnected = Boolean(account);
   const { label } = useLayoutDashboard();
 
@@ -19,13 +22,14 @@ export const Header = () => {
 
         {label !== "Help" && label !== "Report Issue" && (
           <h2 className="text-xl md:text-2xl font-bold tracking-tight">
-            {label}
+            {t(`header.${label.replace(/\s+/g, "").toLowerCase()}`, label)}
           </h2>
         )}
 
         <div className="flex items-center gap-4">
           {/* <NotificationButton /> */}
           <ThemeToggle />
+          <LanguageSwitcher />
           <Button
             variant="outline"
             size="default"
@@ -33,7 +37,7 @@ export const Header = () => {
             className="flex items-center gap-2"
           >
             <WalletIcon className="h-4 w-4" />
-            {isConnected ? "Disconnect" : "Connect Wallet"}
+            {isConnected ? t("header.disconnect") : t("header.connectWallet")}
           </Button>
         </div>
       </div>

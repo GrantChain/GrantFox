@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Titillium_Web } from "next/font/google";
 import "./globals.css";
 import { GlobalProvider } from "@/components/providers/global.provider";
+import { I18nProvider } from "@/components/providers/i18n.provider";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -35,7 +36,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${titilliumWeb.variable} antialiased`}
       >
-        <GlobalProvider>{children}</GlobalProvider>
+        <I18nProvider>
+          <GlobalProvider>{children}</GlobalProvider>
+        </I18nProvider>
         <Toaster />
       </body>
     </html>

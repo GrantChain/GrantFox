@@ -52,7 +52,8 @@ export const usePayoutForm = ({
       image_url: "",
       type: "GRANT",
       status: "DRAFT",
-      total_funding: 1000,
+      // Start at 0; real value will be auto-calculated from milestones
+      total_funding: 0,
       currency: "USDC",
       milestones: [{ description: "", amount: 0 }],
       ...initialValues,
