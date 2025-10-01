@@ -1,6 +1,6 @@
 /**
  * POST /api/comment/create
- * 
+ *
  * Body: { message: string, user_id: string, payout_id: string }
  * Returns: { success: boolean, comment: Comment, message: string }
  */
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid data", details: parsed.error.errors },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -25,38 +25,32 @@ export async function POST(request: Request) {
     // Find the user in the database
     const user = await prisma.user.findUnique({
       where: { user_id },
-      select: { user_id: true, is_active: true }
+      select: { user_id: true, is_active: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     if (!user.is_active) {
       return NextResponse.json(
         { error: "User account is not active" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     // Find the payout in the database
     const payout = await prisma.payout.findUnique({
       where: { payout_id },
-      select: { 
+      select: {
         payout_id: true,
         status: true,
-        created_by: true
-      }
+        created_by: true,
+      },
     });
 
     if (!payout) {
-      return NextResponse.json(
-        { error: "Payout not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Payout not found" }, { status: 404 });
     }
 
     // Create the comment
@@ -73,18 +67,18 @@ export async function POST(request: Request) {
             username: true,
             profile_url: true,
             bio: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         comment,
-        message: "Comment created successfully" 
+        message: "Comment created successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     const { message, status } = handleDatabaseError(error);
