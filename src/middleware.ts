@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   console.log("🔥 MIDDLEWARE EXECUTING for:", request.nextUrl.pathname);
   const { pathname, search } = request.nextUrl;
-  const redirectTo = pathname;
+  const redirectTo = `${pathname}${search}`;
 
   // Skip middleware for auth routes, API routes, and static files
   if (
@@ -20,6 +20,11 @@ export async function middleware(request: NextRequest) {
 
   // Only protect dashboard routes
   if (!pathname.startsWith("/dashboard")) {
+    return NextResponse.next();
+  }
+
+  // For public profile routes, allow access without authentication
+  if (pathname.startsWith("/dashboard/public-profile")) {
     return NextResponse.next();
   }
 
@@ -57,28 +62,21 @@ export async function middleware(request: NextRequest) {
   );
 
   try {
-    // Check for valid session
+    // Check for valid user (more secure than getSession)
     const {
-      data: { session },
+      data: { user },
       error,
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getUser();
 
-    if (error || !session) {
-      // No valid session - redirect to login
+    if (error || !user) {
+      // No valid user - redirect to login
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirectTo", redirectTo);
       return NextResponse.redirect(loginUrl);
     }
 
-    // Valid session found - allow access
-    if (session.user) {
-      return response;
-    }
-
-    // Session exists but no user - redirect to login
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirectTo", redirectTo);
-    return NextResponse.redirect(loginUrl);
+    // Valid user found - allow access
+    return response;
   } catch (error) {
     console.error("Middleware auth error:", error);
     const loginUrl = new URL("/login", request.url);
