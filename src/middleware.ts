@@ -3,30 +3,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  console.log("🔥 MIDDLEWARE EXECUTING for:", request.nextUrl.pathname);
+  if (process.env.NODE_ENV !== "production") {
+    console.debug("middleware:", request.nextUrl.pathname);
+  }
+
   const { pathname, search } = request.nextUrl;
   const redirectTo = `${pathname}${search}`;
 
-  // Skip middleware for auth routes, API routes, and static files
-  if (
-    pathname.startsWith("/(auth)") ||
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon.ico") ||
-    pathname.startsWith("/public")
-  ) {
-    return NextResponse.next();
-  }
-
-  // Only protect dashboard routes
-  if (!pathname.startsWith("/dashboard")) {
-    return NextResponse.next();
-  }
-
-  // For public profile routes, allow access without authentication
-  if (pathname.startsWith("/dashboard/public-profile")) {
-    return NextResponse.next();
-  }
+  // Paths are already constrained by config.matcher → only /dashboard/* reaches here.
 
   // Create response for cookie handling
   let response = NextResponse.next({
@@ -35,31 +19,36 @@ export async function middleware(request: NextRequest) {
     },
   });
 
+  // Validate Supabase environment variables
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error("Supabase env missing: NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    return NextResponse.error();
+  }
+
   // Create Supabase client for middleware
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          for (const { name, value } of cookiesToSet) {
-            request.cookies.set(name, value);
-          }
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          for (const { name, value, options } of cookiesToSet) {
-            response.cookies.set(name, value, options);
-          }
-        },
+  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        for (const { name, value } of cookiesToSet) {
+          request.cookies.set(name, value);
+        }
+        response = NextResponse.next({
+          request: {
+            headers: request.headers,
+          },
+        });
+        for (const { name, value, options } of cookiesToSet) {
+          response.cookies.set(name, value, options);
+        }
       },
     },
-  );
+  });
 
   try {
     // Check for valid user (more secure than getSession)
@@ -86,16 +75,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public (public files)
-     * - api (API routes)
-     * - auth routes (login, sign-up, etc.)
-     */
-    "/dashboard/:path*",
-  ],
+  // Run only on protected dashboard routes, excluding public profiles
+  matcher: ["/dashboard/((?!public-profile).*)"],
 };
