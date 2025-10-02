@@ -103,6 +103,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     });
   } catch (error) {
     console.error("Error in delete bounty application route:", error);
-    return handleDatabaseError(error);
+    const { message, status } = handleDatabaseError(error);
+    return NextResponse.json({ success: false, error: message }, { status });
   }
 }
