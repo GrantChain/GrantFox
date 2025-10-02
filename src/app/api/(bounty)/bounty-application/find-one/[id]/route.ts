@@ -1,8 +1,5 @@
 import { handleDatabaseError, prisma } from "@/lib/prisma";
-// src/app/api/(bounty)/bounty-application/find-one/[id]/route.ts
 import { type NextRequest, NextResponse } from "next/server";
-// The generated IDs are not UUIDs, so we skip this validation for now
-// import { bountyApplicationParamsSchema } from "@/components/modules/bounty/schema/bounty-application.schema";
 import { ZodError } from "zod";
 
 interface RouteParams {
@@ -21,25 +18,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         { status: 400 },
       );
     }
-
-    // The generated IDs are not UUIDs, so we skip this validation for now
-    // try {
-    //   bountyApplicationParamsSchema.parse({ id: applicationId });
-    // } catch (validationError) {
-    //   if (validationError instanceof ZodError) {
-    //     return NextResponse.json(
-    //       {
-    //         success: false,
-    //         error: "Invalid application ID format",
-    //         details: validationError.errors.map(err => ({
-    //           path: err.path.join('.'),
-    //           message: err.message
-    //         }))
-    //       },
-    //       { status: 400 }
-    //     );
-    //   }
-    // }
 
     const application = await prisma.bountyApplication.findUnique({
       where: {
@@ -97,6 +75,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    return handleDatabaseError(error);
+    const { message, status } = handleDatabaseError(error);
+    return NextResponse.json(
+      { success: false, error: message },
+      { status },
+    );
   }
 }

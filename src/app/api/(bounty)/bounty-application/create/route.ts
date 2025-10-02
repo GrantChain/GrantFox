@@ -1,16 +1,21 @@
-import { bountyApplicationCreateSchema } from "@/components/modules/bounty/schema/bounty-application.schema";
 import { handleDatabaseError, prisma } from "@/lib/prisma";
 import { createId } from "@paralleldrive/cuid2";
-// src/app/api/(bounty)/bounty-application/create/route.ts
 import { type NextRequest, NextResponse } from "next/server";
-import { ZodError } from "zod";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const now = new Date();
+    const dateNow = new Date();
 
-    const validatedData = bountyApplicationCreateSchema.parse(body);
+    if (!body.payout_id || !body.grantee_id) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: "payout_id and grantee_id are required" 
+        },
+        { status: 400 },
+      );
+    }
 
     const payout = await prisma.payout.findUnique({
       where: { payout_id: body.payout_id },
@@ -31,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     if (
       payout.application_deadline &&
-      new Date() > new Date(payout.application_deadline)
+      dateNow > new Date(payout.application_deadline)
     ) {
       return NextResponse.json(
         { success: false, error: "Application deadline has passed" },
@@ -76,16 +81,14 @@ export async function POST(request: NextRequest) {
       payout_id: body.payout_id,
       grantee_id: body.grantee_id,
       application_status: "PENDING" as const,
-      created_at: now,
-      updated_at: now,
+      created_at: dateNow,
+      updated_at: dateNow,
 
-      ...(validatedData.application_message && {
-        application_message: validatedData.application_message,
+      ...(body.application_message && {
+        application_message: body.application_message,
       }),
-      ...(validatedData.proposed_completion_date && {
-        proposed_completion_date: new Date(
-          validatedData.proposed_completion_date,
-        ),
+      ...(body.proposed_completion_date && {
+        proposed_completion_date: new Date(body.proposed_completion_date),
       }),
     };
 
@@ -107,14 +110,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    if (!newApplication) {
-      console.error("No data returned from Prisma");
-      return NextResponse.json(
-        { success: false, error: "Failed to create application" },
-        { status: 500 },
-      );
-    }
-
     return NextResponse.json(
       {
         success: true,
@@ -123,21 +118,9 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 },
     );
+    
   } catch (error) {
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid input data",
-          details: error.errors.map((err) => ({
-            path: err.path.join("."),
-            message: err.message,
-          })),
-        },
-        { status: 400 },
-      );
-    }
-
+    console.error("Error in create bounty application route:", error);
     return handleDatabaseError(error);
   }
 }

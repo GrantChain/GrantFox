@@ -1,9 +1,5 @@
 import { handleDatabaseError, prisma } from "@/lib/prisma";
-// src/app/api/(bounty)/bounty-application/delete/[id]/route.ts
 import { type NextRequest, NextResponse } from "next/server";
-import { ZodError } from "zod";
-//The generated IDs are not UUIDs, so we skip this validation for now
-// import { bountyApplicationParamsSchema } from "@/components/modules/bounty/schema/bounty-application.schema";
 
 interface RouteParams {
   params: {
@@ -21,25 +17,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         { status: 400 },
       );
     }
-
-    // The generated IDs are not UUIDs, so we skip this validation for now
-    // try {
-    //   bountyApplicationParamsSchema.parse({ id: applicationId });
-    // } catch (validationError) {
-    //   if (validationError instanceof ZodError) {
-    //     return NextResponse.json(
-    //       {
-    //         success: false,
-    //         error: "Invalid application ID format",
-    //         details: validationError.errors.map(err => ({
-    //           path: err.path.join('.'),
-    //           message: err.message
-    //         }))
-    //       },
-    //       { status: 400 }
-    //     );
-    //   }
-    // }
 
     const existingApplication = await prisma.bountyApplication.findUnique({
       where: { application_id: applicationId },
@@ -67,26 +44,25 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    if (existingApplication.application_status === "APPROVED") {
-      const restrictedPayoutStatuses = ["IN_PROGRESS", "COMPLETED", "CLOSED"];
-      if (
-        restrictedPayoutStatuses.includes(existingApplication.payout.status)
-      ) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: `Cannot delete an approved application for a payout with status: ${existingApplication.payout.status}. Please reject the application first.`,
-          },
-          { status: 400 },
-        );
-      }
-    }
-
-    if ((existingApplication.payout.status as string) === "COMPLETED") {
+    const IMMUTABLE_PAYOUT_STATUSES = ["COMPLETED", "CLOSED"];
+    if (IMMUTABLE_PAYOUT_STATUSES.includes(existingApplication.payout.status as string)) {
       return NextResponse.json(
         {
           success: false,
-          error: "Cannot delete application for a completed payout",
+          error: `Cannot delete application for a payout with status: ${existingApplication.payout.status}`,
+        },
+        { status: 400 },
+      );
+    }
+
+    if (
+      existingApplication.application_status === "APPROVED" &&
+      existingApplication.payout.status === "IN_PROGRESS"
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Cannot delete an approved application for an in-progress payout. Please reject the application first.",
         },
         { status: 400 },
       );
@@ -122,21 +98,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     });
   } catch (error) {
     console.error("Error in delete bounty application route:", error);
-
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid application ID format",
-          details: error.errors.map((err) => ({
-            path: err.path.join("."),
-            message: err.message,
-          })),
-        },
-        { status: 400 },
-      );
-    }
-
     return handleDatabaseError(error);
   }
 }

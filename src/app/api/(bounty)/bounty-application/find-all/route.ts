@@ -1,5 +1,4 @@
 import { handleDatabaseError, prisma } from "@/lib/prisma";
-// src/app/api/(bounty)/bounty-application/find-all/route.ts
 import { type NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
@@ -11,11 +10,43 @@ export async function POST(request: NextRequest) {
       payout_id: body.payout_id,
       grantee_id: body.grantee_id,
       application_status: body.application_status,
-      page: body.page || 1,
-      limit: body.limit || 10,
-      sort_by: body.sort_by || "created_at",
-      sort_order: body.sort_order || "desc",
+      page: Number(body.page) || 1,
+      limit: Number(body.limit) || 10,
+      sort_by: (body.sort_by as string) || "created_at",
+      sort_order: (body.sort_order as string) || "desc",
     };
+
+    if (filters.page < 1 || filters.limit < 1) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "page and limit must be integers greater than or equal to 1",
+        },
+        { status: 400 },
+      );
+    }
+
+    const sortableFields = ["created_at", "updated_at", "application_status"] as const;
+    if (!sortableFields.includes(filters.sort_by)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Invalid sort_by. Allowed values: ${sortableFields.join(", ")}`,
+        },
+        { status: 400 },
+      );
+    }
+
+    const sortOrder = filters.sort_order.toLowerCase();
+    if (sortOrder !== "asc" && sortOrder !== "desc") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "sort_order must be 'asc' or 'desc'",
+        },
+        { status: 400 },
+      );
+    }
 
     const whereConditions: {
       payout_id?: string;
@@ -73,7 +104,7 @@ export async function POST(request: NextRequest) {
         },
       },
       orderBy: {
-        [filters.sort_by]: filters.sort_order as "asc" | "desc",
+        [filters.sort_by]: sortOrder as "asc" | "desc",
       },
       skip: offset,
       take: filters.limit,
@@ -133,6 +164,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return handleDatabaseError(error);
+    const { message, status } = handleDatabaseError(error);
+    return NextResponse.json(
+      { success: false, error: message },
+      { status },
+    );
   }
 }

@@ -1,11 +1,5 @@
 import { handleDatabaseError, prisma } from "@/lib/prisma";
-// src/app/api/(bounty)/bounty-application/update-status/[id]/route.ts
 import { type NextRequest, NextResponse } from "next/server";
-// The generated IDs are not UUIDs, so we skip this validation for now
-// import {
-//   bountyApplicationParamsSchema
-// } from "@/components/modules/bounty/schema/bounty-application.schema";
-
 import { ZodError } from "zod";
 
 interface RouteParams {
@@ -26,6 +20,21 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const body = await request.json();
+    const validStatuses = ["PENDING", "APPROVED", "REJECTED"] as const;
+    if (
+      typeof body?.application_status !== "string" ||
+      !validStatuses.includes(body.application_status)
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "application_status must be one of: PENDING, APPROVED, REJECTED",
+        },
+        { status: 400 },
+      );
+    }
+    const applicationStatus = body.application_status as (typeof validStatuses)[number];
 
     const existingApplication = await prisma.bountyApplication.findUnique({
       where: { application_id: applicationId },
@@ -64,13 +73,33 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const updateData: {
-      application_status: "PENDING" | "APPROVED" | "REJECTED";
-      updated_at: Date;
-    } = {
-      application_status: body.application_status,
+    const updateData = {
+      application_status: applicationStatus,
       updated_at: new Date(),
+    } satisfies {
+      application_status: (typeof validStatuses)[number];
+      updated_at: Date;
     };
+
+    if (applicationStatus === "APPROVED") {
+      const existingApproved = await prisma.bountyApplication.findFirst({
+        where: {
+          payout_id: existingApplication.payout_id,
+          application_status: "APPROVED",
+          NOT: { application_id: existingApplication.application_id },
+        },
+      });
+      if (existingApproved) {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "Another application for this payout is already approved",
+          },
+          { status: 409 },
+        );
+      }
+    }
 
     const updatedApplication = await prisma.bountyApplication.update({
       where: { application_id: applicationId },
@@ -116,6 +145,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    return handleDatabaseError(error);
+    const { message, status } = handleDatabaseError(error);
+    return NextResponse.json(
+      { success: false, error: message },
+      { status },
+    );
+    
   }
 }

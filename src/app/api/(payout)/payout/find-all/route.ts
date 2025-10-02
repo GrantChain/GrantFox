@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
     const where: Prisma.PayoutWhereInput = {};
 
-    // Apply role-based filtering
+  
     if (role && userId) {
       if (role === UserRole.GRANTEE) {
         where.grantee_id = userId;
