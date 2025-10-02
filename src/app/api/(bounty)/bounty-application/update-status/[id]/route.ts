@@ -34,7 +34,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         { status: 400 },
       );
     }
-    const applicationStatus = body.application_status as (typeof validStatuses)[number];
+    const applicationStatus =
+      body.application_status as (typeof validStatuses)[number];
 
     const existingApplication = await prisma.bountyApplication.findUnique({
       where: { application_id: applicationId },
@@ -93,8 +94,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         return NextResponse.json(
           {
             success: false,
-            error:
-              "Another application for this payout is already approved",
+            error: "Another application for this payout is already approved",
           },
           { status: 409 },
         );
@@ -146,10 +146,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const { message, status } = handleDatabaseError(error);
-    return NextResponse.json(
-      { success: false, error: message },
-      { status },
-    );
-    
+    return NextResponse.json({ success: false, error: message }, { status });
   }
 }

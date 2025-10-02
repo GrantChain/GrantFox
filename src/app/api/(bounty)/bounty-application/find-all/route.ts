@@ -26,7 +26,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const sortableFields = ["created_at", "updated_at", "application_status"] as const;
+    const sortableFields = [
+      "created_at",
+      "updated_at",
+      "application_status",
+    ] as const;
     if (!sortableFields.includes(filters.sort_by)) {
       return NextResponse.json(
         {
@@ -165,9 +169,6 @@ export async function POST(request: NextRequest) {
     }
 
     const { message, status } = handleDatabaseError(error);
-    return NextResponse.json(
-      { success: false, error: message },
-      { status },
-    );
+    return NextResponse.json({ success: false, error: message }, { status });
   }
 }

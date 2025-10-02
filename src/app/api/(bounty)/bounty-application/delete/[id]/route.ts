@@ -45,7 +45,11 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     const IMMUTABLE_PAYOUT_STATUSES = ["COMPLETED", "CLOSED"];
-    if (IMMUTABLE_PAYOUT_STATUSES.includes(existingApplication.payout.status as string)) {
+    if (
+      IMMUTABLE_PAYOUT_STATUSES.includes(
+        existingApplication.payout.status as string,
+      )
+    ) {
       return NextResponse.json(
         {
           success: false,
@@ -62,7 +66,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json(
         {
           success: false,
-          error: "Cannot delete an approved application for an in-progress payout. Please reject the application first.",
+          error:
+            "Cannot delete an approved application for an in-progress payout. Please reject the application first.",
         },
         { status: 400 },
       );

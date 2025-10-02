@@ -76,9 +76,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     const { message, status } = handleDatabaseError(error);
-    return NextResponse.json(
-      { success: false, error: message },
-      { status },
-    );
+    return NextResponse.json({ success: false, error: message }, { status });
   }
 }

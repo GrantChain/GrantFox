@@ -9,9 +9,9 @@ export async function POST(request: NextRequest) {
 
     if (!body.payout_id || !body.grantee_id) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: "payout_id and grantee_id are required" 
+        {
+          success: false,
+          error: "payout_id and grantee_id are required",
         },
         { status: 400 },
       );
@@ -118,7 +118,6 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 },
     );
-    
   } catch (error) {
     console.error("Error in create bounty application route:", error);
     return handleDatabaseError(error);
