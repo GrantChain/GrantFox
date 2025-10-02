@@ -3,14 +3,24 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  if (process.env.NODE_ENV !== "production") {
-    console.debug("middleware:", request.nextUrl.pathname);
+  const { pathname, search } = request.nextUrl;
+  const redirectTo = pathname;
+
+  // Skip middleware for auth routes, API routes, and static files
+  if (
+    pathname.startsWith("/(auth)") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/public")
+  ) {
+    return NextResponse.next();
   }
 
-  const { pathname, search } = request.nextUrl;
-  const redirectTo = `${pathname}${search}`;
-
-  // Paths are already constrained by config.matcher → only /dashboard/* reaches here.
+  // Only protect dashboard routes
+  if (!pathname.startsWith("/dashboard")) {
+    return NextResponse.next();
+  }
 
   // Create response for cookie handling
   let response = NextResponse.next({
@@ -19,53 +29,55 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Validate Supabase environment variables
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.error("Supabase env missing: NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY");
-    return NextResponse.error();
-  }
-
   // Create Supabase client for middleware
-  const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        for (const { name, value } of cookiesToSet) {
-          request.cookies.set(name, value);
-        }
-        response = NextResponse.next({
-          request: {
-            headers: request.headers,
-          },
-        });
-        for (const { name, value, options } of cookiesToSet) {
-          response.cookies.set(name, value, options);
-        }
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          for (const { name, value } of cookiesToSet) {
+            request.cookies.set(name, value);
+          }
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          for (const { name, value, options } of cookiesToSet) {
+            response.cookies.set(name, value, options);
+          }
+        },
       },
     },
-  });
+  );
 
   try {
-    // Check for valid user (more secure than getSession)
+    // Check for valid session
     const {
-      data: { user },
+      data: { session },
       error,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getSession();
 
-    if (error || !user) {
-      // No valid user - redirect to login
+    if (error || !session) {
+      // No valid session - redirect to login
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirectTo", redirectTo);
       return NextResponse.redirect(loginUrl);
     }
 
-    // Valid user found - allow access
-    return response;
+    // Valid session found - allow access
+    if (session.user) {
+      return response;
+    }
+
+    // Session exists but no user - redirect to login
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirectTo", redirectTo);
+    return NextResponse.redirect(loginUrl);
   } catch (error) {
     console.error("Middleware auth error:", error);
     const loginUrl = new URL("/login", request.url);
@@ -75,6 +87,16 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Run only on protected dashboard routes, excluding public profiles
-  matcher: ["/dashboard/((?!public-profile).*)"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public (public files)
+     * - api (API routes)
+     * - auth routes (login, sign-up, etc.)
+     */
+    "/dashboard/:path*",
+  ],
 };
