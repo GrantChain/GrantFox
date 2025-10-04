@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/modules/auth/context/AuthContext";
 import { useEscrows } from "@/components/modules/escrows/hooks/useEscrows";
+import TooltipInfo from "@/components/shared/TooltipInfo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -266,22 +267,9 @@ export function PayoutDetailsSheet({
             <Card className="col-span-2 md:col-span-1">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" />
-                  Total Funding
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xl font-bold">
-                  {formatCurrency(payout.currency, payout.total_funding)}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="col-span-2 md:col-span-1">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
                   <Wallet className="h-4 w-4" />
-                  Current Balance
+                  Actual Balance
+                  <TooltipInfo content="Current amount funded in the escrow contract" />
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -458,6 +446,21 @@ export function PayoutDetailsSheet({
                     </div>
                   ),
                 )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <DollarSign className="h-4 w-4" />
+                Total Funding
+                <TooltipInfo content="Total payout amount calculated from all milestone amounts" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">
+                {formatCurrency(payout.currency, payout.total_funding)}
               </div>
             </CardContent>
           </Card>
