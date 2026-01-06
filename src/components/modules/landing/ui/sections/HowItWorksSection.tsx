@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, CheckCircle, DollarSign } from "lucide-react";
+import { CheckCircle, DollarSign, FileText } from "lucide-react";
 import { SectionHeader } from "./HeaderSection";
 
 const steps = [
@@ -9,19 +9,22 @@ const steps = [
     step: "01",
     icon: FileText,
     title: "Create Escrow",
-    description: "Set up a smart escrow with defined milestones and funding amount.",
+    description:
+      "Set up a smart escrow with defined milestones and funding amount.",
   },
   {
     step: "02",
     icon: CheckCircle,
     title: "Verify Milestones",
-    description: "Workers complete milestones which are automatically verified on-chain.",
+    description:
+      "Workers complete milestones which are automatically verified on-chain.",
   },
   {
     step: "03",
     icon: DollarSign,
     title: "Get Paid",
-    description: "Receive instant payouts when milestones are verified and approved.",
+    description:
+      "Receive instant payouts when milestones are verified and approved.",
   },
 ];
 
@@ -59,7 +62,10 @@ export const HowItWorksSection = () => {
                   {step.description}
                 </p>
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-border" style={{ width: 'calc(100% + 2rem)' }} />
+                  <div
+                    className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-border"
+                    style={{ width: "calc(100% + 2rem)" }}
+                  />
                 )}
               </motion.div>
             );

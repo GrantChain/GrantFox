@@ -1,30 +1,40 @@
 "use client";
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { ShieldCheck, Zap, Users, Lock } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Lock, ShieldCheck, Users, Zap } from "lucide-react";
 import { SectionHeader } from "./HeaderSection";
 
 const features = [
   {
     icon: ShieldCheck,
     title: "Secure Escrows",
-    description: "Smart contracts ensure funds are protected until milestones are completed.",
+    description:
+      "Smart contracts ensure funds are protected until milestones are completed.",
   },
   {
     icon: Zap,
     title: "Fast Processing",
-    description: "Automated milestone verification and instant payouts when conditions are met.",
+    description:
+      "Automated milestone verification and instant payouts when conditions are met.",
   },
   {
     icon: Users,
     title: "DAO Friendly",
-    description: "Perfect for decentralized organizations managing grants and bounties.",
+    description:
+      "Perfect for decentralized organizations managing grants and bounties.",
   },
   {
     icon: Lock,
     title: "Trustless System",
-    description: "No intermediaries needed. Code is law with transparent, verifiable transactions.",
+    description:
+      "No intermediaries needed. Code is law with transparent, verifiable transactions.",
   },
 ];
 
