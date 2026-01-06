@@ -1,4 +1,4 @@
-import { Home, LifeBuoy, Sparkles } from "lucide-react";
+import { Home, LifeBuoy, Sparkles, TrendingUp } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface NavItem {
@@ -21,6 +21,13 @@ export const navItems: NavItem[] = [
     title: "Support",
     url: "/dashboard/support",
     icon: LifeBuoy,
+    roles: ["ADMIN", "PAYOUT_PROVIDER", "GRANTEE"],
+    group: "Platform",
+  },
+  {
+    title: "Investors",
+    url: "/dashboard/investors",
+    icon: TrendingUp,
     roles: ["ADMIN", "PAYOUT_PROVIDER", "GRANTEE"],
     group: "Platform",
   },
