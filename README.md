@@ -147,7 +147,7 @@ Important Note: If you're having problems to use Freighter, make sure that you h
 _This project uses **Biome.js** for code linting and formatting, and **Husky** to enforce code quality and commit message standards._
 
 _Here's how it works:_
-*   _**Pre-commit Hook**: Before any commit is finalized, Husky triggers Biome.js to automatically lint and format your **staged files**. If Biome finds issues that it cannot fix automatically, or if there are linting errors, the commit will be prevented. You'll need to resolve these issues before you can commit._
+*   _**Pre-commit Hook**: Before any commit is finalized, Husky triggers Biome.js to automatically lint and format the **staged files**. If Biome finds issues that it cannot fix automatically, or if there are linting errors, the commit will be prevented. You'll need to resolve these issues before you can commit._
 *   _**Commit Message Validation**: After you write your commit message and try to finalize the commit, Husky uses `commitlint` to ensure your message adheres to the [Conventional Commits](https://www.conventionalcommits.org/) standard (e.g., `feat: add new feature`, `fix: resolve bug`). If your commit message is not correctly formatted, the commit will be rejected. You'll need to amend your commit message to meet the standard._
 
 _These integrations help maintain a clean, consistent codebase and a well-structured commit history. If a commit fails due to either of these checks, please review the error messages provided by Biome or commitlint and make the necessary corrections._
