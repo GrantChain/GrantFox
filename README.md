@@ -4,7 +4,7 @@
 
 Grants Open Source Platform.
 
----
+---moneyyyy
 
 # Maintainers | [Telegram](https://t.me/gigifox25)
 
