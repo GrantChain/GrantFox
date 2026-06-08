@@ -7,7 +7,7 @@ Grants Open Source Platform.
 
 ---moneyyyy
 
----i need money
+---i need money plataa
 
 
 # Maintainers | [Telegram](https://t.me/gigifox25)
