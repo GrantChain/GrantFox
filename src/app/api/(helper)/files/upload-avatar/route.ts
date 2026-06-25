@@ -1,3 +1,4 @@
+import { logger } from "@/lib/services/logger";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
@@ -21,6 +22,11 @@ export async function POST(request: Request) {
     const bucket = "avatars";
 
     if (!supabaseUrl || !serviceKey) {
+      logger.error("Missing Supabase credentials", null, {
+        action: "AVATAR_UPLOAD",
+        entityType: "FILE",
+        userId,
+      });
       return NextResponse.json(
         { message: "Missing Supabase credentials" },
         { status: 500 },
@@ -37,14 +43,30 @@ export async function POST(request: Request) {
       .upload(path, file, { cacheControl: "3600", upsert: true });
 
     if (error) {
+      logger.error("Avatar upload error", error, {
+        action: "AVATAR_UPLOAD",
+        entityType: "FILE",
+        userId,
+        metadata: { path, fileName: file.name },
+      });
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
 
     const publicUrl = `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
 
+    logger.info("Avatar uploaded", {
+      action: "AVATAR_UPLOAD",
+      entityType: "FILE",
+      userId,
+      metadata: { path, publicUrl },
+    });
+
     return NextResponse.json({ publicUrl }, { status: 200 });
   } catch (error) {
-    console.error("/api/(helper)/files/upload-avatar error:", error);
+    logger.error("/api/(helper)/files/upload-avatar error", error, {
+      action: "AVATAR_UPLOAD",
+      entityType: "FILE",
+    });
     return NextResponse.json({ message: "Unexpected error" }, { status: 500 });
   }
 }

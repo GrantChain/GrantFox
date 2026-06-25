@@ -1,4 +1,5 @@
 import { handleDatabaseError, prisma } from "@/lib/prisma";
+import { logger } from "@/lib/services/logger";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -8,6 +9,10 @@ export async function GET(request: Request) {
     const role = searchParams.get("role");
 
     if (!user_id) {
+      logger.error("Missing user_id parameter", null, {
+        action: "AUTH_GET_USER_BY_ID",
+        entityType: "USER",
+      });
       return NextResponse.json(
         { exists: false, message: "User ID parameter is required" },
         { status: 400 },
@@ -104,14 +109,29 @@ export async function GET(request: Request) {
     }
 
     if (!user) {
+      logger.error("User not found by id", null, {
+        action: "AUTH_GET_USER_BY_ID",
+        userId: user_id,
+        entityType: "USER",
+      });
       return NextResponse.json(
         { exists: false, message: "User not found" },
         { status: 404 },
       );
     }
 
+    logger.info("Fetched user by id successfully", {
+      action: "AUTH_GET_USER_BY_ID",
+      userId: user_id,
+      entityType: "USER",
+    });
+
     return NextResponse.json({ exists: true, user });
   } catch (error) {
+    logger.error("Error getting user by id", error, {
+      action: "AUTH_GET_USER_BY_ID",
+      entityType: "USER",
+    });
     const { message, status } = handleDatabaseError(error);
     return NextResponse.json({ exists: false, message }, { status });
   }

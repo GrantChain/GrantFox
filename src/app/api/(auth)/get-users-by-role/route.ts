@@ -1,5 +1,6 @@
 import type { UserRole } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/services/logger";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -23,8 +24,8 @@ export async function GET(request: Request) {
     }
 
     // Decode the parameters to handle special characters
-    const decodedRole = decodeURIComponent(role);
-    const decodedUserIds = decodeURIComponent(user_ids);
+    const decodedRole = role as string;
+    const decodedUserIds = user_ids as string;
     const userIdsArray = decodedUserIds.split(",").filter(Boolean);
 
     if (userIdsArray.length === 0) {
@@ -49,9 +50,18 @@ export async function GET(request: Request) {
       },
     });
 
+    logger.info("Fetched users by role successfully", {
+      action: "AUTH_GET_USERS_BY_ROLE",
+      entityType: "USER",
+      metadata: { role: decodedRole, count: users.length },
+    });
+
     return NextResponse.json({ users });
   } catch (error) {
-    console.error("Error getting users by role:", error);
+    logger.error("Error getting users by role", error, {
+      action: "AUTH_GET_USERS_BY_ROLE",
+      entityType: "USER",
+    });
     return NextResponse.json(
       { error: "Failed to get users by role" },
       { status: 500 },

@@ -1,6 +1,7 @@
 import { profileUpdatePayloadSchema } from "@/components/modules/profile/schemas/profile.schema";
 import { Prisma } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/services/logger";
 import { NextResponse } from "next/server";
 
 export async function PATCH(request: Request) {
@@ -80,10 +81,18 @@ export async function PATCH(request: Request) {
       });
     }
 
+    logger.info("Profile updated successfully", {
+      action: "PROFILE_PATCH",
+      userId: userId,
+      entityType: "USER",
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("/api/profile PATCH error:", error);
+    logger.error("/api/profile PATCH error", error, {
+      action: "PROFILE_PATCH",
+      entityType: "USER",
+    });
     // Handle Prisma unique constraint (e.g., wallet already in use)
     if (
       error &&

@@ -1,4 +1,5 @@
 import { handleDatabaseError, prisma } from "@/lib/prisma";
+import { logger } from "@/lib/services/logger";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -9,6 +10,10 @@ export async function GET(
     const { user_id } = await params;
 
     if (!user_id || user_id === "undefined" || user_id === "null") {
+      logger.error("Invalid user_id parameter", null, {
+        action: "AUTH_CHECK_ROLE",
+        entityType: "USER",
+      });
       return NextResponse.json({ error: "Invalid user_id" }, { status: 400 });
     }
 
@@ -37,11 +42,27 @@ export async function GET(
     }
 
     if (!user) {
+      logger.error("User not found in check-role", null, {
+        action: "AUTH_CHECK_ROLE",
+        userId: user_id,
+        entityType: "USER",
+      });
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    logger.info("Fetched user role successfully", {
+      action: "AUTH_CHECK_ROLE",
+      userId: user_id,
+      entityType: "USER",
+      metadata: { role: user.role },
+    });
+
     return NextResponse.json({ role: user.role });
   } catch (error) {
+    logger.error("Error checking user role", error, {
+      action: "AUTH_CHECK_ROLE",
+      entityType: "USER",
+    });
     const { message, status } = handleDatabaseError(error);
     return NextResponse.json({ error: message }, { status });
   }

@@ -1,5 +1,6 @@
 import { RolePayloadSchema } from "@/components/modules/auth/schema/role-selection.schema";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/services/logger";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -13,30 +14,45 @@ export async function POST(req: Request) {
   const { user_id, role } = parsed.data;
 
   try {
-    // Update the user's role in the database
-    const user = await prisma.user.update({
-      where: { user_id },
-      data: { role },
+    // Perform role update and dependent record creation in a transaction
+    const user = await prisma.$transaction(async (tx) => {
+      const updatedUser = await tx.user.update({
+        where: { user_id },
+        data: { role },
+      });
+
+      if (role === "PAYOUT_PROVIDER") {
+        await tx.payoutProvider.upsert({
+          where: { user_id },
+          update: {},
+          create: { user_id },
+        });
+      } else if (role === "GRANTEE") {
+        await tx.grantee.upsert({
+          where: { user_id },
+          update: {},
+          create: { user_id },
+        });
+      }
+
+      return updatedUser;
     });
 
-    // Create the corresponding record in the specific table
-    if (role === "PAYOUT_PROVIDER") {
-      await prisma.payoutProvider.create({
-        data: {
-          user_id: user_id,
-        },
-      });
-    } else if (role === "GRANTEE") {
-      await prisma.grantee.create({
-        data: {
-          user_id: user_id,
-        },
-      });
-    }
+    logger.info("User role registered successfully", {
+      action: "AUTH_REGISTER_ROLE",
+      userId: user_id,
+      entityType: "USER",
+      metadata: { role },
+    });
 
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    console.error("Error registering role:", error);
+    logger.error("Error registering role", error, {
+      action: "AUTH_REGISTER_ROLE",
+      userId: user_id,
+      entityType: "USER",
+      metadata: { role },
+    });
     return NextResponse.json(
       { error: "Failed to register role" },
       { status: 500 },
