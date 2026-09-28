@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCopyUtils } from "@/utils/copy.utils";
 import { Building, Calendar, Copy, Mail, MapPin, Wallet } from "lucide-react";
 import Link from "next/link";
+import { ContributorMetricsCard } from "../components/ContributorMetricsCard";
 import { usePublicProfile } from "../hooks/useUserProfile";
 
 interface PublicProfileClientProps {
@@ -197,6 +198,27 @@ export default function PublicProfilePage({
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {grantee && (
+            <div className="md:col-span-2">
+              <ContributorMetricsCard
+                userId={user.user_id}
+                username={user.username || ""}
+                githubUsername={
+                  socialMedia &&
+                  typeof socialMedia === "object" &&
+                  "github" in socialMedia
+                    ? String(
+                        (socialMedia as Record<string, string>).github || "",
+                      )
+                        .split("/")
+                        .pop()
+                    : null
+                }
+                canEdit={false}
+              />
+            </div>
           )}
         </div>
       </div>

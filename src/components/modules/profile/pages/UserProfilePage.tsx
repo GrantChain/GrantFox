@@ -19,6 +19,7 @@ import {
   User as UserIcon,
   Wallet,
 } from "lucide-react";
+import { ContributorMetricsCard } from "../components/ContributorMetricsCard";
 import { GrantProviderPublicCard } from "../components/GrantProviderPublicCard";
 import { useUserProfile } from "../hooks/useUserProfile";
 
@@ -326,6 +327,18 @@ export default function UserProfilePage({
           </Card>
         ) : null}
       </div>
+      {user && !isGrantProvider && (
+        <div className="mt-6">
+          <ContributorMetricsCard
+            userId={user.user_id}
+            username={user.username || ""}
+            githubUsername={
+              socialMedia?.github ? socialMedia.github.split("/").pop() : null
+            }
+            canEdit={true}
+          />
+        </div>
+      )}
     </div>
   );
 }
