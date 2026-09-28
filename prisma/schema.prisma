@@ -60,6 +60,7 @@ model Grantee {
   user           User     @relation(fields: [user_id], references: [user_id])
   payouts        Payout[]
   bounty_applications BountyApplication[]
+  contributions  GranteeContribution[]
 
   @@index([name])
   @@index([created_at])
@@ -92,6 +93,7 @@ model Payout {
   grantee       Grantee?     @relation(fields: [grantee_id], references: [user_id])
   comments      Comment[]
   bounty_applications BountyApplication[]
+  contributions       GranteeContribution[]
 
   @@index([created_by])
   @@index([grantee_id])
@@ -235,4 +237,41 @@ enum SupportStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+}
+
+enum ContributionStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model GranteeContribution {
+  contribution_id String             @id @default(cuid())
+  grantee_id      String
+  github_username String
+  repository      String
+  pr_number       Int
+  pr_url          String
+  pr_title        String?
+  issue_url       String?
+  issue_title     String?
+  merged_at       DateTime?
+  status          ContributionStatus @default(VERIFIED)
+  reward_eligible Boolean            @default(true)
+  reward_amount   Decimal?           @default(0)
+  currency        Currency?          @default(USDC)
+  payout_id       String?
+  notes           String?
+  created_at      DateTime           @default(now())
+  updated_at      DateTime           @updatedAt
+
+  grantee         Grantee            @relation(fields: [grantee_id], references: [user_id], onDelete: Cascade)
+  payout          Payout?            @relation(fields: [payout_id], references: [payout_id], onDelete: SetNull)
+
+  @@unique([repository, pr_number])
+  @@index([grantee_id])
+  @@index([github_username])
+  @@index([status])
+  @@index([repository])
+  @@map("grantee_contribution")
 }

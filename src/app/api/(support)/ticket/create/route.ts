@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     try {
       const user = await prisma.user.findUnique({
         where: { user_id: record.user_id },
-        select: { email: true },
+        select: { email: true, username: true },
       });
       if (user?.email) {
         await sendSupportTicketNotifications({
@@ -55,8 +55,19 @@ export async function POST(request: Request) {
           },
         });
       }
+
+      const prMatches = payload.message.match(/https?:\/\/github\.com\/[^/\s]+\/[^/\s]+\/pull\/\d+/gi);
+      if (prMatches && prMatches.length > 0 && user?.username) {
+        const { batchRetroactiveAttribute } = await import("@/lib/attribution-service");
+        await batchRetroactiveAttribute({
+          grantee_id: effectiveUserId,
+          github_username: user.username,
+          pr_urls: prMatches,
+          notes: `Auto-submitted via Support Ticket #${record.ticket_id}`,
+        });
+      }
     } catch (e) {
-      console.warn("Support ticket email notifications failed", e);
+      console.warn("Support ticket post-processing warning", e);
     }
 
     return NextResponse.json({ data: record });
