@@ -28,8 +28,8 @@ export const formatDateRangeToFilters = (
   currentFilters: PayoutFilters,
 ): PayoutFilters => ({
   ...currentFilters,
-  startDate: range?.from?.toISOString().split("T")[0] || "",
-  endDate: range?.to?.toISOString().split("T")[0] || "",
+  startDate: range?.from ? range.from.toISOString().split("T")[0] : "",
+  endDate: range?.to ? range.to.toISOString().split("T")[0] : "",
 });
 
 export const createInitialDateRange = (
@@ -40,4 +40,4 @@ export const createInitialDateRange = (
     from: filters.startDate ? new Date(filters.startDate) : undefined,
     to: filters.endDate ? new Date(filters.endDate) : undefined,
   };
-};
+};
